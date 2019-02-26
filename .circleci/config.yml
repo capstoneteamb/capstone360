@@ -5,4 +5,12 @@ jobs:
       - image: circleci/python
     steps:
       - checkout
-      - run: echo "Hello world"
+      - run: pip install -U pytest
+      - run: pytest
+  mypy:
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: pip3 install mypy
+      - run: mypy -p capstone360
