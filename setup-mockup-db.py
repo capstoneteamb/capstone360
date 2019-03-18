@@ -145,7 +145,7 @@ cursor.executemany('INSERT INTO teams VALUES(?,?,?)', team_list)
 
 # Create Students Table
 cursor.execute(('CREATE TABLE students( '
-                   'id VARCHAR(20), '
+                   'id INTEGER, '
                    'tid INTEGER REFERENCES teams(id), '
                    'session_id INTEGER REFERENCES capstone_session(id), '
                    'name VARCHAR(128), '
@@ -185,6 +185,17 @@ cursor.execute(('CREATE TABLE reports('
                    'proud_of_accomplishment VARCHAR(4096), '
                    'is_final BOOL, '
                    'PRIMARY KEY (reporting, tid, report_for, is_final));'))
+
+# Create Removed Students Table
+cursor.execute(('CREATE TABLE removed_students( '
+                   'id INTEGER, '
+                   'tid INTEGER REFERENCES teams(id), '
+                   'session_id INTEGER REFERENCES capstone_session(id), '
+                   'name VARCHAR(128), '
+                   'midterm_done BOOLEAN, '
+                   'final_done BOOLEAN, '
+                   'session_removed INTEGER REFERENCES capstone_session(id), '
+                   'PRIMARY KEY (id, session_id) );'))
 
 ### Add student and student data to database ###
 num_students = len(student_data)
