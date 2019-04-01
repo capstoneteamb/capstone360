@@ -1,11 +1,11 @@
 version: 2
 jobs:
-  build:
-    docker:
-      - image: circleci/python
-    steps:
-      - checkout
-      - run: echo "this doesn't do anything yet!"
+  # build:
+  #   docker:
+  #     - image: circleci/python
+  #   steps:
+  #     - checkout
+  #     - run: echo "Nothing to build yet, so this test is a placeholder."
   test:
     docker:
       - image: circleci/python
@@ -20,6 +20,7 @@ jobs:
       - checkout
       - run: sudo pip3 install -U mypy
       - run: mypy -p capstone360
+
 workflows:
   version: 2
   build_and_test:
