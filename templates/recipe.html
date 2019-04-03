@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- This is the html code for the layout of the recipe page -->
+	<h3>Quick and Easy Recipes</h3>
+	<a href="{{ url_for('index')}}"><button  class="my-btn" 
+		style="background-color: #4286f4;
+    color: white;
+    border: none;
+    border-radius:5px;
+	padding: 10px 20px;
+	cursor: pointer;
+	margin-bottom: 25px;">Back</button></a>
+    {% for recipe in cookbook %}
+	<div class="recipe-card">
+	<h4>{{ recipe.title }} by {{ recipe.author }}</h4>
+	<img class="header-img" src= {{ recipe.image}} style="width: 100%;">
+        <p class=entry>
+	<p>
+		Ingredients: {{ recipe.ingredients }}
+	</p>
+	<p>
+		Time: {{recipe.time}} minutes
+	</p>
+        <p>
+		Skill: Level {{recipe.skill}}
+	</p>
+        <p>
+		Description: {{recipe.description}}
+        </p>
+	</p>
+	</div>
+	{% endfor %}
+	<a href="{{ url_for('index')}}"><button  class="my-btn" 
+		style="background-color: #4286f4;
+    color: white;
+    border: none;
+    border-radius:5px;
+	padding: 10px 20px;
+	cursor: pointer">Back</button></a>
+
+{% endblock %}

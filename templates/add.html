@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- This is the input frontend where users can input information about recipes -->
+	<h3>Add Recipes</h3>
+	<div class="recipe-card">
+		<form action="{{ url_for('add') }}" method=POST>
+			<p class="heading">Title: <input type=text name=title></p>
+			<p class="heading">Author: <input type=text name=author></p>
+			<p class="heading">Ingredients:
+				<textarea rows = 3 cols=50 name=ingredients></textarea>
+			</p>
+			<p class="heading">Time: <input type=text name=time></p>
+			<p class="heading">Skill: <input type=text name=skill></p>
+			<p class="heading">Description
+				<textarea rows = 5 cols=50 name=description></textarea>
+			</p>
+			<p class="heading">Image Link: <input type=text name=image></p>
+			<p><input type=submit value=Add style="
+					background-color: #4286f4;
+ 				   	color: white;
+    				border: none;
+    				border-radius:5px;
+					padding: 10px 20px;
+					cursor: pointer;"></p>
+		</form>
+	</div>
+
+{% endblock %}
