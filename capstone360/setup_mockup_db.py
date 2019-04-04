@@ -132,8 +132,9 @@ def generate_tables(cursor):
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL, '
-                    'midterm_done BOOLEAN NOT NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'is_lead BOOLEAN NULL DEFAULT FALSE, '
+                    'midterm_done BOOLEAN NULL DEFAULT FALSE, '
+                    'final_done BOOLEAN NULL DEFAULT FALSE, '
                     'PRIMARY KEY (id, session_id) );'))
 
     # Create Team Members table
@@ -175,8 +176,9 @@ def generate_tables(cursor):
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL , '
-                    'midterm_done BOOLEAN NOT NULL, '
-                    'final_done BOOLEAN NOT NULL, '
+                    'is_lead BOOLEAN NULL DEFAULT FALSE, '
+                    'midterm_done BOOLEAN NULL DEFAULT FALSE, '
+                    'final_done BOOLEAN NULL DEFAULT FALSE, '
                     'session_removed INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'PRIMARY KEY (id, session_id) );'))
 
@@ -232,12 +234,20 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
             student_id = student["id"] + (len(student_data) * session_id)
             team_id = student["id"] % num_teams + (num_teams * session_id)
 
+            # Figure out if student is team lead
+            # The conditional will be true if the current student is the first one on the team. If they are
+            # the first one, they are the team lead
+            is_team_lead = False
+            if (student["id"] < num_teams):
+                is_team_lead = True
+
             # Add student to the students table
-            cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?)',
+            cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?)',
                            (student_id,
                             team_id,
                             session_id,
                             student["name"],
+                            is_team_lead,
                             False,
                             False))
 
@@ -325,7 +335,7 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
 
 def run():
     # Part 1: Create database and add tables
-    connection = sqlite3.connect('mockup-database.db')
+    connection = sqlite3.connect('mockup_database.db')
     cursor = connection.cursor()
     generate_tables(cursor)
 

@@ -124,16 +124,21 @@ def test_generate_tables():
            and columns[3][3] == 1
            and columns[3][4] is None
            and columns[3][5] == 0)
-    assert(columns[4][1] == "midterm_done"
+    assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 1
+           and columns[4][3] == 0
            and columns[4][4] == "FALSE"
            and columns[4][5] == 0)
-    assert(columns[5][1] == "final_done"
+    assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 1
+           and columns[5][3] == 0
            and columns[5][4] == "FALSE"
            and columns[5][5] == 0)
+    assert(columns[6][1] == "final_done"
+           and columns[6][2] == "BOOLEAN"
+           and columns[6][3] == 0
+           and columns[6][4] == "FALSE"
+           and columns[6][5] == 0)
 
     # Check that the teams table was created, and that it is empty
     cursor.execute("SELECT * FROM teams;")
@@ -208,21 +213,26 @@ def test_generate_tables():
            and columns[3][3] == 1
            and columns[3][4] is None
            and columns[3][5] == 0)
-    assert(columns[4][1] == "midterm_done"
+    assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 1
-           and columns[4][4] is None
+           and columns[4][3] == 0
+           and columns[4][4] == "FALSE"
            and columns[4][5] == 0)
-    assert(columns[5][1] == "final_done"
+    assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 1
-           and columns[5][4] is None
+           and columns[5][3] == 0
+           and columns[5][4] == "FALSE"
            and columns[5][5] == 0)
-    assert(columns[6][1] == "session_removed"
-           and columns[6][2] == "INTEGER"
-           and columns[6][3] == 1
-           and columns[6][4] is None
+    assert(columns[6][1] == "final_done"
+           and columns[6][2] == "BOOLEAN"
+           and columns[6][3] == 0
+           and columns[6][4] == "FALSE"
            and columns[6][5] == 0)
+    assert(columns[7][1] == "session_removed"
+           and columns[7][2] == "INTEGER"
+           and columns[7][3] == 1
+           and columns[7][4] is None
+           and columns[7][5] == 0)
 
     # Check if the reports table exists, and that it is empty
     cursor.execute("SELECT * FROM reports;")
@@ -411,7 +421,7 @@ def test_fill_tables_with_data():
         # Verify that the reports have been submitted
         # student[4] = (is) midterm_done (boolean)
         # student[5] = (is) final_done (boolean)
-        assert(student[4] and student[5])
+        assert(student[5] and student[6])
 
     # Verify the data in the team_members table is correct
     # May need to come back and clarify -- the comments are a bit vague
