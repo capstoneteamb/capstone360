@@ -2,9 +2,10 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_test.db'
-db = SQLAlchemy(app)
+#app = Flask(__name__)
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_test.db'
+#db = SQLAlchemy(app)
+db = SQLAlchemy()
 #in shell:
 #from db_form import db
 #db.create_fall()
@@ -25,14 +26,14 @@ class students(db.Model):
     final_done = db.Column(db.Boolean, unique=False, nullable=False, default=False, primary_key=False)
     active = db.Column(db.String(128), nullable=True, default='')
 
-    sess = db.relationship('capstone_session', foreign_keys='capstone_session.id')
-    team_id = db.relationship('teams', foreign_keys='teams.id')
+    #sess = db.relationship('capstone_session', foreign_keys='capstone_session.id')
+    #team_id = db.relationship('teams', foreign_keys='teams.id')
 
 
 class teams(db.Model):
     id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
     session_id = db.Column(db.Integer, db.ForeignKey('capstone_session.id'), nullable=False, primary_key=False)
-    capstone_session = db.relationship('capstone_session', backref=db.backref('cid', lazy=False))
+    #capstone_session = db.relationship('capstone_session', backref=db.backref('cid', lazy=False))
     name = db.Column(db.String(128), nullable=False, unique=False, primary_key=False)
 
 class capstone_session(db.Model):
@@ -64,3 +65,4 @@ class reports(db.Model):
     what_you_learned = db.Column(db.String(4096), unique=False, nullable=True, primary_key=False)
     proud_of_accomplishment = db.Column(db.String(4096), unique=False, nullable=True, primary_key=False)
     is_final = db.Column(db.Boolean, unique=False, nullable=False, primary_key=True)
+
