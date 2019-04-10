@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block menu %}
+<div class="container nav-container">
+        <div class="row nav">
+            <div class="col-sm">Term</div>
+            <div class="col-sm">Edit</div>
+            <div class="col-sm">Generate Reports</div>
+            <a class="col-sm" href="{{ url_for('index')}}">
+                <div>Logout</div>
+            </a>
+        </div>
+        <div class="row button">
+            <div class="col-sm"></div>
+            <div class="col-sm"></div>
+            <div class="col-sm">
+                <a href=""><button class="my-btn">Add Team</button></a>
+            </div>
+            <div class="col-sm">
+                <a href="{{ url_for('dashboard')}}"><button class="my-btn"
+                        style="background-color: #ff9e16">Remove</button></a>
+            </div>
+            <div class="col-sm">
+                <a href="{{ url_for('dashboard')}}"><button class="my-btn">Cancel</button></a>
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-sm"></div>
+        </div>
+    </div>
+{% endblock %}
