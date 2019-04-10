@@ -135,7 +135,7 @@ def generate_tables(cursor):
                     'is_lead BOOLEAN NULL DEFAULT FALSE, '
                     'midterm_done BOOLEAN NULL DEFAULT FALSE, '
                     'final_done BOOLEAN NULL DEFAULT FALSE, '
-                    'active BOOLEAN NULL, '
+                    'active VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
     # Create Team Members table
@@ -251,7 +251,7 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             is_team_lead,
                             False,
                             False,
-                            True))
+                            None))
 
             # Add student to the team members table
             cursor.execute('INSERT INTO team_members VALUES(?,?,?)',
