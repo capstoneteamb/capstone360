@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .db_form import db, capstone_session, teams, students, team_members
+from .db_form import db, capstone_session, teams, students, team_members, reports
 
 #db = SQLAlchemy
 
@@ -92,9 +92,10 @@ def create_app(test_config=None):
     #from . import db
     db.init_app(app)
     with app.app_context():
-        db.drop_all()
-        db.create_all()
-        fill_data(db)
+        #db.drop_all()
+        #db.create_all()
+        #fill_data(db)
+        print('hi')
 
     from . import form
     app.register_blueprint(form.bp)

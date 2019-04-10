@@ -218,6 +218,7 @@
           </div>
         </td>
         <td>
+          {% if mem['is_lead'] == 1 %}
           <div class="custom-control custom-radio">
             <input type="radio" id="l1_{{mem['id']}}" name="l_{{mem['id']}}" value="1" class="custom-control-input"
               required>
@@ -239,8 +240,10 @@
             <input type="radio" id="l5_{{mem['id']}}" name="l_{{mem['id']}}" value="5" class="custom-control-input">
             <label class="custom-control-label" for="l5_{{mem['id']}}">5</label>
           </div>
+          {% endif %}
         </td>
         <td>
+          {% if mem['is_lead'] == 1 %}
           <div class="custom-control custom-radio">
             <input type="radio" id="o1_{{mem['id']}}" name="o_{{mem['id']}}" value="1" class="custom-control-input"
               required>
@@ -262,8 +265,10 @@
             <input type="radio" id="o5_{{mem['id']}}" name="o_{{mem['id']}}" value="5" class="custom-control-input">
             <label class="custom-control-label" for="o5_{{mem['id']}}">5</label>
           </div>
+          {% endif %}
         </td>
         <td>
+          {% if mem['is_lead'] == 1 %}
           <div class="custom-control custom-radio">
             <input type="radio" id="d1_{{mem['id']}}" name="d_{{mem['id']}}" value="1" class="custom-control-input"
               required>
@@ -285,6 +290,7 @@
             <input type="radio" id="d5_{{mem['id']}}" name="d_{{mem['id']}}" value="5" class="custom-control-input">
             <label class="custom-control-label" for="d5_{{mem['id']}}">5</label>
           </div>
+          {% endif %}
         </td>
         <td>
           <input type="text" class="form-control" name="points_{{mem['id']}}" id="points_{{mem['id']}}" required>
@@ -305,6 +311,11 @@
     <br>
     <label for="learned">What you learned</label>
     <input type="text" class="form-control" name="learned" id="learned" required>
+    {% if state == 'final' %}
+    <br>
+    <label for="proud">Are you proud of your accomplishment for this project?</label>
+    <input type="text" class="form-control" name="proud" id="proud" required>
+    {% endif %}
     <br>
     <input type="submit" value="Submit">
   </form>

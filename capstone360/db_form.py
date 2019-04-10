@@ -24,7 +24,7 @@ class students(db.Model):
     is_lead = db.Column(db.Boolean, unique=False, nullable=False, primary_key=False)
     midterm_done = db.Column(db.Boolean, unique=False, nullable=False, default=False, primary_key=False)
     final_done = db.Column(db.Boolean, unique=False, nullable=False, default=False, primary_key=False)
-    active = db.Column(db.String(128), nullable=True, default='')
+    active = db.Column(db.String(128), nullable=True, default=None)
 
     #sess = db.relationship('capstone_session', foreign_keys='capstone_session.id')
     #team_id = db.relationship('teams', foreign_keys='teams.id')
@@ -45,6 +45,7 @@ class capstone_session(db.Model):
 
 class reports(db.Model):
     time = db.Column(db.DateTime, unique=False, nullable=False, primary_key=False)
+    session_id = db.Column(db.Integer, db.ForeignKey('capstone_session.id'), unique=False, nullable=False, primary_key=False)
     reporting = db.Column(db.Integer, db.ForeignKey('students.id'), unique=False, nullable=False, primary_key=True)
     tid = db.Column(db.Integer, db.ForeignKey('teams.id'), unique=False, nullable=False, primary_key=True)
     report_for = db.Column(db.Integer, db.ForeignKey('students.id'), unique=False, nullable=False, primary_key=True)
