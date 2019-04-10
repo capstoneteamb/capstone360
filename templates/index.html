@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="body">
+	<div class="row">
+		<div class="login-container">
+			<div class="login-hero">
+				<h3>WELCOME TO CAPSTONE 360</h3>
+				<img src="{{ url_for('static', filename='Assets/karl-miller.png')}}">
+			<a href="{{url_for('dashboard')}}"><div class="login-btn">Login</div></a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
