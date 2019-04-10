@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    {% for t in team_names %}
+        <article class="media content-section">
+            <div class="media-body">
+            <div class="article-metadata">            
+                <h2><a class="article-title" href="#">{{ t.name }}</a></h2>
+                    <!-- <small class="text-muted">Team Lead: {{ t.team_lead }}</small> -->
+            </div>
+            {% for m in member_names %}
+                <p class="article-content">{{ m.name }}</p>
+            {% endfor %}
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content%}
