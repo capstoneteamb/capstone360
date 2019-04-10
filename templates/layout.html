@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<title>Capstone360</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='CSS/style.css') }}">
+<div class=page>
+    <div class="row header">
+        <img class="psu-logo" src="{{ url_for('static', filename='Assets/psu-logo.png') }}">
+    </div>
+        {% block menu %}{% endblock%}
+    <div class="layout-container">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+</html>
