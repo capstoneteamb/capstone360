@@ -10,18 +10,20 @@ from datetime import datetime
 bp = Blueprint('form', __name__, url_prefix='/form')
 
 
-@bp.route('/submission')
+@bp.route('/response')
 def submission():
-    return render_template('form/submission.html')
+    return render_template('form/response.html', success=False, mess='')
 
 
 # This will be changed to account for CAS log in
 def getID():
-    sdtID = 45
+    sdtID = 45435345
     return sdtID
 
+
+#only if user error can be fixed
 def displayError(err_str):
-    print(err_str)
+    return redirect('form/response.html', success=False, mess=err_str)
 
 def convertToInt(toConvert):
     #see if input is an integer, if not display error to user
@@ -39,7 +41,7 @@ def getState():
     if sdt is None:
         displayError('user not found in database')
     state = sdt.active
-    print(state)
+    
     return state
 
 def confirmUser():
@@ -130,116 +132,124 @@ def review():
                 
         # check points total
         total = 0
+        pointsPass = True
+
         for j in lst:
+            #check points for being in bounds and adding to 100
             points = request.form[('points_' + j)]
             try:
                 points = convertToInt(points)
                 total = total + points
                 if int(j) == getID():
+                    #make sure own score is 0
                     if points > 0 or points < 0:
-                        displayError('Points above or below 100')
+                        flash('Points must be 0 for self')
+                        pointsPass = False
             except ValueError:
                 displayError('Invalid input for points')
 
         if total != 100:
-            displayError('Points total not equal to 100')
+            flash('Points total must be 100')
+            pointsPass = False
 
-        for i in lst:
-            # Get each radio input and verify that it's an integer, give an error if not
-            print(i)
-            tech = request.form[('tm_' + i)]
-            tech = convertToInt(tech)
+        if pointsPass == True:
+            for i in lst:
+                # Get each radio input and verify that it's an integer, give an error if not
+                print(i)
+                tech = request.form[('tm_' + i)]
+                tech = convertToInt(tech)
 
-            ethic = request.form[('we_' + i)]
-            ethic = convertToInt(ethic)
+                ethic = request.form[('we_' + i)]
+                ethic = convertToInt(ethic)
 
-            com = request.form[('cm_' + i)]
-            com = convertToInt(com)
+                com = request.form[('cm_' + i)]
+                com = convertToInt(com)
 
-            coop = request.form[('co_' + i)]
-            coop = convertToInt(coop)
+                coop = request.form[('co_' + i)]
+                coop = convertToInt(coop)
 
-            init = request.form[('i_' + i)]
-            init = convertToInt(init)
+                init = request.form[('i_' + i)]
+                init = convertToInt(init)
 
-            focus = request.form[('tf_' + i)]
-            focus = convertToInt(focus)
+                focus = request.form[('tf_' + i)]
+                focus = convertToInt(focus)
 
-            cont = request.form[('cr_' + i)]
-            cont = convertToInt(cont)
+                cont = request.form[('cr_' + i)]
+                cont = convertToInt(cont)
 
-            #default leader skills to None for Null
-            lead = None
-            org = None
-            dlg = None
+                #default leader skills to None for Null
+                lead = None
+                org = None
+                dlg = None
 
-            #check if current student is leader
-            sdt = students.query.filter_by(id=i).first()
-            if(sdt.is_lead == 1):
-                #get leader values
-                lead = request.form[('l_' + i)]
-                lead = convertToInt(lead)
+                #check if current student is leader
+                sdt = students.query.filter_by(id=i).first()
+                if(sdt.is_lead == 1):
+                    #get leader values
+                    lead = request.form[('l_' + i)]
+                    lead = convertToInt(lead)
 
-                org = request.form[('o_' + i)]
-                org = convertToInt(org)
+                    org = request.form[('o_' + i)]
+                    org = convertToInt(org)
 
-                dlg = request.form[('d_' + i)]
-                dlg = convertToInt(dlg)
+                    dlg = request.form[('d_' + i)]
+                    dlg = convertToInt(dlg)
 
-            
-            # Get string inputs
-            strn = request.form[('str_' + i)]
-            wkn = request.form[('wkn_' + i)]
-            traits = request.form[('trait_' + i)]
+                
+                # Get string inputs
+                strn = request.form[('str_' + i)]
+                wkn = request.form[('wkn_' + i)]
+                traits = request.form[('trait_' + i)]
 
-            learned = None
-            if int(i) == getID():
-                learned = request.form[('learned')]
-
-            proud = None
-            #only get 'proud' if the student is filling out final review
-            if getState() == 'final':
+                learned = None
                 if int(i) == getID():
-                    proud = request.form[('proud')]
+                    learned = request.form[('learned')]
 
-            points = request.form[('points_' + i)]
-            points = convertToInt(points)
+                proud = None
+                #only get 'proud' if the student is filling out final review
+                if getState() == 'final':
+                    if int(i) == getID():
+                        proud = request.form[('proud')]
 
-            if getState() == 'midterm':
-                # for midterm set final to false
-                is_final = 0
-            elif getState() == 'final':
-                # for midterm set final to false
-                is_final = 1
+                points = request.form[('points_' + i)]
+                points = convertToInt(points)
 
-            
-            report = reports()
-            report.session_id = cid
-            report.time = datetime.now()
-            report.reporting = getID()
-            report.tid = tid
-            report.report_for = i
-            report.tech_mastery = tech
-            report.work_ethic = ethic
-            report.communication = com
-            report.cooperation = coop
-            report.initiative = init
-            report.team_focus = focus
-            report.contribution = cont
-            report.leadership = lead
-            report.organization = org
-            report.delegation = dlg
-            report.points = points
-            report.strengths = strn
-            report.weaknesses = wkn
-            report.traits_to_work_on = traits
-            report.what_you_learned = learned
-            report.proud_of_accomplishment = proud
-            report.is_final = is_final
-            
-            db.session.add(report)
-            db.session.commit()
-            
+                if getState() == 'midterm':
+                    # for midterm set final to false
+                    is_final = 0
+                elif getState() == 'final':
+                    # for midterm set final to false
+                    is_final = 1
 
-        # send to submitted message
-        return redirect('form/submission')
+                
+                report = reports()
+                report.session_id = cid
+                report.time = datetime.now()
+                report.reporting = getID()
+                report.tid = tid
+                report.report_for = i
+                report.tech_mastery = tech
+                report.work_ethic = ethic
+                report.communication = com
+                report.cooperation = coop
+                report.initiative = init
+                report.team_focus = focus
+                report.contribution = cont
+                report.leadership = lead
+                report.organization = org
+                report.delegation = dlg
+                report.points = points
+                report.strengths = strn
+                report.weaknesses = wkn
+                report.traits_to_work_on = traits
+                report.what_you_learned = learned
+                report.proud_of_accomplishment = proud
+                report.is_final = is_final
+                
+                db.session.add(report)
+                db.session.commit()
+                
+
+            # send to submitted message
+            return redirect('form/response', success=True, mess='Review Submitted')
+        return redirect(request.url)
