@@ -135,6 +135,7 @@ def generate_tables(cursor):
                     'is_lead BOOLEAN NULL DEFAULT FALSE, '
                     'midterm_done BOOLEAN NULL DEFAULT FALSE, '
                     'final_done BOOLEAN NULL DEFAULT FALSE, '
+                    'active VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
     # Create Team Members table
@@ -242,14 +243,15 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                 is_team_lead = True
 
             # Add student to the students table
-            cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?)',
+            cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?,?)',
                            (student_id,
                             team_id,
                             session_id,
                             student["name"],
                             is_team_lead,
                             False,
-                            False))
+                            False,
+                            None))
 
             # Add student to the team members table
             cursor.execute('INSERT INTO team_members VALUES(?,?,?)',
