@@ -2,13 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-#app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_test.db'
-#db = SQLAlchemy(app)
 db = SQLAlchemy()
-#in shell:
-#from db_form import db
-#db.create_fall()
 
 team_members = db.Table('team_members',
     db.Column('tid', db.Integer, db.ForeignKey('teams.id'), unique=False, nullable=False, primary_key=True),

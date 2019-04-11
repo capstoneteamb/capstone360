@@ -95,7 +95,6 @@ def create_app(test_config=None):
         db.drop_all()
         db.create_all()
         fill_data(db)
-        print('hi')
 
     from . import form
     app.register_blueprint(form.bp)

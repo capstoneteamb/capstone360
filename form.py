@@ -1,16 +1,16 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
-from .db_form import db, capstone_session, teams, students, team_members, reports
+from db_form import db, capstone_session, teams, students, team_members, reports
 from datetime import datetime
 
 
 # form blueprint
-bp = Blueprint('form', __name__, url_prefix='/form')
+form_bp = Blueprint('form', __name__, url_prefix='/form')
 
 
-@bp.route('/response')
-def submission(result, mess):
-    return render_template('form/response.html', success=result, mess=mess)
+@form_bp.route('/response')
+def submission():
+    return render_template('form/response.html')
 
 
 # This will be changed to account for CAS log in
@@ -92,7 +92,7 @@ def getCap():
     return cap
 
 # forms -- both get and post handling
-@bp.route('/review', methods=('GET', 'POST'))
+@form_bp.route('/review', methods=('GET', 'POST'))
 def review():
     if request.method == 'GET':
         #check if user exists
@@ -137,13 +137,20 @@ def review():
             #check points for being in bounds and adding to 100
             points = request.form[('points_' + j)]
             try:
-                points = convertToInt(points)
-                total = total + points
-                if int(j) == getID():
-                    #make sure own score is 0
-                    if points > 0 or points < 0:
-                        flash('Points must be 0 for self')
-                        pointsPass = False
+                try:
+                    points = int(points)
+                except ValueError:
+                    flash('points must be an integer')
+                    pointsPass = False
+
+                if pointsPass == True:
+                    total = total + points
+
+                    if int(j) == getID():
+                        #make sure own score is 0
+                        if points > 0 or points < 0:
+                            flash('Points must be 0 for self')
+                            pointsPass = False
             except ValueError:
                 displayError('Invalid input for points')
 
@@ -250,5 +257,5 @@ def review():
                 
 
             # send to submitted message
-            return redirect('form/response', success=True, mess='Review Submitted')
+            return redirect('form/response')
         return redirect(request.url)
