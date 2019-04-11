@@ -1,0 +1,37 @@
+{% extends "menu.html" %}
+{% block content %}
+<!-- This is the input frontend where users can input information about recipes -->
+	<h3>Remove Team</h3>
+	<div class="remove-container">
+	<div class="input-card">
+		<form action="{{ url_for('removeTeam') }}" method=POST>
+			<p class="heading" style="display: inline-block;">Team Name: {{tName}}</p> 
+			<input type="hidden" value={{tName}} name=teamName>
+			<div class="row button">
+				<div class="col-sm">
+					<p><input class="my-btn" type=submit value='Remove Team' style="
+							background-color: #ff9e16";
+							color: white;
+							border: none;
+							border-radius:5px;
+							padding: 10px 20px;
+							cursor: pointer;"></p>
+				</div>
+				<div class="col-sm"></div>
+					<p><input class="my-btn" type="button" 
+						onclick="window.location.replace('{{ url_for('removeDashboard') }}')" 
+						value='Cancel' style="
+							background-color: #BCBCBC;
+							color: white;
+							border: none;
+							border-radius:5px;
+							padding: 10px 20px;
+							cursor: pointer;"></p>
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
+	</div>
+
+{% endblock %}

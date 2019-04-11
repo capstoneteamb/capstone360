@@ -3,7 +3,7 @@ from flask.views import MethodView
 import gbmodel
 import datetime
 
-class Dashboard(MethodView):
+class RemoveDashboard(MethodView):
     def get(self):
         """
         get data from model
@@ -29,5 +29,5 @@ class Dashboard(MethodView):
             for student in students:
                 temp.append(student[0])
             lists[i] = temp
-        return render_template('dashboard.html', lists = lists)
+        return render_template('removeDashboard.html', lists = lists)
 

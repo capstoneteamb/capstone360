@@ -29,6 +29,9 @@ h3 {
 
 .nav-container{
     color: #cecece;
+    position: fixed;
+    top: 100px;
+    z-index: 9999;
 }
 
 .row.nav{
@@ -36,7 +39,6 @@ h3 {
 }
 
 .nav{
-    margin-top: 100px;
     text-align: center;
     padding: 10px;
 }
@@ -49,37 +51,58 @@ h3 {
     text-align: center;
 }
 
+.sub-buttons{
+    visibility: hidden;
+}
+
+.edit-btn{
+    cursor: pointer;
+}
+
 .row.header{
     margin-left: 0;
+    z-index: 9999;
 }
 
 form       { margin:.1em auto; padding:.1em; width: 100%; border: 1px }
 .heading  { font-weight: bold; margin-top: 30px;}
 .entry     { 
     margin-bottom: 2em; 
-    border-bottom: 1px solid #888; }
+    border-bottom: 1px solid #888; 
+    position: relative;
+}
 input[type=text] { margin: .5em 0; padding: .5em; font-size: 12px; color: #777; width: 100%;
 border-top:0; border-right:0; border-left: 0;}
 input[type=textarea] { margin: .5em 0; padding: .5em; font-size: 12px; color: #777; width: 100%;}
 input {
     display: block;
 }
+.checkbox-container {
+    padding-left: 10px;
+    font-weight: bold;
+}
 .student-card{
     background-color: #5D5E61;
     color: #fff;
     padding: 50px;
     border-radius: 10px;
-    width: 100%;
+    width: 80%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     margin-bottom: 50px;
-    width: 250px;
+    min-height: 400px;
+    position: relative;
+    margin: 50px auto;
     margin-top: 100px;
-    margin-left: 50px;
+}
+
+.student-card h4{
+    text-align: center;
 }
 
 .add-container, .remove-container{
     display: flex;
     justify-content: center;
+    margin-top: 150px;
 }
 
 .input-card{
@@ -105,6 +128,13 @@ input {
     margin-top: 25px;
     font-size: 12px;
     cursor: pointer;
+}
+
+.card-btn{
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .psu-logo{
@@ -179,6 +209,15 @@ input {
 
 .nav .col-sm:last-child{
     border-right: none;
+}
+
+.dashboard-container{
+    margin-top: 250px;
+}
+
+.remove-check{
+    position: absolute;
+    right: 25px;
 }
 
 @media (min-width: 576px){
