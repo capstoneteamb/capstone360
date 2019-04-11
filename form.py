@@ -15,7 +15,7 @@ def submission():
 
 # This will be changed to account for CAS log in
 def getID():
-    sdtID = 45
+    sdtID = 46
     return sdtID
 
 
@@ -29,14 +29,17 @@ def convertToInt(toConvert):
 
     try:
         toConvert = int(toConvert)
-    except ValueError:
+    except:
         displayError('input is not a number')
 
     return toConvert
 
 def getState():
     # query db for student's state
-    sdt = students.query.filter_by(id=getID()).first()
+    try:
+        sdt = students.query.filter_by(id=getID()).first()
+    except:
+                    displayError('student look up error')
     if sdt is None:
         displayError('user not found in database')
     state = sdt.active
@@ -75,7 +78,10 @@ def confirmUser():
 def getTid():
     #get the user's team id
     tid = 0
-    sdt = students.query.filter_by(id=getID()).first()
+    try:
+        sdt = students.query.filter_by(id=getID()).first()
+    except:
+            displayError('student look up error')
     tid = sdt.tid
     if tid is None:
         displayError('user not found in database')
@@ -84,7 +90,10 @@ def getTid():
 def getCap():
     # query database to get capstone session id
     cap = 0
-    sdt = students.query.filter_by(id=getID()).first()
+    try:
+        sdt = students.query.filter_by(id=getID()).first()
+    except:
+                    displayError('student look up error')
     cap = sdt.session_id
     if cap is None:
         displayError('user not found in database')
@@ -103,8 +112,10 @@ def review():
 
         if tid != 0:
             # if team found, get members from database and send to midterm form web page
-
-            sdt = students.query.join(team_members).filter_by(tid=tid).distinct()
+            try:
+                sdt = students.query.join(team_members).filter_by(tid=tid).distinct()
+            except:
+                    displayError('student look up error')
             state = getState()
             return render_template('form/review.html', mems=sdt, state=state)
 
@@ -189,7 +200,11 @@ def review():
                 dlg = None
 
                 #check if current student is leader
-                sdt = students.query.filter_by(id=i).first()
+                try:
+                    sdt = students.query.filter_by(id=i).first()
+                except:
+                    displayError('student look up error')
+
                 if(sdt.is_lead == 1):
                     #get leader values
                     lead = request.form[('l_' + i)]
@@ -253,7 +268,24 @@ def review():
                 report.is_final = is_final
                 
                 db.session.add(report)
-                db.session.commit()
+
+                try:
+                    sdt = students.query.filter_by(id=getID()).first()
+                    state = sdt.active
+                    if sdt is None:
+                        displayError('user not found in database')
+                    if state == 'midterm':
+                        # check if already submitted
+                        sdt.midterm_done = 1
+                    elif state == 'final':
+                        # check if already submitted
+                        sdt.final_done = 1
+                    else:
+                        displayError('submitting reports not open')
+
+                    db.session.commit()
+                except:
+                    displayError('submission error')
                 
 
             # send to submitted message

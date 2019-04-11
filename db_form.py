@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-
+#temporary databases while sorting out sqlalchemy
 team_members = db.Table('team_members',
     db.Column('tid', db.Integer, db.ForeignKey('teams.id'), unique=False, nullable=False, primary_key=True),
     db.Column('sid', db.Integer, db.ForeignKey('students.id'), unique=False, nullable=False, primary_key=True),
@@ -19,10 +19,6 @@ class students(db.Model):
     midterm_done = db.Column(db.Boolean, unique=False, nullable=False, default=False, primary_key=False)
     final_done = db.Column(db.Boolean, unique=False, nullable=False, default=False, primary_key=False)
     active = db.Column(db.String(128), nullable=True, default=None)
-
-    #sess = db.relationship('capstone_session', foreign_keys='capstone_session.id')
-    #team_id = db.relationship('teams', foreign_keys='teams.id')
-
 
 class teams(db.Model):
     id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
