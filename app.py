@@ -19,6 +19,7 @@ app.config.from_mapping(
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_test.db'
 db.init_app(app)
 
+
 #will remove when capstone360.db is updated
 with app.app_context():
     db.drop_all()
@@ -31,55 +32,130 @@ with app.app_context():
     term1.end_year = '19'
     db.session.add(term1)
 
+    term2 = capstone_session()
+    term2.id = 5
+    term2.start_term = 'spr'
+    term2.end_term = 'smr'
+    term2.start_year = '19'
+    term2.end_year = '19'
+    db.session.add(term2)
+
     team1 = teams()
     team1.id = 11
-    team1.session_id = 1
+    team1.session_id = 3
     team1.name = 'trek'
     db.session.add(team1)
 
-    picard = students()
-    picard.id = 45
-    picard.tid = 11
-    picard.session_id = 3
-    picard.name = 'picard'
-    picard.midterm_done = 0
-    picard.final_done = 0
-    picard.active = 'midterm'
-    picard.is_lead = 1
-    db.session.add(picard)
+    team2 = teams()
+    team2.id = 22
+    team2.session_id = 3
+    team2.name = 'lotr'
+    db.session.add(team2)
 
-    sisko = students()
-    sisko.id = 46
-    sisko.tid = 11
-    sisko.session_id = 3
-    sisko.name = 'sisko'
-    sisko.midterm_done = 0
-    sisko.final_done = 0
-    sisko.active = 'midterm'
-    sisko.is_lead = 0
-    db.session.add(sisko)
+    team3 = teams()
+    team3.id = 33
+    team3.session_id = 5
+    team3.name = 'gw'
+    db.session.add(team3)
 
-    janeway = students()
-    janeway.id = 47
-    janeway.tid = 11
-    janeway.session_id = 3
-    janeway.name = 'janeway'
-    janeway.midterm_done = 0
-    janeway.final_done = 0
-    janeway.active = 'midterm'
-    janeway.is_lead = 0
-    db.session.add(janeway)
+    picardy = students()
+    picardy.id = 45
+    picardy.tid = 11
+    picardy.session_id = 3
+    picardy.name = 'picardy'
+    picardy.midterm_done = 0
+    picardy.final_done = 0
+    picardy.active = 'midterm'
+    picardy.is_lead = 1
+    db.session.add(picardy)
 
-    kirk = students()
-    kirk.id = 48
-    kirk.tid = 11
-    kirk.session_id = 3
-    kirk.name = 'kirk'
-    kirk.midterm_done = 0
-    kirk.final_done = 0
-    kirk.active = 'midterm'
-    kirk.is_lead = 0
-    db.session.add(kirk)
+    ben = students()
+    ben.id = 46
+    ben.tid = 11
+    ben.session_id = 3
+    ben.name = 'ben'
+    ben.midterm_done = 0
+    ben.final_done = 0
+    ben.active = 'midterm'
+    ben.is_lead = 0
+    db.session.add(ben)
+
+    cat = students()
+    cat.id = 47
+    cat.tid = 11
+    cat.session_id = 3
+    cat.name = 'cat'
+    cat.midterm_done = 0
+    cat.final_done = 0
+    cat.active = 'midterm'
+    cat.is_lead = 0
+    db.session.add(cat)
+
+    tiber = students()
+    tiber.id = 48
+    tiber.tid = 11
+    tiber.session_id = 3
+    tiber.name = 'tiber'
+    tiber.midterm_done = 0
+    tiber.final_done = 0
+    tiber.active = 'midterm'
+    tiber.is_lead = 0
+    db.session.add(tiber)
+
+    sam = students()
+    sam.id = 55
+    sam.tid = 22
+    sam.session_id = 3
+    sam.name = 'sam'
+    sam.midterm_done = 0
+    sam.final_done = 0
+    sam.active = 'final'
+    sam.is_lead = 1
+    db.session.add(sam)
+
+    john = students()
+    john.id = 56
+    john.tid = 22
+    john.session_id = 3
+    john.name = 'john'
+    john.midterm_done = 0
+    john.final_done = 0
+    john.active = 'final'
+    john.is_lead = 0
+    db.session.add(john)
+
+    ronald = students()
+    ronald.id = 57
+    ronald.tid = 22
+    ronald.session_id = 3
+    ronald.name = 'ronald'
+    ronald.midterm_done = 0
+    ronald.final_done = 0
+    ronald.active = 'final'
+    ronald.is_lead = 0
+    db.session.add(ronald)
+
+    caran = students()
+    caran.id = 58
+    caran.tid = 22
+    caran.session_id = 3
+    caran.name = 'caran'
+    caran.midterm_done = 0
+    caran.final_done = 0
+    caran.active = 'final'
+    caran.is_lead = 0
+    db.session.add(caran)
+
+    com = students()
+    com.id = 65
+    com.tid = 33
+    com.session_id = 5
+    com.name = 'com'
+    com.midterm_done = 1
+    com.final_done = 1
+    com.active = 'midterm'
+    com.is_lead = 0
+    db.session.add(com)
 
     add_rel1 = team_members.insert().values(tid=11, sid=45, session_id=3)
     add_rel2 = team_members.insert().values(tid=11, sid=46, session_id=3)
@@ -90,6 +166,17 @@ with app.app_context():
     db.session.execute(add_rel3)
     db.session.execute(add_rel4)
 
+    add_rel5 = team_members.insert().values(tid=22, sid=55, session_id=3)
+    add_rel6 = team_members.insert().values(tid=22, sid=56, session_id=3)
+    add_rel7 = team_members.insert().values(tid=22, sid=57, session_id=3)
+    add_rel8 = team_members.insert().values(tid=22, sid=58, session_id=3)
+    db.session.execute(add_rel5)
+    db.session.execute(add_rel6)
+    db.session.execute(add_rel7)
+    db.session.execute(add_rel8)
+
+    add_rel9 = team_members.insert().values(tid=33, sid=65, session_id=5)
+    db.session.execute(add_rel9)
     db.session.commit()
 
 #form blueprint
