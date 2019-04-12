@@ -1,5 +1,4 @@
 -- SQLite
-
 select * from capstone_session;
 
 select * from teams;
