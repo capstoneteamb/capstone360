@@ -1,0 +1,20 @@
+{% extends "menu.html" %}
+{% block content %}
+
+<!-- This is the html code for the layout of the dashboard -->
+<div class=container>
+{% for data in teams %}
+<div class="student-card">
+	<h4>Team: {{data.name}}</h4>
+	{% for student in students %}
+	<p class=entry>
+		<img class="user-icon" style="display: inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
+		<span class="name" style="display: inline-block;">{{ student.name }}</span>
+	</p>
+		{% endfor %}
+</div>
+{% endfor %}
+<a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>
+	</div>
+
+{% endblock %}
