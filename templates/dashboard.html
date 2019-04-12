@@ -1,0 +1,14 @@
+{% extends "menu.html" %}
+{% block content %}
+    {% for t in team_names %}
+        <div class="media-body">
+            <div>            
+                <h3><u><a href="#">{{ t.name }}</u></a></h3>
+                    <!-- <small class="text-muted">Team Lead: {{ t.team_lead }}</small> -->
+            </div>
+            {% for m in member_names %}
+                    <p align="center">{{ m.name }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock content%}
