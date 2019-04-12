@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/addTeam.css') }}"/>
+<title></title>
+</head>
+<body>
+  <h1> Create Team </h1>
+  <form method="POST" action="/addTeam">
+    <p> Team Name </p>
+    <input type="text" name="Team Name">
+    <p> Students </p>
+    <div class = "column">
+    <div class = "row">
+    <input type="text" name="student1">
+    <input type="text" name="student2">
+		</div>
+    <div class = "row">
+    <input type="text" name="student3">
+    <input type="text" name="student4">
+    </div>
+    <div class = "row">
+    <input type="text" name="student5">
+    <input type="text" name="student6">
+    </div>
+    <div class = "row">
+    <input type="text" name="student7">
+    <input type="text" name="student8">
+    </div>
+    <input type="submit" value="Create Team">
+
+
+<div id = "options">
+  <ul>
+    <li><a href="">Cancel </a></li>
+    <li><a href="{{ url_for('csvAddTeam') }}">Create from File</a></li>
+    <!--
+    <form id="upload-form" action="{{ url_for('addTeam') }}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="teamcsv" accept=".csv" />
+    <input type="submit" value="Create from File">
+    </form>
+		-->
+  </ul>
+  </div>
+
+</body>
+
+
+</html>
+
