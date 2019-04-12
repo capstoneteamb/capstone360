@@ -92,10 +92,9 @@ def create_app(test_config=None):
     #from . import db
     db.init_app(app)
     with app.app_context():
-        #db.drop_all()
-        #db.create_all()
-        #fill_data(db)
-        print('hi')
+        db.drop_all()
+        db.create_all()
+        fill_data(db)
 
     from . import form
     app.register_blueprint(form.bp)
