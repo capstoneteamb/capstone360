@@ -2,7 +2,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from .db_form import db, capstone_session, teams, students, team_members, reports
+from db_form import db, capstone_session, teams, students, team_members, reports
 
 
 def create_app(test_config=None):

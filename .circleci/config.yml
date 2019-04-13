@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install -U pytest
-      - run: pytest
+      - run: python3 -m pytest tests/
   mypy:
     docker:
       - image: circleci/python
