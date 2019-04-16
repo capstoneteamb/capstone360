@@ -1,12 +1,10 @@
 from flask import redirect, request, url_for, render_template
 from flask.views import MethodView
-import datetime
 import gbmodel
+import datetime
 
-def get():
-    """
-    get data from model
-    """
+
+def get_rm():
     currentDate = datetime.datetime.now()
     month = int(currentDate.month)
     
@@ -31,4 +29,5 @@ def get():
             temp.append(name[0])
         lists[i] = temp
     return lists 
+    
 
