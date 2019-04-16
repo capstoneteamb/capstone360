@@ -71,7 +71,7 @@ class students(db.Model):
         result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
         tid = result.fetchone()
         tid = tid[0]
-        new_student = students( id = id,tid = tid, session_id = session_id, name = name)       
+        new_student = students(id = id, tid = tid, session_id = session_id, name = name)
         db.session.add(new_student)
         db.session.commit()
         return True
@@ -81,6 +81,7 @@ class students(db.Model):
         result = engine.execute('select name from students where tid =:tid and session_id = :session_id', data)
         names = result.fetchall()
         return names
+
     def removeStudent(self, sts, session_id):
         removed_student = removed_students()
         if sts is None:
@@ -94,14 +95,18 @@ class students(db.Model):
             # students.delete().where(students.id == s[3], students.session_id == session_id) 
             data = {'id':s[0], 'session_id': session_id}
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
+            # consider another statement to remove the student entry from the team_members table
         return True
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
     def getSessionID(self, term, year):
-        id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()    
-        return id.id
+        target_id = capstone_session.query.filter_by(start_term = term, start_year = year).first()
+        if (target_id):
+            return target_id.id
+        else:
+            return None
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']

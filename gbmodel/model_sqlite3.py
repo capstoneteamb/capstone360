@@ -105,7 +105,7 @@ class model():
         connection = sqlite3.connect(DB_FILE)
         cursor = connection.cursor()
         data = {'start_term': term, 'start_year': year}
-        cursor.execute("SELECT id FROM capstone_session WHERE start_term = :start_term AND start_year = :start_year", data)
+        cursor.execute("SELECT * FROM capstone_session WHERE start_term = :start_term AND start_year = :start_year", data)
         return cursor.fetchone()
 
     def getTeam_sessionID(self, sessionID):

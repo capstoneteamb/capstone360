@@ -19,6 +19,7 @@ def get():
     team = gbmodel.teams()
     student = gbmodel.students()
 
+    # What if we don't have any session for this year/term?
     sessionID = session.getSessionID(term, year)
     tids = [row[0] for row in team.getTeam_sessionID(sessionID)]
     teamNames = [row[2] for row in team.getTeam_sessionID(sessionID)]
@@ -31,4 +32,3 @@ def get():
             temp.append(name[0])
         lists[i] = temp
     return lists 
-

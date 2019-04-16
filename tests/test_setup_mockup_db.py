@@ -233,8 +233,8 @@ def test_generate_tables():
            and columns[6][3] == 0
            and columns[6][4] == "FALSE"
            and columns[6][5] == 0)
-    assert(columns[7][1] == "session_removed"
-           and columns[7][2] == "INTEGER"
+    assert(columns[7][1] == "removed_date"
+           and columns[7][2] == "TIMESTAMP"
            and columns[7][3] == 1
            and columns[7][4] is None
            and columns[7][5] == 0)
