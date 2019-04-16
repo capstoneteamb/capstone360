@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, abort
-#from flask_sqlalchemy import SQLAlchemy
-#from db_form import db, capstone_session, teams, students, team_members, reports
+#from sqlalchemy import update
+from sqlalchemy import Date, DateTime
 from datetime import datetime
 import gbmodel
 
@@ -14,7 +14,7 @@ def submission():
 
 # This will be changed to account for CAS log in
 def getID():
-    sdtID = 1
+    sdtID = 0
     return sdtID
 
 
@@ -131,7 +131,7 @@ def review():
 
         # get team members
         students = gbmodel.students()
-        mems = students.query.join(team_members).filter_by(tid=tid).distinct()
+        mems = gbmodel.db_session.query(gbmodel.students).join(gbmodel.team_members).filter_by(tid=tid).distinct()
 
         # add members' ids to a list
         lst = []
@@ -172,7 +172,6 @@ def review():
         if pointsPass == True:
             for i in lst:
                 # Get each radio input and verify that it's an integer, give an error if not
-                print(i)
                 tech = request.form[('tm_' + str(i))]
                 tech = convertToInt(tech)
 
@@ -242,8 +241,7 @@ def review():
                     # for midterm set final to false
                     is_final = 1
 
-                
-                report = reports()
+                report = gbmodel.reports()
                 report.session_id = cid
                 report.time = datetime.now()
                 report.reporting = getID()
@@ -267,27 +265,25 @@ def review():
                 report.proud_of_accomplishment = proud
                 report.is_final = is_final
                 
-                db.session.add(report)
+                gbmodel.db_session.add(report)
 
-                try:
-                    sdt = students.query.filter_by(id=getID()).first()
-                    state = sdt.active
-                    if sdt is None:
-                        displayError('user not found in database')
-                    if state == 'midterm':
-                        # check if already submitted
-                        sdt.midterm_done = 1
-                    elif state == 'final':
-                        # check if already submitted
-                        sdt.final_done = 1
-                    else:
-                        displayError('submitting reports not open')
+        #try:
+            sdt = gbmodel.students()
+            sdt = students.query.filter_by(id=getID()).first()
+            state = sdt.active
+            if sdt is None:
+                displayError('user not found in database')
+            if state == 'midterm':
+                # check if already submitted
+                sdt.midterm_done = 1
+            elif state == 'final':
+                # check if already submitted
+                sdt.final_done = 1
+            else:
+                displayError('submitting reports not open')
 
-                    db.session.commit()
-                except:
-                    displayError('submission error')
+            gbmodel.db_session.commit()
+        #except:
+            #displayError('submission error')
                 
-
-            # send to submitted message
-            return redirect('form/response')
-        return redirect(request.url)
+        return redirect('form/response')

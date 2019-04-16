@@ -109,6 +109,9 @@ class capstone_session(db.Model):
 class team_members(db.Model):
     __table__ = db.Model.metadata.tables['team_members']
 
+class reports(db.Model):
+    __table__ = db.Model.metadata.tables['reports']
+
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
 
