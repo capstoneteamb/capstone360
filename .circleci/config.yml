@@ -36,4 +36,5 @@ workflows:
     jobs:
       - test
       - lint
+      - build
       # - mypy
