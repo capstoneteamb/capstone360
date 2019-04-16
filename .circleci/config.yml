@@ -1,11 +1,12 @@
 version: 2
 jobs:
-  # build:
-  #   docker:
-  #     - image: circleci/python
-  #   steps:
-  #     - checkout
-  #     - run: echo "Nothing to build yet, so this test is a placeholder."
+  build:
+    docker:
+      - image: circleci/python
+    steps:
+      - run: sudo apt-get install build-essential debhelper devscripts equivs dh-virtualenv
+      - checkout
+      - run: dpkg-buildpackage -us -uc
   test:
     docker:
       - image: circleci/python
