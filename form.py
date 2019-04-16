@@ -1,5 +1,4 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, abort
-#from sqlalchemy import update
 from sqlalchemy import Date, DateTime
 from datetime import datetime
 import gbmodel
@@ -7,21 +6,25 @@ import gbmodel
 # form blueprint
 form_bp = Blueprint('form', __name__, url_prefix='/form')
 
+#for successful response
 @form_bp.route('/response')
 def submission():
     return render_template('form/response.html')
 
+#for some errors, redirect user away from form
+@form_bp.route('/errPage/<err_msg>')
+def errPage(err_msg):
+    return render_template("form/errPage.html", msg = err_msg)
 
 # This will be changed to account for CAS log in
 def getID():
     sdtID = 0
     return sdtID
 
-
-#only if user error can be fixed
+#if need to abort
 def displayError(err_str):
     print(err_str)
-    abort(400)
+    abort(500)
 
 def convertToInt(toConvert):
     #see if input is an integer, if not display error to user
@@ -58,7 +61,7 @@ def confirmUser():
     students = gbmodel.students()
     sdt = students.query.filter_by(id=getID()).first()
     if sdt is None:
-        displayError('user not found in database')
+        return False
     if state == 'midterm':
         # check if already submitted
         done = sdt.midterm_done
@@ -72,7 +75,9 @@ def confirmUser():
     done = convertToInt(done)
 
     if done == 1:
-        displayError('Reviews already submitted')
+        return False
+
+    return True
 
 
 def getTid():
@@ -107,7 +112,10 @@ def getCap():
 def review():
     if request.method == 'GET':
         #check if user exists
-        confirmUser()
+        test_user = confirmUser()
+        if test_user == False:
+            return redirect('form/errPage/' + 'No Accessible Review')
+
         #get user's team id
         tid = getTid()
         # if team found, get members from database and send to midterm form web page
@@ -121,7 +129,9 @@ def review():
     if request.method == 'POST':
 
         #check that the user exists, will go to error if not
-        confirmUser()
+        test_user = confirmUser()
+        if test_user == False:
+            return redirect('form/errPage/' + 'Cannot Submit Review')
 
         #get the user's TID
         tid = getTid()
