@@ -1,12 +1,11 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, abort
-from flask_sqlalchemy import SQLAlchemy
-from db_form import db, capstone_session, teams, students, team_members, reports
+#from flask_sqlalchemy import SQLAlchemy
+#from db_form import db, capstone_session, teams, students, team_members, reports
 from datetime import datetime
-
+import gbmodel
 
 # form blueprint
 form_bp = Blueprint('form', __name__, url_prefix='/form')
-
 
 @form_bp.route('/response')
 def submission():
@@ -15,7 +14,7 @@ def submission():
 
 # This will be changed to account for CAS log in
 def getID():
-    sdtID = 46
+    sdtID = 1
     return sdtID
 
 
@@ -26,7 +25,6 @@ def displayError(err_str):
 
 def convertToInt(toConvert):
     #see if input is an integer, if not display error to user
-
     try:
         toConvert = int(toConvert)
     except:
@@ -37,9 +35,10 @@ def convertToInt(toConvert):
 def getState():
     # query db for student's state
     try:
+        students = gbmodel.students()
         sdt = students.query.filter_by(id=getID()).first()
     except:
-                    displayError('student look up error')
+        displayError('student look up error - state')
     if sdt is None:
         displayError('user not found in database')
     state = sdt.active
@@ -56,6 +55,7 @@ def confirmUser():
     state = getState() 
     done = ''
 
+    students = gbmodel.students()
     sdt = students.query.filter_by(id=getID()).first()
     if sdt is None:
         displayError('user not found in database')
@@ -79,9 +79,10 @@ def getTid():
     #get the user's team id
     tid = 0
     try:
+        students = gbmodel.students()
         sdt = students.query.filter_by(id=getID()).first()
     except:
-            displayError('student look up error')
+            displayError('student look up error -tid')
     tid = sdt.tid
     if tid is None:
         displayError('user not found in database')
@@ -91,9 +92,10 @@ def getCap():
     # query database to get capstone session id
     cap = 0
     try:
+        students = gbmodel.students()
         sdt = students.query.filter_by(id=getID()).first()
     except:
-                    displayError('student look up error')
+            displayError('student look up error - capstone')
     cap = sdt.session_id
     if cap is None:
         displayError('user not found in database')
@@ -106,18 +108,15 @@ def review():
     if request.method == 'GET':
         #check if user exists
         confirmUser()
-
         #get user's team id
         tid = getTid()
-
-        if tid != 0:
-            # if team found, get members from database and send to midterm form web page
-            try:
-                sdt = students.query.join(team_members).filter_by(tid=tid).distinct()
-            except:
-                    displayError('student look up error')
-            state = getState()
-            return render_template('form/review.html', mems=sdt, state=state)
+        # if team found, get members from database and send to midterm form web page
+        try:
+            sdt = gbmodel.db_session.query(gbmodel.students).join(gbmodel.team_members).filter_by(tid=tid).distinct()
+        except:
+            displayError('student look up error - review')
+        state = getState()
+        return render_template('form/review.html', mems=sdt, state=state)
 
     if request.method == 'POST':
 
@@ -131,6 +130,7 @@ def review():
         cid = getCap()
 
         # get team members
+        students = gbmodel.students()
         mems = students.query.join(team_members).filter_by(tid=tid).distinct()
 
         # add members' ids to a list
@@ -146,7 +146,7 @@ def review():
 
         for j in lst:
             #check points for being in bounds and adding to 100
-            points = request.form[('points_' + j)]
+            points = request.form[('points_' + str(j))]
             try:
                 try:
                     points = int(points)
@@ -173,25 +173,25 @@ def review():
             for i in lst:
                 # Get each radio input and verify that it's an integer, give an error if not
                 print(i)
-                tech = request.form[('tm_' + i)]
+                tech = request.form[('tm_' + str(i))]
                 tech = convertToInt(tech)
 
-                ethic = request.form[('we_' + i)]
+                ethic = request.form[('we_' + str(i))]
                 ethic = convertToInt(ethic)
 
-                com = request.form[('cm_' + i)]
+                com = request.form[('cm_' + str(i))]
                 com = convertToInt(com)
 
-                coop = request.form[('co_' + i)]
+                coop = request.form[('co_' + str(i))]
                 coop = convertToInt(coop)
 
-                init = request.form[('i_' + i)]
+                init = request.form[('i_' + str(i))]
                 init = convertToInt(init)
 
-                focus = request.form[('tf_' + i)]
+                focus = request.form[('tf_' + str(i))]
                 focus = convertToInt(focus)
 
-                cont = request.form[('cr_' + i)]
+                cont = request.form[('cr_' + str(i))]
                 cont = convertToInt(cont)
 
                 #default leader skills to None for Null
@@ -207,20 +207,20 @@ def review():
 
                 if(sdt.is_lead == 1):
                     #get leader values
-                    lead = request.form[('l_' + i)]
+                    lead = request.form[('l_' + str(i))]
                     lead = convertToInt(lead)
 
-                    org = request.form[('o_' + i)]
+                    org = request.form[('o_' + str(i))]
                     org = convertToInt(org)
 
-                    dlg = request.form[('d_' + i)]
+                    dlg = request.form[('d_' + str(i))]
                     dlg = convertToInt(dlg)
 
                 
                 # Get string inputs
-                strn = request.form[('str_' + i)]
-                wkn = request.form[('wkn_' + i)]
-                traits = request.form[('trait_' + i)]
+                strn = request.form[('str_' + str(i))]
+                wkn = request.form[('wkn_' + str(i))]
+                traits = request.form[('trait_' + str(i))]
 
                 learned = None
                 if int(i) == getID():
@@ -232,7 +232,7 @@ def review():
                     if int(i) == getID():
                         proud = request.form[('proud')]
 
-                points = request.form[('points_' + i)]
+                points = request.form[('points_' + str(i))]
                 points = convertToInt(points)
 
                 if getState() == 'midterm':
