@@ -267,14 +267,16 @@ def review():
                 
                 gbmodel.db_session.add(report)
 
-        #try:
-            sdt = gbmodel.students()
-            sdt = students.query.filter_by(id=getID()).first()
+        try:
+            #students = gbmodel.students()
+            #sdt = students.query.filter_by(id=getID()).first()
+            sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=getID()).first()
             state = sdt.active
             if sdt is None:
                 displayError('user not found in database')
             if state == 'midterm':
                 # check if already submitted
+                print('student id' + str(sdt.id))
                 sdt.midterm_done = 1
             elif state == 'final':
                 # check if already submitted
@@ -283,7 +285,7 @@ def review():
                 displayError('submitting reports not open')
 
             gbmodel.db_session.commit()
-        #except:
-            #displayError('submission error')
+        except:
+            displayError('submission error')
                 
         return redirect('form/response')

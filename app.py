@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capstone360.db'
 app.config['SECRET_KEY'] = 'NotSoSecret'
 engine = create_engine('sqlite:///capstone360.db', convert_unicode=True, echo=False)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 db.Model.metadata.reflect(db.engine)
 db_session = scoped_session(sessionmaker(bind=engine))
