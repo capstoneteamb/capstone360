@@ -7,6 +7,7 @@
 		<form action="{{ url_for('removeTeam') }}" method=POST>
 			<p class="heading" style="display: inline-block;">Team Name: {{tName}}</p> 
 			<input type="hidden" value={{tName}} name=teamName>
+<!--<<<<<<< HEAD
 			<div class="row button">
 				<div class="col-sm">
 					<p><input class="my-btn" type=submit value='Remove Team' style="
@@ -25,6 +26,17 @@
 			</div>
 		</div>
 		</form>
+                =======-->
+			
+			<p><input class="my-btn" type=submit value='Remove Team' style="
+				background-color: #ff9e16";
+				color: white;
+				border: none;
+				border-radius:5px;
+				padding: 10px 20px;
+				cursor: pointer;></p>						
+		</form>
+		<a href="/removeDashboard/"><button class="my-btn">Cancel</button></a>
 	</div>
 	</div>
 

@@ -8,7 +8,7 @@ class AddStudent(MethodView):
     def get(self):
         tName = request.args.get('data')
         tName = tName.replace(" ", "_")
-        return render_template('addStudent.html', tName = str(tName))
+        return render_template('addStudent.html', tName = str(tName), error=None)
 
     def post(self):
         """
@@ -27,21 +27,26 @@ class AddStudent(MethodView):
         else:                        term = "Winter"
 
         sessionID = session.getSessionID(term, year)
-        tName = request.form.get('teamName')
-        tName = tName.replace("_", " ")
-        student.insertStudent(request.form['studentName'], request.form['studentID'], sessionID, tName)
-        lists = dashboard.get()
-        return render_template('dashboard.html', lists = lists) 
+        teamName = request.form.get('teamName')
+        tName = teamName.replace("_", " ")
+        # if?
+        while student.checkDupStudent(request.form['studentID'], sessionID):
+            student.insertStudent(request.form['studentName'], request.form['studentID'], sessionID, tName)
+            lists = dashboard.get()
+            return render_template('dashboard.html', lists = lists)
+        error = "Student id "+ str(request.form['studentID']) + " already exists"
+        return render_template('addStudent.html', tName = teamName, error=error)
 
 
 class AddTeam(MethodView):
     def get(self):
-        return render_template('addTeam.html')
+        error = None
+        return render_template('addTeam.html', error=error)
 
     def post(self):
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
-
+        error = None
         currentDate = datetime.datetime.now()
         month = int(currentDate.month) 
         year = currentDate.year
@@ -51,7 +56,9 @@ class AddTeam(MethodView):
         else:                        term = "Winter"
 
         sessionID = session.getSessionID(term, year)
-        team.insertTeam(sessionID,request.form['teamName'])
-        
-        lists = dashboard.get()
-        return render_template('dashboard.html', lists = lists) 
+        while team.checkDupTeam(request.form['teamName'], sessionID):
+            team.insertTeam(sessionID,request.form['teamName']) 
+            lists = dashboard.get()
+            return render_template('dashboard.html', lists = lists) 
+        error = "Team name already exists"
+        return render_template('addTeam.html', error=error)

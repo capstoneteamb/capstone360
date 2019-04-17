@@ -61,4 +61,3 @@ class RemoveTeam(MethodView):
         team.removeTeam(tName, sessionID)
         lists = removeDashboard.get_rm()
         return render_template('removeDashboard.html', lists = lists)
-

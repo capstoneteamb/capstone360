@@ -5,18 +5,28 @@ import datetime
 
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
+    
     def __repr__(self):
         return self.DISTRICT
+
     def getMaxTeamID(self):
         max_id = engine.execute('select max(id) from teams ')
         max_id = max_id.fetchone()
-        id = 1
         if max_id[0] is None:
             return 1
         else:
             return max_id[0] + 1
 
+    def checkDupTeam(self, tName, sessionID):
+        params = {'name': tName, 'session_id': sessionID}
+        result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)
+        result = result.fetchone()
+        if result is not None:
+            return False
+        return True
+
     def insertTeam(self, session_id, tName):
+        #TODO: returns false if the team name is already exist in the current section
         id = self.getMaxTeamID()
         new_team = teams(id=id,session_id=session_id,name=tName)
         db.session.add(new_team)
@@ -55,6 +65,7 @@ class students(db.Model):
 
     def __repr__(self):
         return self.DISTRICT
+
     def checkDupStudent(self, id, session_id):
         params = {'id': id, 'session_id': session_id}
         result = engine.execute('select * from students where id = :id and session_id = :session_id', params)
@@ -102,9 +113,10 @@ class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
     def getSessionID(self, term, year):
-        target_id = capstone_session.query.filter_by(start_term = term, start_year = year).first()
-        if (target_id):
-            return target_id.id
+        #id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()    
+        ses_id = capstone_session.query.filter_by(start_term = term, start_year = year).first()
+        if (ses_id):
+            return ses_id.id
         else:
             return None
 

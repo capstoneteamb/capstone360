@@ -3,9 +3,12 @@
 	<h3>Add Students</h3>
 	<div class="add-container">
 	<div class="input-card">
+		{% if error %}
+			<p><strong>Error:</strong> {{ error }}
+		{% endif %}
 		<form action="{{ url_for('addStudent') }}" method=POST>
-			<p class="heading">Student Name: <input type=text name=studentName></p>
-			<p class="heading">Student ID: <input type=text name=studentID></p>
+			<p class="heading">Student Name: <input type=text required='required' name=studentName></p>
+			<p class="heading">Student ID: <input type=text required='required' name=studentID></p>
 			<p class="heading" style="display: inline-block;">Team Name: {{tName}}</p> 
 			<input type="hidden" value={{tName}} name=teamName>
 			
@@ -17,6 +20,7 @@
 					padding: 10px 20px;
 					cursor: pointer;"></p>	
 		</form>
+		<a href="/dashboard/"><button class="my-btn">Cancel</button></a>
 	</div>
 	</div>
 
