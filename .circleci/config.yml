@@ -5,6 +5,7 @@ jobs:
       - image: circleci/python:3.5-stretch
     steps:
       - run: sudo apt-get install build-essential debhelper devscripts equivs dh-virtualenv
+      - run: sudo apt-get install libpython3.5
       - checkout
       - run: dpkg-buildpackage -us -uc
   test:
