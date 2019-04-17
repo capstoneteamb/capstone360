@@ -5,8 +5,7 @@ import datetime
 
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
-    def __repr__(self):
-        return self.DISTRICT
+
     def getMaxTeamID(self):
         max_id = engine.execute('select max(id) from teams ')
         max_id = max_id.fetchone()
@@ -14,6 +13,7 @@ class teams(db.Model):
             return 1
         else:
             return max_id[0] + 1
+
     def checkDupTeam(self, tName, sessionID):
         params = {'name': tName, 'session_id': sessionID}
         result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)
@@ -21,8 +21,8 @@ class teams(db.Model):
         if result is not None:
             return False
         return True
+
     def insertTeam(self, session_id, tName):
-        #TODO: returns false if the team name is already exist in the current section
         id = self.getMaxTeamID()
         new_team = teams(id=id,session_id=session_id,name=tName)
         db.session.add(new_team)
@@ -49,8 +49,7 @@ class teams(db.Model):
                 result = engine.execute("select * from students where name = :name AND session_id = :session_id", params)
                 s = result.fetchone()
                 removed_student.addStudent(s)
-                # data = {'id':s[0], 'session_id': session_id}
-                # engine.execute('delete from students where id = :id and session_id = :session_id', data)     
+              
         params = {'tid': tid, 'session_id': session_id}
         engine.execute("delete from students where tid = :tid AND session_id = :session_id", params)
         engine.execute("delete from teams where id = :tid AND session_id = :session_id", params)
@@ -59,15 +58,11 @@ class teams(db.Model):
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
 
-    def __repr__(self):
-        return self.DISTRICT
-
     def checkDupStudent(self, id, session_id):
         params = {'id': id, 'session_id': session_id}
         result = engine.execute('select * from students where id = :id and session_id = :session_id', params)
         result = result.fetchone()
         if result is not None:
-            print('student is already in the current session')
             return False
         return True
 
@@ -88,14 +83,20 @@ class students(db.Model):
         result = engine.execute('select name from students where tid =:tid and session_id = :session_id', data)
         names = result.fetchall()
         return names
-    def removeStudent(self, sts, session_id):
+
+    def removeStudent(self, sts, tName, session_id):
+        if tName is None:
+            return False
         removed_student = removed_students()
+        params = {'name': tName, 'session_id': session_id}
+        result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
+        id = result.fetchone()
+        tid = id[0] 
         if sts is None:
             return False       
         for i in sts:
-            print(i)
-            params = {'name':i, 'session_id': session_id}
-            result = engine.execute("select * from students where name = :name AND session_id = :session_id", params)
+            params = {'name':i, 'tid':tid, 'session_id': session_id}
+            result = engine.execute("select * from students where name = :name AND tid= :tid AND session_id = :session_id", params)
             s = result.fetchone()
             removed_student.addStudent(s)
             # students.delete().where(students.id == s[3], students.session_id == session_id) 
@@ -112,14 +113,17 @@ class capstone_session(db.Model):
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
-    def __repr__(self):
-        return self.DISTRICT
+
     def addStudent(self, s):
         if s is None:
             return False
+        s = list(s)
         current_date = datetime.datetime.now()
-        removed_student = removed_students(id = s[0], tid = s[1], session_id = s[2],
-            name = str(s[3]), removed_date = current_date) 
-        db.session.add(removed_student)
-        db.session.commit()
+        date = current_date.strftime("%Y-%m-%d") 
+        s.append(date)
+        engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, final_done, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, :midterm_done, :final_done, :removed_date)", s)
+        # removed_student = removed_students(id = s[0], tid = s[1], session_id = s[2],
+        #     name = str(s[3]), is_lead = bool(not(s[4])), midterm_done = not(bool(s[5])),final_done=not(bool(s[6])), removed_date = current_date) 
+        # db.session.add(removed_student)
+        # db.session.commit()
         return True
