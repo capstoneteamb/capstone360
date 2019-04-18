@@ -29,7 +29,6 @@ class AddStudent(MethodView):
         sessionID = session.getSessionID(term, year)
         teamName = request.form.get('teamName')
         tName = teamName.replace("_", " ")
-        # if?
         while student.checkDupStudent(request.form['studentID'], sessionID):
             student.insertStudent(request.form['studentName'], request.form['studentID'], sessionID, tName)
             lists = dashboard.get()

@@ -5,7 +5,7 @@ import datetime
 
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
-    
+
     def getMaxTeamID(self):
         max_id = engine.execute('select max(id) from teams ')
         max_id = max_id.fetchone()
