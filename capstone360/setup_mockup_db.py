@@ -180,9 +180,9 @@ def generate_tables(cursor):
                     'is_lead BOOLEAN NULL DEFAULT FALSE, '
                     'midterm_done BOOLEAN NULL DEFAULT FALSE, '
                     'final_done BOOLEAN NULL DEFAULT FALSE, '
-                    'session_removed INTEGER NOT NULL REFERENCES capstone_session(id), '
+                    'active VARCHAR(128) NULL, '
+                    'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
-
 
 def submit_review(cursor, student_id, session_id, review):
     # Put midterm review into database
@@ -213,14 +213,31 @@ def submit_review(cursor, student_id, session_id, review):
 
 
 def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
+    start_year = 2019
+    end_year = 2019
+    term_index_start = 0
+    term_index_end = 1
+    terms = ["Winter", "Spring", "Summer", "Fall"]
+
     for session_id in range(num_sessions):
+        # Get new days and years
+        if (term_index_start > 3):
+            term_index_start = 0
+            start_year = start_year + 1
+
+        if (term_index_end > 3):
+            term_index_end = 0
+            end_year = end_year + 1
+
         # Put new session entry into the database
         cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?)',
                        (session_id,
-                        "winter",
-                        2019 + session_id,
-                        "spring",
-                        2019 + session_id))
+                        terms[term_index_start],
+                        start_year,
+                        terms[term_index_end],
+                        end_year))
+        term_index_start = term_index_start + 1
+        term_index_end = term_index_end + 1
 
         # Put new team entry into the database
         for team_id in range(num_teams):
@@ -342,7 +359,7 @@ def run():
     generate_tables(cursor)
 
     # Part 2: Add student and student data to database
-    fill_tables_with_data(cursor, generate_student_data(), 3, 6)
+    fill_tables_with_data(cursor, generate_student_data(), 10, 6)
 
     # Commit database changes and close the connection to the database
     connection.commit()
