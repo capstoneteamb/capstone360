@@ -1,14 +1,20 @@
 {% extends "menu.html" %}
 {% block content %}
-    {% for t in team_names %}
-        <div class="media-body">
-            <div>            
-                <h3><u><a href="#">{{ t.name }}</u></a></h3>
-                    <!-- <small class="text-muted">Team Lead: {{ t.team_lead }}</small> -->
-            </div>
-            {% for m in member_names %}
-                    <p align="center">{{ m.name }}</p>
-            {% endfor %}
-        </div>
-    {% endfor %}
-{% endblock content%}
+
+<!-- This is the html code for the layout of the dashboard -->
+<div class=container>
+{% for data in team_names %}
+<div class="student-card">
+	<h4>{{data.name}}</h4>
+	{% for student in member_names %}
+	<script type="text/javascript">
+		if ({{student.tid}} === {{data.id}})
+			document.write("<p>{{student.name}}</p>");
+	</script>
+	{% endfor %}
+</div>
+{% endfor %}
+<a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>
+	</div>
+
+{% endblock %}

@@ -2,15 +2,18 @@
 {% block menu %}
 <div class="container nav-container">
         <div class="row nav">
-            <div class="col-sm">Term</div>
+            <div class="col-sm">Term 
                 <form method="POST">
-                  {{ form.csrf_token }}
-                  {{ form.opts }}
-                  <input type="submit">
+                    {{ form.csrf_token }}
+                    {{ form.opts }}
+                    <div>
+                        <input type="submit" class="my-btn" style="display: block; margin: 0 auto;">
+                    </div>
                 </form>
+            </div>
             <div class="col-sm">Edit</div>
             <div class="col-sm">Generate Reports</div>
-            <a class="col-sm" href="{{ url_for('home')}}">
+            <a class="col-sm" href="{{ url_for('index')}}">
                 <div>Logout</div>
             </a>
         </div>
@@ -21,11 +24,11 @@
                 <a href=""><button class="my-btn">Add Team</button></a>
             </div>
             <div class="col-sm">
-                <a href="{{ url_for('home')}}"><button class="my-btn"
+                <a href="/dashboard"><button class="my-btn"
                         style="background-color: #ff9e16">Remove</button></a>
             </div>
             <div class="col-sm">
-                <a href="{{ url_for('home')}}"><button class="my-btn">Cancel</button></a>
+                <a href="/dashboard"><button class="my-btn">Cancel</button></a>
             </div>
             <div class="col-sm"></div>
             <div class="col-sm"></div>

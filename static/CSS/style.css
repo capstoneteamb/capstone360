@@ -1,4 +1,4 @@
-body{ 
+body       { 
     font-family: "Helvetica", sans-serif; 
     font-size: 20px; 
     margin: 0;
@@ -162,6 +162,7 @@ input {
     padding: 5px 100px;
     border-radius: 5px;
     margin-top: 50px;
+    bottom: 30%;
 }
 
 .user-icon{

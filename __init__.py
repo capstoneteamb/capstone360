@@ -2,8 +2,7 @@
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from db_form import db, capstone_session, teams, students, team_members, reports
-
+from .db_form import db, capstone_session, teams, students, team_members, reports
 
 def create_app(test_config=None):
     # create and configure the app
@@ -11,10 +10,5 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='NotSoSecret',
     )
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_test.db'
-
-
-    from . import form
-    app.register_blueprint(form.bp)
 
     return app

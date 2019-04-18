@@ -1,82 +1,68 @@
-from flask import Flask, render_template, request, jsonify, url_for
+"""
+from flask import redirect, request, url_for, render_template
+from flask.views import MethodView
+import gbmodel
+
+class Dashboard(MethodView):
+    def get(self):
+        model = gbmodel.get_model()
+        students = [dict(name=row[3]) for row in model.selectStudents()]
+        return render_template('dashboard.html', students=students)
+
+"""
+from flask import redirect, request, url_for, render_template
+from flask.views import MethodView
 from flask_wtf import FlaskForm
-from flask_sqlalchemy import SQLAlchemy
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from db_form import db, capstone_session, teams, students, team_members, reports
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
+import datetime
+import gbmodel
 
-app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:\\Users\\faisa\\Desktop\\Code\\capstone\\capstone360.db'
-app.config['SECRET_KEY'] = '06ca1f7f68edd3eb7209a5fca2cc6ca0'
-engine = create_engine('sqlite:///C:\\Users\\faisa\\Desktop\\Code\\capstone\\capstone360.db', convert_unicode=True, echo=False)
+#class Dashboard(MethodView):
+def get():
+    """
+    get data from model
+    """
+    currentDate = datetime.datetime.now()
+    month = int(currentDate.month)
+    
+    year = currentDate.year
+    if month in range (9, 11):   term = "Fall"
+    elif month in range (3,5):   term = "Spring"
+    elif month in range (6,8):   term = "Summer"
+    else:                        term = "Winter"
+    session = gbmodel.capstone_session()
+    team = gbmodel.teams()
+    student = gbmodel.students()
 
-db = SQLAlchemy(app)
-db.Model.metadata.reflect(db.engine)
-db_session = scoped_session(sessionmaker(bind=engine))
+"""
+    sessionID = session.getSessionID(term, year)
+    tids = [row[0] for row in team.getTeam_sessionID(sessionID)]
+    teamNames = [row[2] for row in team.getTeam_sessionID(sessionID)]
+    lists = [[] for _ in range(len(tids))]
+    
+    for i in range(len(tids)):
+        names = student.getStudents(tids[i], sessionID)
+        temp = [teamNames[i]]
+        for name in names:
+            temp.append(name[0])
+        lists[i] = temp
+    return lists 
+    """
 
-class teams(db.Model):
-    __table__ = db.Model.metadata.tables['teams']
+def get_teams():
+    return db.session.query(teams)
 
-    def __repr__(self):
-        return self.DISTRICT
+def get_tid():
+    return db.session.query(teams.id).all()
 
-class team_members(db.Model):
-    __table__ = db.Model.metadata.tables['team_members']
-
-    def __repr__(self):
-        return self.DISTRICT
-
-class students(db.Model):
-    __table__ = db.Model.metadata.tables['students']
-
-    def __repr__(self):
-        return self.DISTRICT
-        
-class reports(db.Model):
-    __table__ = db.Model.metadata.tables['reports']
-
-    def __repr__(self):
-        return self.DISTRICT
-
-class capstone_session(db.Model):
-    __table__ = db.Model.metadata.tables['capstone_session']
-
-    #def __repr__(self):
-        #return self.start_term
-
-class removed_students(db.Model):
-    __table__ = db.Model.metadata.tables['removed_students']
-
-    def __repr__(self):
-        return self.DISTRICT
+def get_members():
+    return db.session.query(students.name, students.tid).filter(students.tid == teams.id)
 
 def choice_query():
     return db.session.query(capstone_session)
 
 class Form(FlaskForm):
-    opts = QuerySelectField(query_factory=choice_query, allow_blank=True, get_label='start_year')
-
-
-
-@app.route("/")
-@app.route("/dashboard", methods=['GET', 'POST'])
-def home():
-    form = Form()
-    team_names = db_session.query(teams)
-    member_names = db_session.query(students)
-    
-    return render_template('dashboard.html', team_names=team_names, member_names=member_names, form=form)
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-    #member_names = db_session.query(students.name).filter(teams.id==students.tid)
-    #print(member_names)
-
-   # for d in db_session.query(team_members):
-   #     if d.tid == 1:
-   #         print("yes")
-    #for item in db_session.query(capstone_session):
-    #    print(item)
+    opts = QuerySelectField(query_factory=choice_query, allow_blank=True, get_label='start_year', blank_text='Select Term')
