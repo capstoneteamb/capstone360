@@ -73,7 +73,7 @@ class students(db.Model):
         result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
         tid = result.fetchone()
         tid = tid[0]
-        new_student = students(id = id, tid = tid, session_id = session_id, name = name)
+        new_student = students(id = id, tid = tid, session_id = session_id, name = name, is_lead = 0, midterm_done = 0, final_done = 0)
         db.session.add(new_student)
         db.session.commit()
         return True
