@@ -1,6 +1,7 @@
+import os
 import sys
-sys.path.append('/capstone')
-from app import db, engine
+sys.path.append(os.getcwd())
+from app import db, engine, db_session
 import datetime
 
 class teams(db.Model):
@@ -13,7 +14,7 @@ class teams(db.Model):
             return 1
         else:
             return max_id[0] + 1
-
+            
     def checkDupTeam(self, tName, sessionID):
         params = {'name': tName, 'session_id': sessionID}
         result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)
@@ -115,6 +116,11 @@ class capstone_session(db.Model):
             return ses_id.id
         else:
             return None
+class team_members(db.Model):
+    __table__ = db.Model.metadata.tables['team_members']
+
+class reports(db.Model):
+    __table__ = db.Model.metadata.tables['reports']
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
