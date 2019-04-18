@@ -43,7 +43,8 @@ app.add_url_rule('/',
 @app.route('/dashboard/', methods=['GET','POST'])
 def get():
     lists = dashboard.get()
-    return render_template('dashboard.html', lists = lists)  
+    sessions = {'first','second'}
+    return render_template('dashboard.html', lists = lists, sessions=sessions)  
 
 @app.route('/removeDashboard/')
 @app.route('/removeDashboard/', methods=['GET','POST'])

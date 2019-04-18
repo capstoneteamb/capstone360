@@ -2,7 +2,13 @@
 {% block menu %}
 <div class="container nav-container">
         <div class="row nav">
-            <div class="col-sm">Term</div>
+            <div class="col-sm">Sessions 
+                <select name="selected_session">
+                    {% for i in session %}
+                        <option value= "{{i}}">{{i}}</option>
+                    {% endfor %}
+                </select>
+            </div> 
             <a class="col-sm edit-btn">
             <div>Edit</div>
             </a>

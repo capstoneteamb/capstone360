@@ -180,9 +180,9 @@ def generate_tables(cursor):
                     'is_lead BOOLEAN NULL DEFAULT FALSE, '
                     'midterm_done BOOLEAN NULL DEFAULT FALSE, '
                     'final_done BOOLEAN NULL DEFAULT FALSE, '
-                    'removed_date TIMESTAMP NOT NULL, '
+                    'active VARCHAR(128) NULL, '
+                    'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
-
 
 def submit_review(cursor, student_id, session_id, review):
     # Put midterm review into database

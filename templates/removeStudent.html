@@ -7,7 +7,8 @@
 		<form action="{{ url_for('removeStudent') }}" method=POST>
 			<p class="heading">Student ID: <input type=text name=studentID></p>
 			<p class="heading">Session ID: <input type=text name=sessionID></p>
-			
+			<p class="heading" style="display: inline-block;">Team Name: {{tName}}</p> 
+			<input type="hidden" value={{tName}} name=teamName>
 			<p><input class="my-btn" type=submit value='Remove Student' style="
 					background-color: #b7c229;
  				   	color: white;

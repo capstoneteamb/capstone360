@@ -5,7 +5,7 @@ import gbmodel
 import datetime
 
 class RemoveStudent(MethodView):
-    def get(self):
+    def get(self):       
         return render_template('removeStudent.html')
 
     def post(self):
@@ -24,10 +24,9 @@ class RemoveStudent(MethodView):
         sessionID = session.getSessionID(term, year)
 
         students = request.form.getlist('removedStudent')
-        #TODO: assume the student name is unique //
-        student.removeStudent(students, sessionID)
+        tName = request.form.get('teamName')  
+        student.removeStudent(students, tName, sessionID)
         lists = removeDashboard.get_rm()
-        # print(lists)
         return render_template('removeDashboard.html', lists = lists) 
 
 
