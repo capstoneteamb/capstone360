@@ -18,7 +18,7 @@ def errPage(err_msg):
 
 # This will be changed to account for CAS log in
 def getID():
-    sdtID = 0
+    sdtID = 1
     return sdtID
 
 #if need to abort
@@ -140,8 +140,11 @@ def review():
         cid = getCap()
 
         # get team members
-        students = gbmodel.students()
-        mems = gbmodel.db_session.query(gbmodel.students).join(gbmodel.team_members).filter_by(tid=tid).distinct()
+        try:
+            students = gbmodel.students()
+            mems = gbmodel.db_session.query(gbmodel.students).join(gbmodel.team_members).filter_by(tid=tid).distinct()
+        except:
+            displayError('error grabbing teammates')
 
         # add members' ids to a list
         lst = []
@@ -281,9 +284,12 @@ def review():
             #students = gbmodel.students()
             #sdt = students.query.filter_by(id=getID()).first()
             sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=getID()).first()
-            state = sdt.active
+
             if sdt is None:
                 displayError('user not found in database')
+
+            state = sdt.active
+            
             if state == 'midterm':
                 # check if already submitted
                 print('student id' + str(sdt.id))
