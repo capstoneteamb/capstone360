@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/Users/anguyen/Desktop/470/capstone')
+sys.path.append('/capstone')
 from app import db, engine
 import datetime
 

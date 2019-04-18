@@ -16,9 +16,9 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////Users/anguyen/Desktop/470/capstone/capstone360.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capstone360.db'
 app.config['SECRET_KEY'] = '06ca1f7f68edd3eb7209a5fca2cc6ca0'
-engine = create_engine('sqlite:////Users/anguyen/Desktop/470/capstone/capstone360.db', convert_unicode=True, echo=False)
+engine = create_engine('sqlite:///capstone360.db', convert_unicode=True, echo=False)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 db.Model.metadata.reflect(db.engine)
