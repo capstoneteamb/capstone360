@@ -29,29 +29,14 @@ db_session = scoped_session(sessionmaker(bind=engine))
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
 
-"""
-app.add_url_rule('/dashboard/',
-                view_func=Dashboard.as_view('dashboard'),
-                methods=['GET', 'POST'])
-"""
-
 @app.route('/dashboard/')
 @app.route('/dashboard/', methods=['GET','POST'])
 def get():
-    lists = dashboard.get()
     form = dashboard.Form()
     team_names = dashboard.get_teams()
     member_names = dashboard.get_members()
-    """
-    dic_of_names = {}
-    m = dashboard.get_tid()
-    for i in m:
-        dic_of_names[i] = dashboard.get_members(i)
-    """
-    #print(dic_of_names)
-    return render_template('dashboard.html', lists = lists, team_names=team_names, member_names=member_names, form=form) 
+    return render_template('dashboard.html', team_names=team_names, member_names=member_names, form=form) 
 
 if __name__ == '__main__':
     #app.run(host='0.0.0.0', port=8000, debug=True)
-
     app.run(debug=True)
