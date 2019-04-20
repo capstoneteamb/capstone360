@@ -2,7 +2,7 @@
 {% block content %}
 
 <!-- This is the html code for the layout of the dashboard -->
-<div class=container>
+<div class="container dashboard-container">
 {% for data in team_names %}
 <div class="student-card">
 	<h4>{{data.name}}</h4>
@@ -12,6 +12,7 @@
 			document.write("<p>{{student.name}}</p>");
 	</script>
 	{% endfor %}
+	<a href="/addStudent"><button class="my-btn card-btn">Add Student</button></a>
 </div>
 {% endfor %}
 <a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>

@@ -1,7 +1,7 @@
 import os
 import sys
-#sys.path.append('/Users/faisa/Desktop/Code/capstone_repo/capstone360')
-from app import db, engine
+sys.path.append(os.getcwd())
+from app import db, engine, db_session
 import datetime
 
 class teams(db.Model):

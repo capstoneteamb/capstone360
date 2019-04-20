@@ -147,7 +147,7 @@ def generate_tables(cursor):
 
     # Create Reports table
     cursor.execute(('CREATE TABLE reports('
-                    'time TIME NOT NULL, '
+                    'time DATETIME NOT NULL, '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'reporting INTEGER NOT NULL REFERENCES students(id), '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
@@ -180,9 +180,9 @@ def generate_tables(cursor):
                     'is_lead BOOLEAN NULL DEFAULT FALSE, '
                     'midterm_done BOOLEAN NULL DEFAULT FALSE, '
                     'final_done BOOLEAN NULL DEFAULT FALSE, '
-                    'session_removed INTEGER NOT NULL REFERENCES capstone_session(id), '
+                    'active VARCHAR(128) NULL, '
+                    'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
-
 
 def submit_review(cursor, student_id, session_id, review):
     # Put midterm review into database
@@ -213,14 +213,31 @@ def submit_review(cursor, student_id, session_id, review):
 
 
 def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
+    start_year = 2019
+    end_year = 2019
+    term_index_start = 0
+    term_index_end = 1
+    terms = ["Winter", "Spring", "Summer", "Fall"]
+
     for session_id in range(num_sessions):
+        # Get new days and years
+        if (term_index_start > 3):
+            term_index_start = 0
+            start_year = start_year + 1
+
+        if (term_index_end > 3):
+            term_index_end = 0
+            end_year = end_year + 1
+
         # Put new session entry into the database
         cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?)',
                        (session_id,
-                        "winter",
-                        2019 + session_id,
-                        "spring",
-                        2019 + session_id))
+                        terms[term_index_start],
+                        start_year,
+                        terms[term_index_end],
+                        end_year))
+        term_index_start = term_index_start + 1
+        term_index_end = term_index_end + 1
 
         # Put new team entry into the database
         for team_id in range(num_teams):
@@ -251,88 +268,12 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             is_team_lead,
                             False,
                             False,
-                            None))
+                            'midterm'))
 
             # Add student to the team members table
             cursor.execute('INSERT INTO team_members VALUES(?,?,?)',
                            (team_id, student_id, session_id))
 
-            # Create mock midterm report templates from example report
-            midterm = copy.deepcopy(example_review)
-            midterm["reporting"] = student_id
-            midterm["tid"] = team_id
-            midterm["is_final"] = False
-            midterm["what_you_learned"] = ""
-
-            # Create mock final report template from midterm report template
-            final = copy.deepcopy(midterm)
-            final["is_final"] = True
-
-            # Generate a review for each member of the student's team and put
-            # it in the database
-            for team_index in range(num_teams):
-                # This is complicated. Basically, I want to use student ids
-                # and indexes and such to figure out the ids of the other
-                # students that are/will be on the current student's team.
-                #
-                # target_student_id = start + team_offset_id + offset
-                # start = the id of the first student on the team the student
-                # is on. We calulate this with the following:
-                #  -start = session_id * num_students
-                #   session * num_students helps us figure out where we start
-                #   If we have two sessions and have 40 students, and we want
-                #   to create reports for students in the second session, the
-                #   student id range we will be interested in will be 40-79.
-                #   session_id * num_students helps us get to the beginning
-                #   of the student_id range (40, in our example).
-                #  -team_id_offset = student_id_num % number_of_teams
-                #   This helps us get to the id of the first student
-                #   on the same team as the current student. If they are on the
-                #   second team, for example, their team_index will be 1, and
-                #   start = 40, start + team_offset_id = 40 + 1 = 41, which
-                #   is the index of the first student on the second team (in
-                #   the current session). team_id_offset is calculated by
-                #   taking the student_id (before
-                #   it is adjusted to take multiple sessions into account) and
-                #   modulating it by the number of teams
-                #   (so team_offset_id = student_id % num_teams)
-                #  -offset = team_index * num_teams
-                #   This helps us transition to the id of the next student on
-                #   the team. If start is 41, there are four teams and
-                #   team_index = 0 target_student = 41, so we are creating a
-                #   report for the first student on the team. If
-                #   team_index = 1, target_student = 41 + (1 * 4) = 45. 45
-                #   is the index of the second member of student 41's team,
-                #   so we create a report for the second member of student
-                #   41's team.
-                start = session_id * len(student_data)
-                team_offset_id = student["id"] % num_teams
-                offset = team_index * num_teams
-                target_student_id = start + team_offset_id + offset
-
-                # Break the loop if we start going too far
-                if (target_student_id >= start + len(student_data)):
-                    break
-
-                # Create midterm report
-                new_midterm = copy.deepcopy(midterm)
-                new_midterm["report_for"] = target_student_id
-
-                # Create final
-                new_final = copy.deepcopy(final)
-                new_final["report_for"] = target_student_id
-                if (target_student_id == student_id):
-                    new_final["what you learned"] = "How to make a web app. Yah!"
-
-                # Put midterm review into database
-                submit_review(cursor, student_id, session_id, new_midterm)
-                cursor.execute(('UPDATE students SET midterm_done = ? WHERE id = ? '
-                                'AND session_id = ?'), (True, student_id, session_id))
-
-                # Put final review into database
-                submit_review(cursor, student_id, session_id, new_final)
-                cursor.execute(('UPDATE students SET final_done = ? WHERE id = ? '
-                                'AND session_id = ?'), (True, student_id, session_id))
 
 
 def run():
@@ -342,7 +283,7 @@ def run():
     generate_tables(cursor)
 
     # Part 2: Add student and student data to database
-    fill_tables_with_data(cursor, generate_student_data(), 3, 6)
+    fill_tables_with_data(cursor, generate_student_data(), 10, 6)
 
     # Commit database changes and close the connection to the database
     connection.commit()

@@ -233,11 +233,16 @@ def test_generate_tables():
            and columns[6][3] == 0
            and columns[6][4] == "FALSE"
            and columns[6][5] == 0)
-    assert(columns[7][1] == "session_removed"
-           and columns[7][2] == "INTEGER"
-           and columns[7][3] == 1
+    assert(columns[7][1] == "active"
+           and columns[7][2] == "VARCHAR(128)"
+           and columns[7][3] == 0
            and columns[7][4] is None
            and columns[7][5] == 0)
+    assert(columns[8][1] == "removed_date"
+           and columns[8][2] == "DATETIME"
+           and columns[8][3] == 1
+           and columns[8][4] is None
+           and columns[8][5] == 0)
 
     # Check if the reports table exists, and that it is empty
     cursor.execute("SELECT * FROM reports;")

@@ -1,29 +1,34 @@
 """
-Entry into the Flask App
+Flask entry
 """
 from flask import Flask, redirect, request, url_for, render_template
-import flask
 from flask.views import MethodView
-import dashboard 
+import dashboard
+import removeDashboard
+from add import AddTeam
+from add import AddStudent
 from index import Index
+from remove import RemoveStudent
+from remove import RemoveTeam
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
 from form import form_bp
 
-app = flask.Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:\\Users\\faisa\\Desktop\\Code\\capstone\\capstone360.db'
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capstone360.db'
 app.config['SECRET_KEY'] = '06ca1f7f68edd3eb7209a5fca2cc6ca0'
-engine = create_engine('sqlite:///C:\\Users\\faisa\\Desktop\\Code\\capstone\\capstone360.db', convert_unicode=True, echo=False)
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+engine = create_engine('sqlite:///capstone360.db', convert_unicode=True, echo=False)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 db.Model.metadata.reflect(db.engine)
 db_session = scoped_session(sessionmaker(bind=engine))
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
+
+#form blueprint, can change to url_rules without blueprint if desired
+app.register_blueprint(form_bp)
 
 @app.route('/dashboard/')
 @app.route('/dashboard/', methods=['GET','POST'])
