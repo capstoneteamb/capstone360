@@ -1,19 +1,15 @@
 """
 Entry into the Flask App
 """
-import flask
 from flask import Flask, redirect, request, url_for, render_template
+import flask
 from flask.views import MethodView
 import dashboard 
 from index import Index
 from flask_sqlalchemy import SQLAlchemy
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from db_form import db, capstone_session, teams, students, team_members, reports
-from db_form import db
-from form import form_bp
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
+from form import form_bp
 
 app = flask.Flask(__name__)
 
@@ -32,10 +28,12 @@ app.add_url_rule('/',
 @app.route('/dashboard/')
 @app.route('/dashboard/', methods=['GET','POST'])
 def get():
+    lists = dashboard.get()
+    sessions = {'first','second'}
     form = dashboard.Form()
     team_names = dashboard.get_teams()
     member_names = dashboard.get_members()
-    return render_template('dashboard.html', team_names=team_names, member_names=member_names, form=form) 
+    return render_template('dashboard.html', lists=lists, sessions=sessions, team_names=team_names, member_names=member_names, form=form) 
 
 if __name__ == '__main__':
     #app.run(host='0.0.0.0', port=8000, debug=True)
