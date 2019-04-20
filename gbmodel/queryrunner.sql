@@ -1,8 +1,4 @@
 -- SQLite
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 select * from capstone_session;
 
 select * from teams;

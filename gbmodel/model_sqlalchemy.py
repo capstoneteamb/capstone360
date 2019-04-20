@@ -14,7 +14,7 @@ class teams(db.Model):
             return 1
         else:
             return max_id[0] + 1
-            
+
     def checkDupTeam(self, tName, sessionID):
         params = {'name': tName, 'session_id': sessionID}
         result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)

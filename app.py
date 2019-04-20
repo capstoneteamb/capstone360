@@ -41,5 +41,4 @@ def get():
     return render_template('dashboard.html', lists=lists, sessions=sessions, team_names=team_names, member_names=member_names, form=form) 
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', port=8000, debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
