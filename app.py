@@ -13,7 +13,7 @@ from remove import RemoveTeam
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from form import form_bp
+from form import review
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capstone360.db'
@@ -27,8 +27,9 @@ db_session = scoped_session(sessionmaker(bind=engine))
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
 
-#form blueprint, can change to url_rules without blueprint if desired
-app.register_blueprint(form_bp)
+app.add_url_rule('/review/',
+                view_func=review.as_view('review'),
+                methods=['GET'])
 
 @app.route('/dashboard/')
 @app.route('/dashboard/', methods=['GET','POST'])
