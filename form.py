@@ -1,3 +1,6 @@
+#This file operates the form that students will fill out to complete their 360 reviews.
+#It handles get and post requests 
+
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, abort
 from sqlalchemy import Date, DateTime
 from flask.views import MethodView
@@ -9,7 +12,7 @@ class review(MethodView):
 
     # This will be changed to account for CAS log in
     def get_id(self):
-        sdt_id = 1
+        sdt_id = 38
         return sdt_id
 
     #if need to abort, report an internal server error and print the error to the console
