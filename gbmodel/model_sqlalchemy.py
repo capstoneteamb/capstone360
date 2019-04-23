@@ -109,7 +109,7 @@ class students(db.Model):
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
-    def getSessionID(self, term, year):
+    def get_session_id(self, term, year):
         #id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()    
         ses_id = capstone_session.query.filter_by(start_term = term, start_year = year).first()
         if (ses_id):

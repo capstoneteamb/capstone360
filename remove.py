@@ -13,19 +13,19 @@ class RemoveStudent(MethodView):
         session = gbmodel.capstone_session()
         student = gbmodel.students()
 
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
+        current_date = datetime.datetime.now()
+        month = int(current_date.month) 
+        year = current_date.year
         if month in range (9, 11):   term = "Fall"
         elif month in range (3,5):   term = "Spring"
         elif month in range (6,8):   term = "Summer"
         else:                        term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
+        session_id = session.get_session_id(term, year)
 
         students = request.form.getlist('removedStudent')
         t_name = request.form.get('teamName')  
-        student.remove_student(students, t_name, sessionID)
+        student.remove_student(students, t_name, session_id)
         lists = removeDashboard.get_rm()
         return render_template('removeDashboard.html', lists = lists) 
 
@@ -45,18 +45,18 @@ class RemoveTeam(MethodView):
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
 
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
+        current_date = datetime.datetime.now()
+        month = int(current_date.month) 
+        year = current_date.year
         if month in range (9, 11):   term = "Fall"
         elif month in range (3,5):   term = "Spring"
         elif month in range (6,8):   term = "Summer"
         else:                        term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
+        session_id = session.get_session_id(term, year)
 
         t_name = request.form.get('teamName')
         t_name = t_name.replace("_", " ")
-        team.remove_team(t_name, sessionID)
+        team.remove_team(t_name, session_id)
         lists = removeDashboard.get_rm()
         return render_template('removeDashboard.html', lists = lists)
