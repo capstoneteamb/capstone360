@@ -3,34 +3,34 @@
 <h3>Remove Student</h3>
 <!-- This is the html code for the layout of the dashboard -->
 <div class="container dashboard-container">
-	{% for data in lists %}
-	<div class="student-card">
-		<form action="{{ url_for('removeStudent')}}" method=POST>
-			<h4>{{data[0]}}</h4>
-			{% for student in data[1:] %}
-			<p class=entry>
-				<img class="user-icon" style="display: inline-block;"
-					src="{{ url_for('static', filename='Assets/user.png')}}">
-				<span class="name" style="display: inline-block;"> {{ student }}
-				</span>
-				<input class="remove-check" type="checkbox" style="display: inline-block;" name="removedStudent"
-					value="{{ student}}"> <input type="hidden" name="teamName" value="{{data[0]}}"></input>				
-			</p>
-			{% endfor %}
-			<!-- <input type="hidden" value={{data[0:]}} name="data"/> -->
-			<p><input class="my-btn" type=submit value='Remove Student' style="
-						background-color: #BCBCBC;
-						color: white;
-						border: none;
-						border-radius:5px;
-						padding: 10px 20px;
-						cursor: pointer;"></p>
-		
-		</form>
-	 	<a href="{{ url_for('removeTeam', data=data[0])}}"><button class="my-btn card-btn"
-				style="background-color: #ff9e16">Remove Team</button></a>
-	</div>
-	{% endfor %}
+    {% for data in lists %}
+    <div class="student-card">
+        <form action="{{ url_for('removeStudent')}}" method=POST>
+            <h4>{{data[0]}}</h4>
+            {% for student in data[1:] %}
+            <p class=entry>
+                <img class="user-icon" style="display: inline-block;"
+                    src="{{ url_for('static', filename='Assets/user.png')}}">
+                <span class="name" style="display: inline-block;"> {{ student }}
+                </span>
+                <input class="remove-check" type="checkbox" style="display: inline-block;" name="removedStudent"
+                    value="{{ student}}"> <input type="hidden" name="teamName" value="{{data[0]}}"></input>				
+            </p>
+            {% endfor %}
+            <!-- <input type="hidden" value={{data[0:]}} name="data"/> -->
+            <p><input class="my-btn" type=submit value='Remove Student' style="
+                        background-color: #BCBCBC;
+                        color: white;
+                        border: none;
+                        border-radius:5px;
+                        padding: 10px 20px;
+                        cursor: pointer;"></p>
+        
+        </form>
+         <a href="{{ url_for('removeTeam', data=data[0])}}"><button class="my-btn card-btn"
+                style="background-color: #ff9e16">Remove Team</button></a>
+    </div>
+    {% endfor %}
 </div>
 <a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>
 

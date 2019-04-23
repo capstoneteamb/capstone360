@@ -1,366 +1,364 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<!--better solution later-->
-<br>
-<br>
-<br>
-<br>
-{% if fatal_error %}
-  {{ fatal_error }}
-{% else %}
-    {% if input_error %}
-    <ul>
-        {% for alert in get_flashed_messages() %}
-        <li><b>{{alert}}</b></li>
-        {% endfor %}
-    </ul>
+    <!--better solution later-->
     <br>
-    {% endif %}
-    <h4 style="font-size:24px">Key:</h4>
-    <ol style="font-size: 14px">
-        <li>Poor</li>
-        <li>Does Not Meet Expectations</li>
-        <li>Meets Expectations</li>
-        <li>Exceeds Exeectations</li>
-        <li>Excellent</li>
-    </ol>
-    </nav>
-    <section class="content">
-        <form method="post">
-            <table class="table table-striped" style="table-layout: fixed; font-size: 12px">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Name</th>
-                        <th>Technical Mastery</th>
-                        <th>Work Ethic</th>
-                        <th>Communication</th>
-                        <th>Cooperaton</th>
-                        <th>Initiative</th>
-                        <th>Team Focus</th>
-                        <th>Contribution</th>
-                        <th>Leadership</th>
-                        <th>Organization</th>
-                        <th>Delegation</th>
-                        <th>Points</th>
-                        <th>Strengths</th>
-                        <th>Weaknesses</th>
-                        <th>Traits to Work On</th>
-                    </tr>
-                </thead>
-                {% for mem in mems %}
-                <!-- will change independent radios to for loop rather than listing them all out here-->
-                <tr>
-                    <td>{{mem['name']}}</td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tm1_{{mem['id']}}" name="tm_{{mem['id']}}"
-                                class="custom-control-input" value="1" required>
-                            <label class="custom-control-label" for="tm1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tm2_{{mem['id']}}" name="tm_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tm2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tm3_{{mem['id']}}" name="tm_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tm3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tm4_{{mem['id']}}" name="tm_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tm4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tm5_{{mem['id']}}" name="tm_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tm5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="we1_{{mem['id']}}" name="we_{{mem['id']}}"
-                                class="custom-control-input" value="1" required>
-                            <label class="custom-control-label" for="we1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="we2_{{mem['id']}}" name="we_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="we2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="we3_{{mem['id']}}" name="we_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="we3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="we4_{{mem['id']}}" name="we_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="we4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="we5_{{mem['id']}}" name="we_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="we5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cm1_{{mem['id']}}" name="cm_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="cm1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cm2_{{mem['id']}}" name="cm_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cm2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cm3_{{mem['id']}}" name="cm_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cm3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cm4_{{mem['id']}}" name="cm_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cm4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cm5_{{mem['id']}}" name="cm_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cm5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="co1_{{mem['id']}}" name="co_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="co1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="co2_{{mem['id']}}" name="co_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="co2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="co3_{{mem['id']}}" name="co_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="co3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="co4_{{mem['id']}}" name="co_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="co4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="co5_{{mem['id']}}" name="co_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="co5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="i1_{{mem['id']}}" name="i_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="i1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="i2_{{mem['id']}}" name="i_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="i2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="i3_{{mem['id']}}" name="i_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="i3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="i4_{{mem['id']}}" name="i_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="i4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="i5_{{mem['id']}}" name="i_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="i5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tf1_{{mem['id']}}" name="tf_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="tf1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tf2_{{mem['id']}}" name="tf_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tf2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tf3_{{mem['id']}}" name="tf_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tf3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tf4_{{mem['id']}}" name="tf_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tf4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="tf5_{{mem['id']}}" name="tf_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="tf5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cr1_{{mem['id']}}" name="cr_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="cr1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cr2_{{mem['id']}}" name="cr_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cr2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cr3_{{mem['id']}}" name="cr_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cr3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cr4_{{mem['id']}}" name="cr_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cr4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="cr5_{{mem['id']}}" name="cr_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="cr5_{{mem['id']}}">5</label>
-                        </div>
-                    </td>
-                    <td>
-                        {% if mem['is_lead'] == 1 %}
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="l1_{{mem['id']}}" name="l_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="l1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="l2_{{mem['id']}}" name="l_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="l2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="l3_{{mem['id']}}" name="l_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="l3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="l4_{{mem['id']}}" name="l_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="l4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="l5_{{mem['id']}}" name="l_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="l5_{{mem['id']}}">5</label>
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if mem['is_lead'] == 1 %}
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="o1_{{mem['id']}}" name="o_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="o1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="o2_{{mem['id']}}" name="o_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="o2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="o3_{{mem['id']}}" name="o_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="o3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="o4_{{mem['id']}}" name="o_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="o4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="o5_{{mem['id']}}" name="o_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="o5_{{mem['id']}}">5</label>
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if mem['is_lead'] == 1 %}
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="d1_{{mem['id']}}" name="d_{{mem['id']}}" value="1"
-                                class="custom-control-input" required>
-                            <label class="custom-control-label" for="d1_{{mem['id']}}">1</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="d2_{{mem['id']}}" name="d_{{mem['id']}}" value="2"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="d2_{{mem['id']}}">2</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="d3_{{mem['id']}}" name="d_{{mem['id']}}" value="3"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="d3_{{mem['id']}}">3</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="d4_{{mem['id']}}" name="d_{{mem['id']}}" value="4"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="d4_{{mem['id']}}">4</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="d5_{{mem['id']}}" name="d_{{mem['id']}}" value="5"
-                                class="custom-control-input">
-                            <label class="custom-control-label" for="d5_{{mem['id']}}">5</label>
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" name="points_{{mem['id']}}" id="points_{{mem['id']}}"
-                            required>
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" name="str_{{mem['id']}}" id="str_{{mem['id']}}"
-                            required>
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" name="wkn_{{mem['id']}}" id="wkn_{{mem['id']}}"
-                            required>
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" name="trait_{{mem['id']}}" id="trait_{{mem['id']}}"
-                            required>
-                    </td>
-                </tr>
-                {% endfor %}
+    <br>
+    <br>
+    <br>
+    {% if fatal_error %}
+        {{ fatal_error }}
+    {% else %}
+        {% if input_error %}
+        <ul>
+            {% for alert in get_flashed_messages() %}
+                <li><b>{{alert}}</b></li>
+            {% endfor %}
+        </ul>
+        <br>
+        {% endif %}
+        <h4 style="font-size:24px">Key:</h4>
+        <ol style="font-size: 14px">
+            <li>Poor</li>
+            <li>Does Not Meet Expectations</li>
+            <li>Meets Expectations</li>
+            <li>Exceeds Exeectations</li>
+            <li>Excellent</li>
+        </ol>
+        </nav>
+        <section class="content">
+            <form method="post">
+                <table class="table table-striped" style="table-layout: fixed; font-size: 12px">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Technical Mastery</th>
+                            <th>Work Ethic</th>
+                            <th>Communication</th>
+                            <th>Cooperaton</th>
+                            <th>Initiative</th>
+                            <th>Team Focus</th>
+                            <th>Contribution</th>
+                            <th>Leadership</th>
+                            <th>Organization</th>
+                            <th>Delegation</th>
+                            <th>Points</th>
+                            <th>Strengths</th>
+                            <th>Weaknesses</th>
+                            <th>Traits to Work On</th>
+                        </tr>
+                    </thead>
+                    {% for mem in mems %}
+                        <!-- will change independent radios to for loop rather than listing them all out here-->
+                        <tr>
+                            <td>{{mem['name']}}</td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tm1_{{mem['id']}}" name="tm_{{mem['id']}}"
+                                        class="custom-control-input" value="1" required>
+                                    <label class="custom-control-label" for="tm1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tm2_{{mem['id']}}" name="tm_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tm2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tm3_{{mem['id']}}" name="tm_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tm3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tm4_{{mem['id']}}" name="tm_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tm4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tm5_{{mem['id']}}" name="tm_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tm5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="we1_{{mem['id']}}" name="we_{{mem['id']}}"
+                                        class="custom-control-input" value="1" required>
+                                    <label class="custom-control-label" for="we1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="we2_{{mem['id']}}" name="we_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="we2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="we3_{{mem['id']}}" name="we_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="we3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="we4_{{mem['id']}}" name="we_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="we4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="we5_{{mem['id']}}" name="we_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="we5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cm1_{{mem['id']}}" name="cm_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="cm1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cm2_{{mem['id']}}" name="cm_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cm2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cm3_{{mem['id']}}" name="cm_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cm3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cm4_{{mem['id']}}" name="cm_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cm4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cm5_{{mem['id']}}" name="cm_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cm5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="co1_{{mem['id']}}" name="co_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="co1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="co2_{{mem['id']}}" name="co_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="co2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="co3_{{mem['id']}}" name="co_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="co3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="co4_{{mem['id']}}" name="co_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="co4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="co5_{{mem['id']}}" name="co_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="co5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="i1_{{mem['id']}}" name="i_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="i1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="i2_{{mem['id']}}" name="i_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="i2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="i3_{{mem['id']}}" name="i_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="i3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="i4_{{mem['id']}}" name="i_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="i4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="i5_{{mem['id']}}" name="i_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="i5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tf1_{{mem['id']}}" name="tf_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="tf1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tf2_{{mem['id']}}" name="tf_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tf2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tf3_{{mem['id']}}" name="tf_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tf3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tf4_{{mem['id']}}" name="tf_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tf4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="tf5_{{mem['id']}}" name="tf_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="tf5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cr1_{{mem['id']}}" name="cr_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="cr1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cr2_{{mem['id']}}" name="cr_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cr2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cr3_{{mem['id']}}" name="cr_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cr3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cr4_{{mem['id']}}" name="cr_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cr4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="cr5_{{mem['id']}}" name="cr_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="cr5_{{mem['id']}}">5</label>
+                                </div>
+                            </td>
+                            <td>
+                                {% if mem['is_lead'] == 1 %}
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="l1_{{mem['id']}}" name="l_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="l1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="l2_{{mem['id']}}" name="l_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="l2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="l3_{{mem['id']}}" name="l_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="l3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="l4_{{mem['id']}}" name="l_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="l4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="l5_{{mem['id']}}" name="l_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="l5_{{mem['id']}}">5</label>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if mem['is_lead'] == 1 %}
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="o1_{{mem['id']}}" name="o_{{mem['id']}}" value="1"
+                                        class="custom-control-input" required>
+                                    <label class="custom-control-label" for="o1_{{mem['id']}}">1</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="o2_{{mem['id']}}" name="o_{{mem['id']}}" value="2"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="o2_{{mem['id']}}">2</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="o3_{{mem['id']}}" name="o_{{mem['id']}}" value="3"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="o3_{{mem['id']}}">3</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="o4_{{mem['id']}}" name="o_{{mem['id']}}" value="4"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="o4_{{mem['id']}}">4</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="o5_{{mem['id']}}" name="o_{{mem['id']}}" value="5"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="o5_{{mem['id']}}">5</label>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if mem['is_lead'] == 1 %}
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="d1_{{mem['id']}}" name="d_{{mem['id']}}" value="1"
+                                            class="custom-control-input" required>
+                                        <label class="custom-control-label" for="d1_{{mem['id']}}">1</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="d2_{{mem['id']}}" name="d_{{mem['id']}}" value="2"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="d2_{{mem['id']}}">2</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="d3_{{mem['id']}}" name="d_{{mem['id']}}" value="3"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="d3_{{mem['id']}}">3</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="d4_{{mem['id']}}" name="d_{{mem['id']}}" value="4"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="d4_{{mem['id']}}">4</label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="d5_{{mem['id']}}" name="d_{{mem['id']}}" value="5"
+                                            class="custom-control-input">
+                                        <label class="custom-control-label" for="d5_{{mem['id']}}">5</label>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="points_{{mem['id']}}" id="points_{{mem['id']}}"
+                                    required>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="str_{{mem['id']}}" id="str_{{mem['id']}}"
+                                    required>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="wkn_{{mem['id']}}" id="wkn_{{mem['id']}}"
+                                    required>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="trait_{{mem['id']}}" id="trait_{{mem['id']}}"
+                                    required>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <br>
+                </table>
                 <br>
-            </table>
-            <br>
-            <label for="learned">What you learned</label>
-            <input type="text" class="form-control" name="learned" id="learned" required>
-            {% if state == 'final' %}
-            <br>
-            <label for="proud">Are you proud of your accomplishment for this project?</label>
-            <input type="text" class="form-control" name="proud" id="proud" required>
-            {% endif %}
-            <br>
-            <input type="submit" value="Submit">
-        </form>
-
-    </section>
-
-{% endif %}
+                <label for="learned">What you learned</label>
+                <input type="text" class="form-control" name="learned" id="learned" required>
+                {% if state == 'final' %}
+                    <br>
+                    <label for="proud">Are you proud of your accomplishment for this project?</label>
+                    <input type="text" class="form-control" name="proud" id="proud" required>
+                {% endif %}
+                <br>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+    {% endif %}
 {% endblock %}
