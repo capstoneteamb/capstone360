@@ -8,63 +8,63 @@ import gbmodel
 class review(MethodView):
 
     # This will be changed to account for CAS log in
-    def getID(self):
-        sdtID = 1
-        return sdtID
+    def get_id(self):
+        sdt_id = 1
+        return sdt_id
 
     #if need to abort, report an internal server error and print the error to the console
-    def displayError(self, err_str):
+    def display_error(self, err_str):
         print(err_str)
         abort(500)
 
-    def convertToInt(self, toConvert):
+    def convert_to_int(self, to_convert):
         #see if input is an integer, if not display error to user
         try:
-            toConvert = int(toConvert)
+            to_convert = int(to_convert)
         except:
-            self.displayError('input is not a number')
+            self.display_error('input is not a number')
 
-        return toConvert
+        return to_convert
 
 
-    def getCap(self):
+    def get_cap(self):
         # query database to get capstone session id
         cap = 0
         try:
             students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.getID()).first()
+            sdt = students.query.filter_by(id=self.get_id()).first()
         except:
-                self.displayError('student look up error - capstone')
+                self.display_error('student look up error - capstone')
         
         #get capstone session id
         cap = sdt.session_id
         if cap is None:
-            self.displayError('No user capstone id found in database')
+            self.display_error('No user capstone id found in database')
 
         return cap
 
 
-    def getTid(self):
+    def get_tid(self):
         #get the user's team id
         tid = 0
         try:
             students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.getID()).first()
+            sdt = students.query.filter_by(id=self.get_id()).first()
         except:
-                self.displayError('student look up error - tid')
+                self.display_error('student look up error - tid')
 
         #get tid
         tid = sdt.tid
         if tid is None:
-            self.displayError('No user tid found in database')
+            self.display_error('No user tid found in database')
 
         return tid
 
-    def getState(self):
+    def get_state(self):
         # query db for student's state
         try:
             students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.getID()).first()
+            sdt = students.query.filter_by(id=self.get_id()).first()
         except:
             print('Student Look Up Error - Get State')
             return 'Error'
@@ -77,17 +77,17 @@ class review(MethodView):
         #return student state
         return sdt.active
 
-    def confirmUser(self):
+    def confirm_user(self):
         # check if the current user is found in the database
         print('Need to confirm')
+
         #check the user's active reports
-        state = self.getState()
+        state = self.get_state()
         if state == 'Error':
             return False
 
-        print('state is:' + str(state))
         students = gbmodel.students()
-        sdt = students.query.filter_by(id=self.getID()).first()
+        sdt = students.query.filter_by(id=self.get_id()).first()
         
         if sdt is None:
             return False
@@ -102,8 +102,6 @@ class review(MethodView):
         else:
             return False
 
-        print('done is:' + str(done))
-
         if done == 1:
             return False
 
@@ -112,12 +110,12 @@ class review(MethodView):
 
     def get(self):
         #check if user exists
-        test_user = self.confirmUser()
+        test_user = self.confirm_user()
         if test_user == False:
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='You have no open reviews.')
 
         #get user's team id
-        tid = self.getTid()
+        tid = self.get_tid()
         
         #get user's team members
         try:
@@ -126,7 +124,7 @@ class review(MethodView):
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='There was an error while retrieving user team members.')
 
         #get user's state of open/closed reports
-        state = self.getState()
+        state = self.get_state()
         if state == 'Error':
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='There was an error while retrieving user information.')
         
@@ -134,12 +132,12 @@ class review(MethodView):
 
     def post(self):
         #check if user exists
-        test_user = self.confirmUser()
+        test_user = self.confirm_user()
         if test_user == False:
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='You have no open reviews.')
 
         #get user's team id
-        tid = self.getTid()
+        tid = self.get_tid()
         
         #get user's team members
         try:
@@ -147,7 +145,7 @@ class review(MethodView):
         except:
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='There was an error while retrieving user team members.')
 
-        cid = self.getCap()
+        cid = self.get_cap()
 
         lst = []
         for mem in mems:
@@ -156,7 +154,7 @@ class review(MethodView):
 
         # check points total
         total = 0
-        pointsPass = True
+        points_pass = True
 
         for j in lst:
             #check points for being in bounds and adding to 100
@@ -166,47 +164,47 @@ class review(MethodView):
                     points = int(points)
                 except ValueError:
                     flash('points must be an integer')
-                    pointsPass = False
+                    points_pass = False
 
-                if pointsPass == True:
+                if points_pass == True:
                     
                     total = total + points
 
-                    if int(j) == self.getID():
+                    if int(j) == self.get_id():
                         #make sure own score is 0
                         if points > 0 or points < 0:
                             flash('Points must be 0 for self')
-                            pointsPass = False
+                            points_pass = False
             except ValueError:
-                self.displayError('Invalid input for points')
+                self.display_error('Invalid input for points')
 
         if total != 100:
             flash('Points total must be 100')
-            pointsPass = False
+            points_pass = False
 
-        if pointsPass == True:
+        if points_pass == True:
             for i in lst:
                 # Get each radio input and verify that it's an integer, give an error if not
                 tech = request.form[('tm_' + str(i))]
-                tech = self.convertToInt(tech)
+                tech = self.convert_to_int(tech)
 
                 ethic = request.form[('we_' + str(i))]
-                ethic = self.convertToInt(ethic)
+                ethic = self.convert_to_int(ethic)
 
                 com = request.form[('cm_' + str(i))]
-                com = self.convertToInt(com)
+                com = self.convert_to_int(com)
 
                 coop = request.form[('co_' + str(i))]
-                coop = self.convertToInt(coop)
+                coop = self.convert_to_int(coop)
 
                 init = request.form[('i_' + str(i))]
-                init = self.convertToInt(init)
+                init = self.convert_to_int(init)
 
                 focus = request.form[('tf_' + str(i))]
-                focus = self.convertToInt(focus)
+                focus = self.convert_to_int(focus)
 
                 cont = request.form[('cr_' + str(i))]
-                cont = self.convertToInt(cont)
+                cont = self.convert_to_int(cont)
 
                 #default leader skills to None for Null in database
                 lead = None
@@ -217,18 +215,18 @@ class review(MethodView):
                 try:
                     sdt = gbmodel.students().query.filter_by(id=i).first()
                 except:
-                    self.displayError('student look up error')
+                    self.display_error('student look up error')
 
                 if(sdt.is_lead == 1):
                     #get leader values
                     lead = request.form[('l_' + str(i))]
-                    lead = self.convertToInt(lead)
+                    lead = self.convert_to_int(lead)
 
                     org = request.form[('o_' + str(i))]
-                    org = self.convertToInt(org)
+                    org = self.convert_to_int(org)
 
                     dlg = request.form[('d_' + str(i))]
-                    dlg = self.convertToInt(dlg)
+                    dlg = self.convert_to_int(dlg)
 
                 
                 # Get string inputs
@@ -237,29 +235,29 @@ class review(MethodView):
                 traits = request.form[('trait_' + str(i))]
 
                 learned = None
-                if int(i) == self.getID():
+                if int(i) == self.get_id():
                     learned = request.form[('learned')]
 
                 proud = None
                 #only get 'proud' if the student is filling out final review
-                if self.getState() == 'final':
-                    if int(i) == self.getID():
+                if self.get_state() == 'final':
+                    if int(i) == self.get_id():
                         proud = request.form[('proud')]
 
                 points = request.form[('points_' + str(i))]
-                points = self.convertToInt(points)
+                points = self.convert_to_int(points)
 
-                if self.getState() == 'midterm':
+                if self.get_state() == 'midterm':
                     # for midterm set final to false
                     is_final = 0
-                elif self.getState() == 'final':
+                elif self.get_state() == 'final':
                     # for midterm set final to false
                     is_final = 1
 
                 report = gbmodel.reports()
                 report.session_id = cid
                 report.time = datetime.now()
-                report.reporting = self.getID()
+                report.reporting = self.get_id()
                 report.tid = tid
                 report.report_for = i
                 report.tech_mastery = tech
@@ -283,27 +281,26 @@ class review(MethodView):
                 gbmodel.db_session.add(report)
 
             try:
-                sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=self.getID()).first()
+                sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=self.get_id()).first()
 
                 if sdt is None:
-                    self.displayError('user not found in database when trying to submit report')
+                    self.display_error('user not found in database when trying to submit report')
 
                 state = sdt.active
                 
                 if state == 'midterm':
                     # check if already submitted
-                    print('student id' + str(sdt.id))
                     sdt.midterm_done = 1
                 elif state == 'final':
                     # check if already submitted
                     sdt.final_done = 1
                 else:
-                    self.displayError('submitting reports not open')
+                    self.display_error('submitting reports not open')
 
                 gbmodel.db_session.commit()
             except:
-                self.displayError('submission error')
+                self.display_error('submission error')
                     
             return render_template('submitted.html')
     
-        return render_template('review.html', mems=mems, state=self.getState(), input_error = True, fatal_error=None)
+        return render_template('review.html', mems=mems, state=self.get_state(), input_error = True, fatal_error=None)
