@@ -19,21 +19,21 @@ def test_generate_student_data():
     student_ids = []
 
     for student in student_data:
-        # Check Name
-        assert (student["name"] in names)
+       # Check Name
+       assert (student["name"] in names)
 
-        # Check that email address is first_name.last_name.pdx.edu
-        student_name = student["name"].split(" ")
-        assert (len(student_name) == 2)
-        assert (student["email_address"]
-                == (student_name[0]
-                    + "."
-                    + student_name[1]
-                    + ".notreal@pdx.edu"))
+       # Check that email address is first_name.last_name.pdx.edu
+       student_name = student["name"].split(" ")
+       assert (len(student_name) == 2)
+       assert (student["email_address"]
+           == (student_name[0]
+               + "."
+               + student_name[1]
+               + ".notreal@pdx.edu"))
 
-        # Check that the student id is unique
-        assert (student["id"] not in student_ids)
-        student_ids.append(student["id"])
+       # Check that the student id is unique
+       assert (student["id"] not in student_ids)
+       student_ids.append(student["id"])
 
 
 def test_generate_tables():
@@ -64,38 +64,38 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(capstone_session);")
     columns = cursor.fetchall()
     assert(
-           # db column name
-           columns[0][1] == "id"
-           # db column type
-           and columns[0][2] == "INTEGER"
-           # if the value in this column can be null
-           # - 1 = NOT NULL
-           # - 0 = NULL
-           and columns[0][3] == 1
-           # the default value for this db column
-           and columns[0][4] is None
-           # the index of the column in the primary key, if it is a part of it (I think). 0 otherwise
-           and columns[0][5] == 1)
+        # db column name
+        columns[0][1] == "id"
+        # db column type
+        and columns[0][2] == "INTEGER"
+        # if the value in this column can be null
+        # - 1 = NOT NULL
+        # - 0 = NULL
+        and columns[0][3] == 1
+        # the default value for this db column
+        and columns[0][4] is None
+        # the index of the column in the primary key, if it is a part of it (I think). 0 otherwise
+        and columns[0][5] == 1)
     assert(columns[1][1] == "start_term"
-           and columns[1][2] == "VARCHAR(10)"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 0)
+        and columns[1][2] == "VARCHAR(10)"
+        and columns[1][3] == 1
+        and columns[1][4] is None
+        and columns[1][5] == 0)
     assert(columns[2][1] == "start_year"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 0)
+        and columns[2][2] == "INTEGER"
+        and columns[2][3] == 1
+        and columns[2][4] is None
+        and columns[2][5] == 0)
     assert(columns[3][1] == "end_term"
-           and columns[3][2] == "VARCHAR(10)"
-           and columns[3][3] == 1
-           and columns[3][4] is None
-           and columns[3][5] == 0)
+        and columns[3][2] == "VARCHAR(10)"
+        and columns[3][3] == 1
+        and columns[3][4] is None
+        and columns[3][5] == 0)
     assert(columns[4][1] == "end_year"
-           and columns[4][2] == "INTEGER"
-           and columns[4][3] == 1
-           and columns[4][4] is None
-           and columns[4][5] == 0)
+        and columns[4][2] == "INTEGER"
+        and columns[4][3] == 1
+        and columns[4][4] is None
+        and columns[4][5] == 0)
 
     # Verify that the students table was created, and that it is empty
     cursor.execute("SELECT * FROM students;")
@@ -105,45 +105,45 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(students);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
-           and columns[0][3] == 1
-           and columns[0][4] is None
-           and columns[0][5] == 1)
+        and columns[0][2] == "INTEGER"
+        and columns[0][3] == 1
+        and columns[0][4] is None
+        and columns[0][5] == 1)
     assert(columns[1][1] == "tid"
-           and columns[1][2] == "INTEGER"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 0)
+        and columns[1][2] == "INTEGER"
+        and columns[1][3] == 1
+        and columns[1][4] is None
+        and columns[1][5] == 0)
     assert(columns[2][1] == "session_id"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 2)
+        and columns[2][2] == "INTEGER"
+        and columns[2][3] == 1
+        and columns[2][4] is None
+        and columns[2][5] == 2)
     assert(columns[3][1] == "name"
-           and columns[3][2] == "VARCHAR(128)"
-           and columns[3][3] == 1
-           and columns[3][4] is None
-           and columns[3][5] == 0)
+        and columns[3][2] == "VARCHAR(128)"
+        and columns[3][3] == 1
+        and columns[3][4] is None
+        and columns[3][5] == 0)
     assert(columns[4][1] == "is_lead"
-           and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 0
-           and columns[4][4] == "FALSE"
-           and columns[4][5] == 0)
+        and columns[4][2] == "BOOLEAN"
+        and columns[4][3] == 0
+        and columns[4][4] == "FALSE"
+        and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
-           and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 0
-           and columns[5][4] == "FALSE"
-           and columns[5][5] == 0)
+        and columns[5][2] == "BOOLEAN"
+        and columns[5][3] == 0
+        and columns[5][4] == "FALSE"
+        and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
-           and columns[6][2] == "BOOLEAN"
-           and columns[6][3] == 0
-           and columns[6][4] == "FALSE"
-           and columns[6][5] == 0)
+        and columns[6][2] == "BOOLEAN"
+        and columns[6][3] == 0
+        and columns[6][4] == "FALSE"
+        and columns[6][5] == 0)
     assert(columns[7][1] == "active"
-           and columns[7][2] == "VARCHAR(128)"
-           and columns[7][3] == 0
-           and columns[7][4] is None
-           and columns[7][5] == 0)
+        and columns[7][2] == "VARCHAR(128)"
+        and columns[7][3] == 0
+        and columns[7][4] is None
+        and columns[7][5] == 0)
 
     # Check that the teams table was created, and that it is empty
     cursor.execute("SELECT * FROM teams;")
@@ -153,20 +153,20 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(teams);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
-           and columns[0][3] == 1
-           and columns[0][4] is None
-           and columns[0][5] == 1)
+        and columns[0][2] == "INTEGER"
+        and columns[0][3] == 1
+        and columns[0][4] is None
+        and columns[0][5] == 1)
     assert(columns[1][1] == "session_id"
-           and columns[1][2] == "INTEGER"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 0)
+        and columns[1][2] == "INTEGER"
+        and columns[1][3] == 1
+        and columns[1][4] is None
+        and columns[1][5] == 0)
     assert(columns[2][1] == "name"
-           and columns[2][2] == "VARCHAR(128)"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 0)
+        and columns[2][2] == "VARCHAR(128)"
+        and columns[2][3] == 1
+        and columns[2][4] is None
+        and columns[2][5] == 0)
 
     # Check that the team_members table was created, and that it is empty
     cursor.execute("SELECT * FROM team_members;")
@@ -176,20 +176,20 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(team_members);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "tid"
-           and columns[0][2] == "INTEGER"
-           and columns[0][3] == 1
-           and columns[0][4] is None
-           and columns[0][5] == 1)
+        and columns[0][2] == "INTEGER"
+        and columns[0][3] == 1
+        and columns[0][4] is None
+        and columns[0][5] == 1)
     assert(columns[1][1] == "sid"
-           and columns[1][2] == "INTEGER"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 2)
+        and columns[1][2] == "INTEGER"
+        and columns[1][3] == 1
+        and columns[1][4] is None
+        and columns[1][5] == 2)
     assert(columns[2][1] == "session_id"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 3)
+        and columns[2][2] == "INTEGER"
+        and columns[2][3] == 1
+        and columns[2][4] is None
+        and columns[2][5] == 3)
 
     # Check that the table was created and that it is empty
     cursor.execute("SELECT * FROM removed_students;")
@@ -199,50 +199,50 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(removed_students);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
-           and columns[0][3] == 1
-           and columns[0][4] is None
-           and columns[0][5] == 1)
+        and columns[0][2] == "INTEGER"
+        and columns[0][3] == 1
+        and columns[0][4] is None
+        and columns[0][5] == 1)
     assert(columns[1][1] == "tid"
-           and columns[1][2] == "INTEGER"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 0)
+        and columns[1][2] == "INTEGER"
+        and columns[1][3] == 1
+        and columns[1][4] is None
+        and columns[1][5] == 0)
     assert(columns[2][1] == "session_id"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 2)
+        and columns[2][2] == "INTEGER"
+        and columns[2][3] == 1
+        and columns[2][4] is None
+        and columns[2][5] == 2)
     assert(columns[3][1] == "name"
-           and columns[3][2] == "VARCHAR(128)"
-           and columns[3][3] == 1
-           and columns[3][4] is None
-           and columns[3][5] == 0)
+        and columns[3][2] == "VARCHAR(128)"
+        and columns[3][3] == 1
+        and columns[3][4] is None
+        and columns[3][5] == 0)
     assert(columns[4][1] == "is_lead"
-           and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 0
-           and columns[4][4] == "FALSE"
-           and columns[4][5] == 0)
+        and columns[4][2] == "BOOLEAN"
+        and columns[4][3] == 0
+        and columns[4][4] == "FALSE"
+        and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
-           and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 0
-           and columns[5][4] == "FALSE"
-           and columns[5][5] == 0)
+        and columns[5][2] == "BOOLEAN"
+        and columns[5][3] == 0
+        and columns[5][4] == "FALSE"
+        and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
-           and columns[6][2] == "BOOLEAN"
-           and columns[6][3] == 0
-           and columns[6][4] == "FALSE"
-           and columns[6][5] == 0)
+        and columns[6][2] == "BOOLEAN"
+        and columns[6][3] == 0
+        and columns[6][4] == "FALSE"
+        and columns[6][5] == 0)
     assert(columns[7][1] == "active"
-           and columns[7][2] == "VARCHAR(128)"
-           and columns[7][3] == 0
-           and columns[7][4] is None
-           and columns[7][5] == 0)
+        and columns[7][2] == "VARCHAR(128)"
+        and columns[7][3] == 0
+        and columns[7][4] is None
+        and columns[7][5] == 0)
     assert(columns[8][1] == "removed_date"
-           and columns[8][2] == "DATETIME"
-           and columns[8][3] == 1
-           and columns[8][4] is None
-           and columns[8][5] == 0)
+        and columns[8][2] == "DATETIME"
+        and columns[8][3] == 1
+        and columns[8][4] is None
+        and columns[8][5] == 0)
 
     # Check if the reports table exists, and that it is empty
     cursor.execute("SELECT * FROM reports;")
@@ -265,110 +265,110 @@ def test_generate_tables():
            # index in the primary key, if it is one. If not, it is 0. # check if these are right
            and columns[0][5] == 0)
     assert(columns[1][1] == "session_id"
-           and columns[1][2] == "INTEGER"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 0)
+        and columns[1][2] == "INTEGER"
+        and columns[1][3] == 1
+        and columns[1][4] is None
+        and columns[1][5] == 0)
     assert(columns[2][1] == "reporting"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 1)
+        and columns[2][2] == "INTEGER"
+        and columns[2][3] == 1
+        and columns[2][4] is None
+        and columns[2][5] == 1)
     assert(columns[3][1] == "tid"
-           and columns[3][2] == "INTEGER"
-           and columns[3][3] == 1
-           and columns[3][4] is None
-           and columns[3][5] == 2)
+        and columns[3][2] == "INTEGER"
+        and columns[3][3] == 1
+        and columns[3][4] is None
+        and columns[3][5] == 2)
     assert(columns[4][1] == "report_for"
-           and columns[4][2] == "INTEGER"
-           and columns[4][3] == 1
-           and columns[4][4] is None
-           and columns[4][5] == 3)
+        and columns[4][2] == "INTEGER"
+        and columns[4][3] == 1
+        and columns[4][4] is None
+        and columns[4][5] == 3)
     assert(columns[5][1] == "tech_mastery"
-           and columns[5][2] == "INTEGER"
-           and columns[5][3] == 0
-           and columns[5][4] is None
-           and columns[5][5] == 0)
+        and columns[5][2] == "INTEGER"
+        and columns[5][3] == 0
+        and columns[5][4] is None
+        and columns[5][5] == 0)
     assert(columns[6][1] == "work_ethic"
-           and columns[6][2] == "INTEGER"
-           and columns[6][3] == 0
-           and columns[6][4] is None
-           and columns[6][5] == 0)
+        and columns[6][2] == "INTEGER"
+        and columns[6][3] == 0
+        and columns[6][4] is None
+        and columns[6][5] == 0)
     assert(columns[7][1] == "communication"
-           and columns[7][2] == "INTEGER"
-           and columns[7][3] == 0
-           and columns[7][4] is None
-           and columns[7][5] == 0)
+        and columns[7][2] == "INTEGER"
+        and columns[7][3] == 0
+        and columns[7][4] is None
+        and columns[7][5] == 0)
     assert(columns[8][1] == "cooperation"
-           and columns[8][2] == "INTEGER"
-           and columns[8][3] == 0
-           and columns[8][4] is None
-           and columns[8][5] == 0)
+        and columns[8][2] == "INTEGER"
+        and columns[8][3] == 0
+        and columns[8][4] is None
+        and columns[8][5] == 0)
     assert(columns[9][1] == "initiative"
-           and columns[9][2] == "INTEGER"
-           and columns[9][3] == 0
-           and columns[9][4] is None
-           and columns[9][5] == 0)
+        and columns[9][2] == "INTEGER"
+        and columns[9][3] == 0
+        and columns[9][4] is None
+        and columns[9][5] == 0)
     assert(columns[10][1] == "team_focus"
-           and columns[10][2] == "INTEGER"
-           and columns[10][3] == 0
-           and columns[10][4] is None
-           and columns[10][5] == 0)
+        and columns[10][2] == "INTEGER"
+        and columns[10][3] == 0
+        and columns[10][4] is None
+        and columns[10][5] == 0)
     assert(columns[11][1] == "contribution"
-           and columns[11][2] == "INTEGER"
-           and columns[11][3] == 0
-           and columns[11][4] is None
-           and columns[11][5] == 0)
+        and columns[11][2] == "INTEGER"
+        and columns[11][3] == 0
+        and columns[11][4] is None
+        and columns[11][5] == 0)
     assert(columns[12][1] == "leadership"
-           and columns[12][2] == "INTEGER"
-           and columns[12][3] == 0
-           and columns[12][4] is None
-           and columns[12][5] == 0)
+        and columns[12][2] == "INTEGER"
+        and columns[12][3] == 0
+        and columns[12][4] is None
+        and columns[12][5] == 0)
     assert(columns[13][1] == "organization"
-           and columns[13][2] == "INTEGER"
-           and columns[13][3] == 0
-           and columns[13][4] is None
-           and columns[13][5] == 0)
+        and columns[13][2] == "INTEGER"
+        and columns[13][3] == 0
+        and columns[13][4] is None
+        and columns[13][5] == 0)
     assert(columns[14][1] == "delegation"
-           and columns[14][2] == "INTEGER"
-           and columns[14][3] == 0
-           and columns[14][4] is None
-           and columns[14][5] == 0)
+        and columns[14][2] == "INTEGER"
+        and columns[14][3] == 0
+        and columns[14][4] is None
+        and columns[14][5] == 0)
     assert(columns[15][1] == "points"
-           and columns[15][2] == "INTEGER"
-           and columns[15][3] == 1
-           and columns[15][4] is None
-           and columns[15][5] == 0)
+        and columns[15][2] == "INTEGER"
+        and columns[15][3] == 1
+        and columns[15][4] is None
+        and columns[15][5] == 0)
     assert(columns[16][1] == "strengths"
-           and columns[16][2] == "VARCHAR(4096)"
-           and columns[16][3] == 0
-           and columns[16][4] is None
-           and columns[16][5] == 0)
+        and columns[16][2] == "VARCHAR(4096)"
+        and columns[16][3] == 0
+        and columns[16][4] is None
+        and columns[16][5] == 0)
     assert(columns[17][1] == "weaknesses"
-           and columns[17][2] == "VARCHAR(4096)"
-           and columns[17][3] == 0
-           and columns[17][4] is None
-           and columns[17][5] == 0)
+        and columns[17][2] == "VARCHAR(4096)"
+        and columns[17][3] == 0
+        and columns[17][4] is None
+        and columns[17][5] == 0)
     assert(columns[18][1] == "traits_to_work_on"
-           and columns[18][2] == "VARCHAR(4096)"
-           and columns[18][3] == 0
-           and columns[18][4] is None
-           and columns[18][5] == 0)
+        and columns[18][2] == "VARCHAR(4096)"
+        and columns[18][3] == 0
+        and columns[18][4] is None
+        and columns[18][5] == 0)
     assert(columns[19][1] == "what_you_learned"
-           and columns[19][2] == "VARCHAR(4096)"
-           and columns[19][3] == 0
-           and columns[19][4] is None
-           and columns[19][5] == 0)
+        and columns[19][2] == "VARCHAR(4096)"
+        and columns[19][3] == 0
+        and columns[19][4] is None
+        and columns[19][5] == 0)
     assert(columns[20][1] == "proud_of_accomplishment"
-           and columns[20][2] == "VARCHAR(4096)"
-           and columns[20][3] == 0
-           and columns[20][4] is None
-           and columns[20][5] == 0)
+        and columns[20][2] == "VARCHAR(4096)"
+        and columns[20][3] == 0
+        and columns[20][4] is None
+        and columns[20][5] == 0)
     assert(columns[21][1] == "is_final"
-           and columns[21][2] == "BOOLEAN"
-           and columns[21][3] == 1
-           and columns[21][4] is None
-           and columns[21][5] == 4)
+        and columns[21][2] == "BOOLEAN"
+        and columns[21][3] == 1
+        and columns[21][4] is None
+       and columns[21][5] == 4)
 
     # Check that the connection is closed
     connection.close()
