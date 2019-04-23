@@ -49,7 +49,7 @@ class teams(db.Model):
                 params = {'name':i[0], 'session_id': session_id}
                 result = engine.execute("select * from students where name = :name AND session_id = :session_id", params)
                 s = result.fetchone()
-                removed_student.addStudent(s)
+                removed_student.add_student(s)
               
         params = {'tid': tid, 'session_id': session_id}
         engine.execute("delete from students where tid = :tid AND session_id = :session_id", params)
@@ -99,7 +99,7 @@ class students(db.Model):
             params = {'name':i, 'tid':tid, 'session_id': session_id}
             result = engine.execute("select * from students where name = :name AND tid= :tid AND session_id = :session_id", params)
             s = result.fetchone()
-            removed_student.addStudent(s)
+            removed_student.add_student(s)
             # students.delete().where(students.id == s[3], students.session_id == session_id) 
             data = {'id':s[0], 'session_id': session_id}
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
@@ -125,7 +125,7 @@ class reports(db.Model):
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
 
-    def addStudent(self, s):
+    def add_student(self, s):
         if s is None:
             return False
         s = list(s)

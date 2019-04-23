@@ -1,25 +1,25 @@
 {% extends "layout.html" %}
 {% block content %}
 <!-- This is the input frontend where users can input information about recipes -->
-	<h3>Add Team</h3>
-	<div class="add-container">
-	<div class="input-card">
-		{% if error %}
-			<p><strong>Error:</strong> {{ error }}
-		{% endif %}
-		<form action="{{ url_for('addTeam') }}" method=POST>
-			<p class="heading">Team Name: <input type=text required='required' name=teamName></p>
-			<p><input class="my-btn" type=submit value='Add Team' style="
-				background-color: #b7c229;
-				color: white;
-				border: none;
-				border-radius:5px;
-				padding: 10px 20px;
-				cursor: pointer;"></p>	
-		</form>
-		
-		<a href="/dashboard/"><button class="my-btn">Cancel</button></a>
-	</div>
-	</div>
+    <h3>Add Team</h3>
+    <div class="add-container">
+    <div class="input-card">
+        {% if error %}
+            <p><strong>Error:</strong> {{ error }}
+        {% endif %}
+        <form action="{{ url_for('addTeam') }}" method=POST>
+            <p class="heading">Team Name: <input type=text required='required' name=teamName></p>
+            <p><input class="my-btn" type=submit value='Add Team' style="
+                background-color: #b7c229;
+                color: white;
+                border: none;
+                border-radius:5px;
+                padding: 10px 20px;
+                cursor: pointer;"></p>	
+        </form>
+        
+        <a href="/dashboard/"><button class="my-btn">Cancel</button></a>
+    </div>
+    </div>
 
 {% endblock %}
