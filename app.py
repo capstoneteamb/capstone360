@@ -29,7 +29,7 @@ app.add_url_rule('/',
 
 app.add_url_rule('/review/',
                 view_func=review.as_view('review'),
-                methods=['GET'])
+                methods=['GET', 'POST'])
 
 @app.route('/dashboard/')
 @app.route('/dashboard/', methods=['GET','POST'])
