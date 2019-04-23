@@ -1,5 +1,5 @@
 #This file operates the form that students will fill out to complete their 360 reviews.
-#It handles get and post requests 
+#It handles get and post requests for review.html.
 
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, abort
 from sqlalchemy import Date, DateTime
@@ -7,29 +7,42 @@ from flask.views import MethodView
 from datetime import datetime
 import gbmodel
 
-# forms -- both get and post handling
+# The review class handles get and post requests for review.html, and it includes helper functions for cleanliness
 class review(MethodView):
 
     # This will be changed to account for CAS log in
+    #input: only self
+    #output: the user's ID value
     def get_id(self):
         sdt_id = 38
         return sdt_id
 
-    #if need to abort, report an internal server error and print the error to the console
+    #If an unrecoverable error occurs and there is a need to abort, 
+    #report an internal server error and print the error to the console.
+    #As the code indicates, this should be reserved for internal errors. User
+    #error should not lead here.
+    #input: self and a string to report to the console
+    #output: none
     def display_error(self, err_str):
         print(err_str)
         abort(500)
 
+    #Converts strings to integers and tests if the input was an integer as expected.
+    #User textarea input from reviews should not come into this method.
+    #input: self and a number to be converted to the integer format
+    #output: the same number as an integer
     def convert_to_int(self, to_convert):
-        #see if input is an integer, if not display error to user
         try:
             to_convert = int(to_convert)
         except:
-            self.display_error('input is not a number')
+            self.display_error('Inpit which should have been a number is not a number')
 
         return to_convert
 
-
+    #This method returns the current user's capstone session id value while testing if the user
+    #exists in the database.
+    #input: only self
+    #output: An integer representing the user's capstone session id
     def get_cap(self):
         # query database to get capstone session id
         cap = 0
@@ -46,7 +59,10 @@ class review(MethodView):
 
         return cap
 
-
+    #This method returns the current user's team id value while testing if the user
+    #exists in the database.
+    #input: only self
+    #output: the user's tid as an integer
     def get_tid(self):
         #get the user's team id
         tid = 0
@@ -63,6 +79,9 @@ class review(MethodView):
 
         return tid
 
+    #This method queries the database to get the user's report state. It will test for any database errors.
+    #input: only self
+    #output: String -- The user's "active" attribute or 'Error' to indicate something went wrong (could be user error, thus no need to abort)
     def get_state(self):
         # query db for student's state
         try:
@@ -80,9 +99,12 @@ class review(MethodView):
         #return student state
         return sdt.active
 
+    #This method checks to ensure that the user trying to access the review exists and has an open review.
+    #Input: only self
+    #Output: A boolean indication for if the user was successfully confirmed (true) or not (false)
     def confirm_user(self):
         # check if the current user is found in the database
-        print('Need to confirm')
+        #need to implement with log in
 
         #check the user's active reports
         state = self.get_state()
@@ -95,6 +117,7 @@ class review(MethodView):
         if sdt is None:
             return False
         
+        #depending on the user's active state, check if the user is done or not
         done = 0
         if state == 'midterm':
             # check if already submitted
@@ -111,6 +134,10 @@ class review(MethodView):
         #no errors, so return true
         return True
 
+    #This method handles get requests to review.html. 
+    #Input: only self
+    #Output: rendering the review.html template with given conditions -- team members to displate, the student's open reports state,
+        #if there are any user input errors to report, and if there are any fatal errors to report as a result of user action.
     def get(self):
         #check if user exists
         test_user = self.confirm_user()
@@ -131,8 +158,13 @@ class review(MethodView):
         if state == 'Error':
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='There was an error while retrieving user information.')
         
+        #If all successful, render the page with team members and the state
         return render_template('review.html', mems=mems, state=state, input_error = None, fatal_error=None)
 
+    #This method handles post requests from review.html. 
+    #Input: only self
+    #Output: rendering the review.html template with errors reported to the user or rendering the success page to indicate
+        #the user was successful in submitting their reform
     def post(self):
         #check if user exists
         test_user = self.confirm_user()
@@ -148,22 +180,26 @@ class review(MethodView):
         except:
             return render_template('review.html', mems=None, state=None, input_error = None, fatal_error='There was an error while retrieving user team members.')
 
+        #get student's cid
         cid = self.get_cap()
 
-        lst = []
+        #generate a list of the DB ids for students on the team
+        id_list = []
         for mem in mems:
             if mem is not None:
-                lst.append(mem.id)
+                id_list.append(mem.id)
 
         # check points total
         total = 0
         points_pass = True
 
-        for j in lst:
+        #check that conditions for points match requirements
+        for j in id_list:
             #check points for being in bounds and adding to 100
             points = request.form[('points_' + str(j))]
             try:
                 try:
+                    #ensure that points are all integers
                     points = int(points)
                 except ValueError:
                     flash('points must be an integer')
@@ -181,12 +217,14 @@ class review(MethodView):
             except ValueError:
                 self.display_error('Invalid input for points')
 
+        #check that total is 100
         if total != 100:
             flash('Points total must be 100')
             points_pass = False
 
+        #get form inputs and submit to the database
         if points_pass == True:
-            for i in lst:
+            for i in id_list:
                 # Get each radio input and verify that it's an integer, give an error if not
                 tech = request.form[('tm_' + str(i))]
                 tech = self.convert_to_int(tech)
@@ -257,6 +295,7 @@ class review(MethodView):
                     # for midterm set final to false
                     is_final = 1
 
+                #generate the python object to use for database submission
                 report = gbmodel.reports()
                 report.session_id = cid
                 report.time = datetime.now()
@@ -283,6 +322,7 @@ class review(MethodView):
                 
                 gbmodel.db_session.add(report)
 
+            #attempt to submit to the database
             try:
                 sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=self.get_id()).first()
 
