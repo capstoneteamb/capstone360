@@ -1,4 +1,4 @@
-# main file for server management
+# main file for server management --- Do we still need this?
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy

@@ -18,19 +18,19 @@ class AddStudent(MethodView):
         session = gbmodel.capstone_session()
         student = gbmodel.students()
 
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
+        current_date = datetime.datetime.now()
+        month = int(current_date.month) 
+        year = current_date.year
         if month in range (9, 11):   term = "Fall"
         elif month in range (3,5):   term = "Spring"
         elif month in range (6,8):   term = "Summer"
         else:                        term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
+        session_id = session.get_session_id(term, year)
         teamName = request.form.get('teamName')
         t_name = teamName.replace("_", " ")
-        while student.check_dup_student(request.form['studentID'], sessionID):
-            student.insert_student(request.form['student_name'], request.form['studentID'], sessionID, t_name)
+        while student.check_dup_student(request.form['studentID'], session_id):
+            student.insert_student(request.form['student_name'], request.form['studentID'], session_id, t_name)
             lists = dashboard.get()
             return render_template('dashboard.html', lists = lists)
         error = "Student id "+ str(request.form['studentID']) + " already exists"
@@ -46,17 +46,17 @@ class AddTeam(MethodView):
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
         error = None
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
+        current_date = datetime.datetime.now()
+        month = int(current_date.month) 
+        year = current_date.year
         if month in range (9, 11):   term = "Fall"
         elif month in range (3,5):   term = "Spring"
         elif month in range (6,8):   term = "Summer"
         else:                        term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
-        while team.check_dup_team(request.form['teamName'], sessionID):
-            team.insert_team(sessionID,request.form['teamName']) 
+        session_id = session.get_session_id(term, year)
+        while team.check_dup_team(request.form['teamName'], session_id):
+            team.insert_team(session_id,request.form['teamName']) 
             lists = dashboard.get()
             return render_template('dashboard.html', lists = lists) 
         error = "Team name already exists"
