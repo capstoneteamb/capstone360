@@ -24,17 +24,17 @@ class RemoveStudent(MethodView):
         sessionID = session.getSessionID(term, year)
 
         students = request.form.getlist('removedStudent')
-        tName = request.form.get('teamName')  
-        student.removeStudent(students, tName, sessionID)
+        t_name = request.form.get('teamName')  
+        student.remove_student(students, t_name, sessionID)
         lists = removeDashboard.get_rm()
         return render_template('removeDashboard.html', lists = lists) 
 
 
 class RemoveTeam(MethodView):
     def get(self):
-        tName = request.args.get('data')
-        tName = tName.replace(" ", "_")
-        return render_template('removeTeam.html', tName = tName)
+        t_name = request.args.get('data')
+        t_name = t_name.replace(" ", "_")
+        return render_template('removeTeam.html', t_name = t_name)
 
     def post(self):
         """
@@ -55,8 +55,8 @@ class RemoveTeam(MethodView):
 
         sessionID = session.getSessionID(term, year)
 
-        tName = request.form.get('teamName')
-        tName = tName.replace("_", " ")
-        team.removeTeam(tName, sessionID)
+        t_name = request.form.get('teamName')
+        t_name = t_name.replace("_", " ")
+        team.remove_team(t_name, sessionID)
         lists = removeDashboard.get_rm()
         return render_template('removeDashboard.html', lists = lists)
