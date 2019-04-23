@@ -7,10 +7,10 @@
 			<p><strong>Error:</strong> {{ error }}
 		{% endif %}
 		<form action="{{ url_for('addStudent') }}" method=POST>
-			<p class="heading">Student Name: <input type=text required='required' name=studentName></p>
+			<p class="heading">Student Name: <input type=text required='required' name=student_name></p>
 			<p class="heading">Student ID: <input type=text required='required' name=studentID></p>
-			<p class="heading" style="display: inline-block;">Team Name: {{tName}}</p> 
-			<input type="hidden" value={{tName}} name=teamName>
+			<p class="heading" style="display: inline-block;">Team Name: {{t_name}}</p> 
+			<input type="hidden" value={{t_name}} name=teamName>
 			
 			<p><input class="my-btn" type=submit value='Add Student' style="
 					background-color: #b7c229;

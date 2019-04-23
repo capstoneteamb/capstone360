@@ -7,7 +7,7 @@ import datetime
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
 
-    def getMaxTeamID(self):
+    def get_max_team_id(self):
         max_id = engine.execute('select max(id) from teams ')
         max_id = max_id.fetchone()
         if max_id[0] is None:
@@ -15,26 +15,26 @@ class teams(db.Model):
         else:
             return max_id[0] + 1
             
-    def checkDupTeam(self, tName, sessionID):
-        params = {'name': tName, 'session_id': sessionID}
+    def check_dup_team(self, t_name, session_id):
+        params = {'name': t_name, 'session_id': session_id}
         result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)
         result = result.fetchone()
         if result is not None:
             return False
         return True
 
-    def insertTeam(self, session_id, tName):
-        id = self.getMaxTeamID()
-        new_team = teams(id=id,session_id=session_id,name=tName)
+    def insert_team(self, session_id, t_name):
+        id = self.get_max_team_id()
+        new_team = teams(id=id,session_id=session_id,name=t_name)
         db.session.add(new_team)
         db.session.commit()
 
-    def getTeam_sessionID(self, session_id):
+    def get_team_session_id(self, session_id):
         result = engine.execute('select * from teams where session_id = :session_id', session_id)
         teams = result.fetchall()
         return teams
 
-    def removeTeam(self, name, session_id):
+    def remove_team(self, name, session_id):
         student = students()
         removed_student = removed_students()
         params = {'name': name, 'session_id': session_id}
@@ -42,7 +42,7 @@ class teams(db.Model):
         id = result.fetchone()
         tid = id[0]
         params = {'tid':tid, 'session_id':session_id}
-        list_students = student.getStudents(tid, session_id)
+        list_students = student.get_students(tid, session_id)
         print(list_students)
         if list_students is not None:      
             for i in list_students:
@@ -59,7 +59,7 @@ class teams(db.Model):
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
 
-    def checkDupStudent(self, id, session_id):
+    def check_dup_student(self, id, session_id):
         params = {'id': id, 'session_id': session_id}
         result = engine.execute('select * from students where id = :id and session_id = :session_id', params)
         result = result.fetchone()
@@ -67,9 +67,9 @@ class students(db.Model):
             return False
         return True
 
-    def insertStudent(self, name, id, session_id, tname):
-        params = {'name': tname, 'session_id': session_id}
-        if not self.checkDupStudent(id, session_id):
+    def insert_student(self, name, id, session_id, t_name):
+        params = {'name': t_name, 'session_id': session_id}
+        if not self.check_dup_student(id, session_id):
             return False
         result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
         tid = result.fetchone()
@@ -79,17 +79,17 @@ class students(db.Model):
         db.session.commit()
         return True
     
-    def getStudents(self, tid, sessionID):
+    def get_students(self, tid, sessionID):
         data = {'tid': tid, 'session_id': sessionID}
         result = engine.execute('select name from students where tid =:tid and session_id = :session_id', data)
         names = result.fetchall()
         return names
 
-    def removeStudent(self, sts, tName, session_id):
-        if tName is None:
+    def remove_student(self, sts, t_name, session_id):
+        if t_name is None:
             return False
         removed_student = removed_students()
-        params = {'name': tName, 'session_id': session_id}
+        params = {'name': t_name, 'session_id': session_id}
         result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
         id = result.fetchone()
         tid = id[0] 

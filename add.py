@@ -6,9 +6,9 @@ import dashboard
 
 class AddStudent(MethodView):
     def get(self):
-        tName = request.args.get('data')
-        tName = tName.replace(" ", "_")
-        return render_template('addStudent.html', tName = str(tName), error=None)
+        t_name = request.args.get('data')
+        t_name = t_name.replace(" ", "_")
+        return render_template('addStudent.html', t_name = str(t_name), error=None)
 
     def post(self):
         """
@@ -28,13 +28,13 @@ class AddStudent(MethodView):
 
         sessionID = session.getSessionID(term, year)
         teamName = request.form.get('teamName')
-        tName = teamName.replace("_", " ")
-        while student.checkDupStudent(request.form['studentID'], sessionID):
-            student.insertStudent(request.form['studentName'], request.form['studentID'], sessionID, tName)
+        t_name = teamName.replace("_", " ")
+        while student.check_dup_student(request.form['studentID'], sessionID):
+            student.insert_student(request.form['student_name'], request.form['studentID'], sessionID, t_name)
             lists = dashboard.get()
             return render_template('dashboard.html', lists = lists)
         error = "Student id "+ str(request.form['studentID']) + " already exists"
-        return render_template('addStudent.html', tName = teamName, error=error)
+        return render_template('addStudent.html', t_name = teamName, error=error)
 
 
 class AddTeam(MethodView):
@@ -55,8 +55,8 @@ class AddTeam(MethodView):
         else:                        term = "Winter"
 
         sessionID = session.getSessionID(term, year)
-        while team.checkDupTeam(request.form['teamName'], sessionID):
-            team.insertTeam(sessionID,request.form['teamName']) 
+        while team.check_dup_team(request.form['teamName'], sessionID):
+            team.insert_team(sessionID,request.form['teamName']) 
             lists = dashboard.get()
             return render_template('dashboard.html', lists = lists) 
         error = "Team name already exists"

@@ -21,12 +21,12 @@ def get():
 
     # What if we don't have any session for this year/term?
     sessionID = session.getSessionID(term, year)
-    tids = [row[0] for row in team.getTeam_sessionID(sessionID)]
-    teamNames = [row[2] for row in team.getTeam_sessionID(sessionID)]
+    tids = [row[0] for row in team.get_team_session_id(sessionID)]
+    teamNames = [row[2] for row in team.get_team_session_id(sessionID)]
     lists = [[] for _ in range(len(tids))]
     
     for i in range(len(tids)):
-        names = student.getStudents(tids[i], sessionID)
+        names = student.get_students(tids[i], sessionID)
         temp = [teamNames[i]]
         for name in names:
             temp.append(name[0])
