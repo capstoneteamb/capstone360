@@ -1,5 +1,5 @@
-# This file operates the form that students will fill out to complete their 
-# 360 reviews.
+# This file operates the form that students will fill out to
+# complete their 360 reviews.
 # It handles get and post requests for review.html.
 
 from flask import flash, render_template, request, abort
@@ -21,7 +21,7 @@ class review(MethodView):
         sdt_id = 38
         return sdt_id
 
-    # If an unrecoverable error occurs and there is a need to abort, 
+    # If an unrecoverable error occurs and there is a need to abort,
     # report an internal server error and print the error to the console.
     # As the code indicates, this should be reserved for internal errors. User
     # error should not lead here.
@@ -55,7 +55,7 @@ class review(MethodView):
             sdt = students.query.filter_by(id=self.get_id()).first()
         except SQLAlchemyError:
             self.display_error('student look up error - capstone')
-        
+
         # get capstone session id
         cap = sdt.session_id
         if cap is None:
@@ -63,7 +63,7 @@ class review(MethodView):
 
         return cap
 
-    # This method returns the current user's team id value while testing if 
+    # This method returns the current user's team id value while testing if
     # the user exists in the database.
     # input: only self
     # output: the user's tid as an integer
@@ -83,10 +83,10 @@ class review(MethodView):
 
         return tid
 
-    # This method queries the database to get the user's report state. It will 
+    # This method queries the database to get the user's report state. It will
     # test for any database errors.
     # input: only self
-    # output: String -- The user's "active" attribute or 'Error' to indicate 
+    # output: String -- The user's "active" attribute or 'Error' to indicate
     # something went wrong (could be user error, thus no need to abort)
     def get_state(self):
         # query db for student's state
@@ -96,19 +96,19 @@ class review(MethodView):
         except SQLAlchemyError:
             print('Student Look Up Error - Get State')
             return 'Error'
-        
+
         # Check if there isn't a student
         if sdt is None:
             print('Student Was None in Get State')
             return 'Error'
-        
+
         # return student state
         return sdt.active
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
     # Input: only self
-    # Output: A boolean indication for 
+    # Output: A boolean indication for
     # if the user was successfully confirmed (true) or not (false)
     def confirm_user(self):
         # check if the current user is found in the database
@@ -121,10 +121,10 @@ class review(MethodView):
 
         students = gbmodel.students()
         sdt = students.query.filter_by(id=self.get_id()).first()
-        
+
         if sdt is None:
             return False
-        
+
         # depending on the user's active state, check if the user is done
         done = 0
         if state == 'midterm':
@@ -142,9 +142,9 @@ class review(MethodView):
         # no errors, so return true
         return True
 
-    # This method handles get requests to review.html. 
+    # This method handles get requests to review.html.
     # Input: only self
-    # Output: rendering the review.html template with given conditions -- 
+    # Output: rendering the review.html template with given conditions --
     # team members to displate, the student's open reports state,
     # if there are any user input errors to report, and if there are
     # any fatal errors to report as a result of user action.
@@ -152,58 +152,15 @@ class review(MethodView):
         # check if user exists
         test_user = self.confirm_user()
         if test_user is False:
-            return render_template('review.html', 
-                                   mems=None, 
+            return render_template('review.html',
+                                   mems=None,
                                    state=None,
-                                   input_error=None, 
+                                   input_error=None,
                                    fatal_error='You have no open reviews.')
 
         # get user's team id
         tid = self.get_tid()
-        
-        # get user's team members
-        try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
-        except SQLAlchemyError:
-            return render_template('review.html',
-                                   mems=None, 
-                                   state=None, 
-                                   input_error=None, 
-                                   fatal_error='There was an error while retrieving user team members.')
 
-        # get user's state of open/closed reports
-        state = self.get_state()
-        if state == 'Error':
-            return render_template('review.html', 
-                                   mems=None, 
-                                   state=None, 
-                                   input_error=None, 
-                                   fatal_error='There was an error while retrieving user information.')
-        
-        # If all successful, render the page with team members and the state
-        return render_template('review.html',
-                               mems=mems, 
-                               state=state, 
-                               input_error=None, 
-                               fatal_error=None)
-
-    # This method handles post requests from review.html. 
-    # Input: only self
-    # Output: rendering the review.html template with errors reported to the user or rendering the success page to indicate
-        # the user was successful in submitting their reform
-    def post(self):
-        # check if user exists
-        test_user = self.confirm_user()
-        if test_user is False:
-            return render_template('review.html',
-                                   mems=None, 
-                                   state=None, 
-                                   input_error=None, 
-                                   fatal_error='You have no open reviews.')
-
-        # get user's team id
-        tid = self.get_tid()
-        
         # get user's team members
         try:
             mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
@@ -214,10 +171,54 @@ class review(MethodView):
                                    input_error=None,
                                    fatal_error='There was an error while retrieving user team members.')
 
-        #get student's cid
+        # get user's state of open/closed reports
+        state = self.get_state()
+        if state == 'Error':
+            return render_template('review.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='There was an error while retrieving user information.')
+
+        # If all successful, render the page with team members and the state
+        return render_template('review.html',
+                               mems=mems,
+                               state=state,
+                               input_error=None,
+                               fatal_error=None)
+
+    # This method handles post requests from review.html.
+    # Input: only self
+    # Output: rendering the review.html template with errors reported
+    #  to the user or rendering the success page to indicate
+        # the user was successful in submitting their reform
+    def post(self):
+        # check if user exists
+        test_user = self.confirm_user()
+        if test_user is False:
+            return render_template('review.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='You have no open reviews.')
+
+        # get user's team id
+        tid = self.get_tid()
+
+        # get user's team members
+        try:
+            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+        except SQLAlchemyError:
+            return render_template('review.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='There was an error while retrieving user team members.')
+
+        # get student's cid
         cid = self.get_cap()
 
-        #generate a list of the DB ids for students on the team
+        # generate a list of the DB ids for students on the team
         id_list = []
         for mem in mems:
             if mem is not None:
@@ -240,7 +241,7 @@ class review(MethodView):
                     points_pass = False
 
                 if points_pass is True:
-                    
+                    # add up the total points
                     total = total + points
 
                     if int(j) == self.get_id():
@@ -363,7 +364,8 @@ class review(MethodView):
                     self.display_error('user not found in database when trying to submit report')
 
                 state = sdt.active
-                
+
+                # check state
                 if state == 'midterm':
                     # check if already submitted
                     sdt.midterm_done = 1
@@ -378,5 +380,5 @@ class review(MethodView):
                 self.display_error('submission error')
 
             return render_template('submitted.html')
-    
+
         return render_template('review.html', mems=mems, state=self.get_state(), input_error=True, fatal_error=None)
