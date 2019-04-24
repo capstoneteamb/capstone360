@@ -89,6 +89,15 @@ class students(db.Model):
         names = result.fetchall()
         return names
 
+    # Used the documentation here as reference: https://docs.sqlalchemy.org/en/13/orm/tutorial.html
+    def getStudent(self, given_name, given_session_id):
+        results = students.query().filter(name==given_name, session_id==session_id).all()
+        if len(results) != 1:
+            print("getStudentError: multiple students with the same name and session")
+            return None
+        else:
+            return results[0]
+
     def remove_student(self, sts, t_name, session_id):
         if t_name is None:
             return False
