@@ -2,6 +2,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 from sqlalchemy import Date, DateTime
 from datetime import datetime
 import gbmodel
+from flask_cas import login_required
 
 # form blueprint
 form_bp = Blueprint('form', __name__, url_prefix='/form')
@@ -109,6 +110,7 @@ def getCap():
 
 # forms -- both get and post handling
 @form_bp.route('/review', methods=('GET', 'POST'))
+@login_required
 def review():
     if request.method == 'GET':
         #check if user exists

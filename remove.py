@@ -3,8 +3,10 @@ from flask.views import MethodView
 import removeDashboard
 import gbmodel
 import datetime
+from flask_cas import login_required
 
 class RemoveStudent(MethodView):
+    @login_required
     def get(self):       
         return render_template('removeStudent.html')
 

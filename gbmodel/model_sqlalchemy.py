@@ -105,6 +105,14 @@ class students(db.Model):
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
             # consider another statement to remove the student entry from the team_members table
         return True
+    
+    #validate cas username with student name in database for testing purposes only
+    #will use id later
+    def validate(self, username):
+        params = {'name' :username}
+        result = engine.execute('select name from students where name = :name', params)
+        result = result.fetchone()
+        return result
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']

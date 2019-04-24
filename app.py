@@ -14,6 +14,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from form import form_bp
+from flask_cas import CAS
+from flask_cas import login_required
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capstone360.db'
@@ -24,21 +26,36 @@ db = SQLAlchemy(app)
 db.Model.metadata.reflect(db.engine)
 db_session = scoped_session(sessionmaker(bind=engine))
 
+#CAS LOGIN
+cas = CAS()
+cas.init_app(app)
+app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
+app.config['CAS_AFTER_LOGIN'] = 'dashboard'
+app.config['CAS_AFTER_LOGOUT'] = 'logout'
+
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
 
 #form blueprint, can change to url_rules without blueprint if desired
 app.register_blueprint(form_bp)
 
-@app.route('/dashboard/')
 @app.route('/dashboard/', methods=['GET','POST'])
+@login_required
 def get():
     lists = dashboard.get()
+    print(lists)
+    if lists is False:
+        return render_template('index.html')
     sessions = {'first','second'}
-    return render_template('dashboard.html', lists = lists, sessions=sessions)  
+    return render_template('dashboard.html', lists = lists, sessions=sessions)
 
-@app.route('/removeDashboard/')
+@app.route('/logout/')
+def logged_out():
+    # return redirect (url_for('index'))
+    return render_template('index.html')
+
 @app.route('/removeDashboard/', methods=['GET','POST'])
+@login_required
 def get_rm():
     lists = removeDashboard.get_rm()
     return render_template('removeDashboard.html', lists = lists)
