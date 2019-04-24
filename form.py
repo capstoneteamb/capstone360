@@ -209,9 +209,9 @@ class review(MethodView):
             mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
         except SQLAlchemyError:
             return render_template('review.html',
-                                   mems=None, 
-                                   state=None, 
-                                   input_error=None, 
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
                                    fatal_error='There was an error while retrieving user team members.')
 
         #get student's cid
@@ -302,7 +302,7 @@ class review(MethodView):
 
                     dlg = request.form[('d_' + str(i))]
                     dlg = self.convert_to_int(dlg)
-  
+
                 # Get string inputs
                 strn = request.form[('str_' + str(i))]
                 wkn = request.form[('wkn_' + str(i))]
@@ -352,7 +352,7 @@ class review(MethodView):
                 report.what_you_learned = learned
                 report.proud_of_accomplishment = proud
                 report.is_final = is_final
-                
+
                 gbmodel.db_session.add(report)
 
             # attempt to submit to the database
@@ -376,7 +376,7 @@ class review(MethodView):
                 gbmodel.db_session.commit()
             except SQLAlchemyError:
                 self.display_error('submission error')
-                    
+
             return render_template('submitted.html')
     
         return render_template('review.html', mems=mems, state=self.get_state(), input_error=True, fatal_error=None)
