@@ -2,25 +2,33 @@
 {% block menu %}
 <div class="container nav-container">
         <div class="row nav">
-            <div class="col-sm">Term</div>
-            <div class="col-sm">Edit</div>
+            <div class="col-sm">Sessions 
+                <select name="selected_session">
+                    {% for i in session %}
+                        <option value= "{{i}}">{{i}}</option>
+                    {% endfor %}
+                </select>
+            </div> 
+            <a class="col-sm edit-btn">
+            <div>Edit</div>
+            </a>
             <div class="col-sm">Generate Reports</div>
             <a class="col-sm" href="{{ url_for('index')}}">
                 <div>Logout</div>
             </a>
         </div>
-        <div class="row button">
+        <div class="row button sub-buttons">
             <div class="col-sm"></div>
             <div class="col-sm"></div>
             <div class="col-sm">
-                <a href=""><button class="my-btn">Add Team</button></a>
+                <a href="{{ url_for('addTeam')}}"><button class="my-btn">Add Team</button></a>
             </div>
             <div class="col-sm">
-                <a href="{{ url_for('dashboard')}}"><button class="my-btn"
+                <a href="/removeDashboard"><button class="my-btn"
                         style="background-color: #ff9e16">Remove</button></a>
             </div>
             <div class="col-sm">
-                <a href="{{ url_for('dashboard')}}"><button class="my-btn">Cancel</button></a>
+                <a href="/dashboard"><button class="my-btn">Cancel</button></a>
             </div>
             <div class="col-sm"></div>
             <div class="col-sm"></div>

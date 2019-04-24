@@ -1,12 +1,10 @@
 from flask import redirect, request, url_for, render_template
 from flask.views import MethodView
-import datetime
 import gbmodel
+import datetime
 
-def get():
-    """
-    get data from model
-    """
+
+def get_rm():
     currentDate = datetime.datetime.now()
     month = int(currentDate.month)
     
@@ -19,7 +17,6 @@ def get():
     team = gbmodel.teams()
     student = gbmodel.students()
 
-    # What if we don't have any session for this year/term?
     sessionID = session.getSessionID(term, year)
     tids = [row[0] for row in team.getTeam_sessionID(sessionID)]
     teamNames = [row[2] for row in team.getTeam_sessionID(sessionID)]
@@ -32,3 +29,5 @@ def get():
             temp.append(name[0])
         lists[i] = temp
     return lists 
+    
+
