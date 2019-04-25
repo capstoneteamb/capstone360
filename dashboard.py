@@ -32,3 +32,6 @@ def get():
             temp.append(name[0])
         lists[i] = temp
     return lists 
+
+def choice_query():
+    return gbmodel.capstone_session.get_all_sessions()

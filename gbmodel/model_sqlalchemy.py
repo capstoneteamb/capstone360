@@ -109,6 +109,10 @@ class students(db.Model):
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
+    def get_all_sessions():
+        all_sessions = engine.execute("select * from capstone_session")
+        return all_sessions
+
     def getSessionID(self, term, year):
         #id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()    
         ses_id = capstone_session.query.filter_by(start_term = term, start_year = year).first()

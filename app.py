@@ -31,10 +31,13 @@ app.add_url_rule('/',
 app.register_blueprint(form_bp)
 
 @app.route('/dashboard/')
-@app.route('/dashboard/', methods=['GET','POST'])
+@app.route('/dashboard', methods=['GET','POST'])
 def get():
+    if request.method == 'POST':
+        current_session = request.form.get('selected_session') #stores the selected session from dropdown
+        print(current_session)
     lists = dashboard.get()
-    sessions = {'first','second'}
+    sessions = dashboard.choice_query()
     return render_template('dashboard.html', lists = lists, sessions=sessions)  
 
 @app.route('/removeDashboard/')

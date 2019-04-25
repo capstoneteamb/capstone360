@@ -3,11 +3,15 @@
 <div class="container nav-container">
         <div class="row nav">
             <div class="col-sm">Sessions 
-                <select name="selected_session">
-                    {% for i in session %}
-                        <option value= "{{i}}">{{i}}</option>
-                    {% endfor %}
-                </select>
+                <form id="myform" action="/dashboard" method="POST">
+                    <select name="selected_session">
+                            <option value="none">Select Term</option>
+                        {% for i in sessions %}
+                            <option value= "{{i.id}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="Submit" name="session_id" class="my-btn">
+                </form>
             </div> 
             <a class="col-sm edit-btn">
             <div>Edit</div>
