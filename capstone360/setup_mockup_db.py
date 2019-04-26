@@ -100,7 +100,7 @@ def generate_student_data():
                          + ".notreal@pdx.edu")
 
         # Get student id
-        student_id = id_num
+        student_id = str(id_num)
         id_num = id_num + 1
 
         # Add Data To List
@@ -128,7 +128,7 @@ def generate_tables(cursor):
 
     # Create Students Table
     cursor.execute(('CREATE TABLE students( '
-                    'id INTEGER NOT NULL, '
+                    'id VARCHAR(128) NOT NULL, '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL, '
@@ -141,7 +141,7 @@ def generate_tables(cursor):
     # Create Team Members table
     cursor.execute(('CREATE TABLE team_members( '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
-                    'sid INTEGER NOT NULL REFERENCES students(id), '
+                    'sid VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'PRIMARY KEY (tid, sid, session_id) );'))
 
@@ -149,9 +149,9 @@ def generate_tables(cursor):
     cursor.execute(('CREATE TABLE reports('
                     'time DATETIME NOT NULL, '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
-                    'reporting INTEGER NOT NULL REFERENCES students(id), '
+                    'reporting VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
-                    'report_for INTEGER NOT NULL REFERENCES students(id), '
+                    'report_for VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'tech_mastery INTEGER NULL, '
                     'work_ethic INTEGER NULL, '
                     'communication INTEGER NULL, '
@@ -173,7 +173,7 @@ def generate_tables(cursor):
 
     # Create removed students table
     cursor.execute(('CREATE TABLE removed_students( '
-                    'id INTEGER NOT NULL, '
+                    'id VARCHAR(128) NOT NULL, '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL , '
@@ -249,14 +249,14 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
 
         # Put data into the students, teams, team members, and reports tables
         for student in student_data:
-            student_id = student["id"] + (len(student_data) * session_id)
-            team_id = student["id"] % num_teams + (num_teams * session_id)
+            student_id = int(student["id"]) + (len(student_data) * session_id)
+            team_id = int(student["id"]) % num_teams + (num_teams * session_id)
 
             # Figure out if student is team lead
             # The conditional will be true if the current student is the first one on the team. If they are
             # the first one, they are the team lead
             is_team_lead = False
-            if (student["id"] < num_teams):
+            if (int(student["id"]) < num_teams):
                 is_team_lead = True
 
             # Add student to the students table
