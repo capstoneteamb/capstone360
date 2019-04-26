@@ -137,13 +137,6 @@ def generate_tables(cursor):
                     'active VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
-    # Create Team Members table
-    cursor.execute(('CREATE TABLE team_members( '
-                    'tid INTEGER NOT NULL REFERENCES teams(id), '
-                    'sid VARCHAR(128) NOT NULL REFERENCES students(id), '
-                    'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
-                    'PRIMARY KEY (tid, sid, session_id) );'))
-
     # Create Reports table
     cursor.execute(('CREATE TABLE reports('
                     'time DATETIME NOT NULL, '
@@ -247,7 +240,7 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             session_id,
                             "Team " + str(team_number)))
 
-        # Put data into the students, teams, team members, and reports tables
+        # Put data into the students and teams tables
         for student in student_data:
             student_id = int(student["id"]) + (len(student_data) * session_id)
             team_id = int(student["id"]) % num_teams + (num_teams * session_id)
@@ -269,10 +262,6 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             False,
                             False,
                             'midterm'))
-
-            # Add student to the team members table
-            cursor.execute('INSERT INTO team_members VALUES(?,?,?)',
-                           (team_id, student_id, session_id))
 
 
 def run():

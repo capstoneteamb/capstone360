@@ -168,29 +168,6 @@ def test_generate_tables():
            and columns[2][4] is None
            and columns[2][5] == 0)
 
-    # Check that the team_members table was created, and that it is empty
-    cursor.execute("SELECT * FROM team_members;")
-    assert (not cursor.fetchall())
-
-    # Now check that the columns of the table are what we expect them to be
-    cursor.execute("PRAGMA table_info(team_members);")
-    columns = cursor.fetchall()
-    assert(columns[0][1] == "tid"
-           and columns[0][2] == "INTEGER"
-           and columns[0][3] == 1
-           and columns[0][4] is None
-           and columns[0][5] == 1)
-    assert(columns[1][1] == "sid"
-           and columns[1][2] == "VARCHAR(128)"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 2)
-    assert(columns[2][1] == "session_id"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 3)
-
     # Check that the table was created and that it is empty
     cursor.execute("SELECT * FROM removed_students;")
     assert (not cursor.fetchall())
@@ -426,23 +403,6 @@ def test_fill_tables_with_data():
         # student[0] = (student) id of the current student
         assert (student[0] not in student_ids)
         student_ids.append(student[0])
-
-    # Verify the data in the team_members table is correct
-    # May need to come back and clarify -- the comments are a bit vague
-    cursor.execute("SELECT * FROM team_members;")
-    team_members = cursor.fetchall()
-    for team_member in team_members:
-        # Verify that the team id is valid
-        # team_member[0] = the team id associated with the given table entry
-        assert (team_member[0] in team_ids)
-
-        # Verify that the student id is valid
-        # team_member[1] = student id associated with the given table entry
-        assert (team_member[1] in student_ids)
-
-        # Verify that the session_id exists
-        # team_member[2] = session_id associated with the given table entry
-        assert (team_member[2] in session_ids)
 
     # Verify the data in the reports table is correct
     # Might want to change comments here as well

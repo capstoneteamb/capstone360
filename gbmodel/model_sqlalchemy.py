@@ -106,7 +106,6 @@ class students(db.Model):
             removed_student.add_student(s)
             data = {'id': s[0], 'session_id': session_id}
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
-            # consider another statement to remove the student entry from the team_members table
         return True
 
     # validate cas username with student id in the database
@@ -174,10 +173,6 @@ class capstone_session(db.Model):
             temp = str(i.start_term) + " - " + str(i.start_year)
             lists.append(temp)
         return lists
-
-
-class team_members(db.Model):
-    __table__ = db.Model.metadata.tables['team_members']
 
 
 class reports(db.Model):
