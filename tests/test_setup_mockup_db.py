@@ -105,7 +105,7 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(students);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
+           and columns[0][2] == "VARCHAR(128)"
            and columns[0][3] == 1
            and columns[0][4] is None
            and columns[0][5] == 1)
@@ -181,7 +181,7 @@ def test_generate_tables():
            and columns[0][4] is None
            and columns[0][5] == 1)
     assert(columns[1][1] == "sid"
-           and columns[1][2] == "INTEGER"
+           and columns[1][2] == "VARCHAR(128)"
            and columns[1][3] == 1
            and columns[1][4] is None
            and columns[1][5] == 2)
@@ -199,7 +199,7 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(removed_students);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
+           and columns[0][2] == "VARCHAR(128)"
            and columns[0][3] == 1
            and columns[0][4] is None
            and columns[0][5] == 1)
@@ -270,7 +270,7 @@ def test_generate_tables():
            and columns[1][4] is None
            and columns[1][5] == 0)
     assert(columns[2][1] == "reporting"
-           and columns[2][2] == "INTEGER"
+           and columns[2][2] == "VARCHAR(128)"
            and columns[2][3] == 1
            and columns[2][4] is None
            and columns[2][5] == 1)
@@ -280,7 +280,7 @@ def test_generate_tables():
            and columns[3][4] is None
            and columns[3][5] == 2)
     assert(columns[4][1] == "report_for"
-           and columns[4][2] == "INTEGER"
+           and columns[4][2] == "VARCHAR(128)"
            and columns[4][3] == 1
            and columns[4][4] is None
            and columns[4][5] == 3)
