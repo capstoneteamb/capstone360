@@ -8,6 +8,8 @@ import removeDashboard
 from add import AddTeam
 from add import AddStudent
 from index import Index
+from addTeam import CreateTeam
+from csvAddTeam import csvAddTeam
 from remove import RemoveStudent
 from remove import RemoveTeam
 from flask_sqlalchemy import SQLAlchemy
@@ -58,6 +60,13 @@ app.add_url_rule('/removeStudent/',
 app.add_url_rule('/removeTeam/',
                 view_func=RemoveTeam.as_view('removeTeam'),
                 methods=['GET', 'POST'])
+
+app.add_url_rule('/createTeam/',
+                 view_func=CreateTeam.as_view('createTeam'),
+                 methods=['GET', 'POST'])
+app.add_url_rule('/csvAddTeam/',
+                 view_func=csvAddTeam.as_view('csvAddTeam'),
+                 methods=['GET', 'POST'])
 
 if __name__ == '__main__':
   

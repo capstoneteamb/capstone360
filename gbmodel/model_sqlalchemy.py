@@ -85,6 +85,12 @@ class students(db.Model):
         names = result.fetchall()
         return names
 
+    def updateTeam(self, name, tid):
+        data = {'name': name, 'tid': tid}
+        result = engine.execute("UPDATE students SET tid=:tid WHERE name=:name", data)
+        db.session.commit()
+        return True
+
     def removeStudent(self, sts, tName, session_id):
         if tName is None:
             return False
