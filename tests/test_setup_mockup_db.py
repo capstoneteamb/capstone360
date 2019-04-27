@@ -27,9 +27,9 @@ def test_generate_student_data():
         assert (len(student_name) == 2)
         assert (student["email_address"]
                 == (student_name[0]
-                    + "."
-                    + student_name[1]
-                    + ".notreal@pdx.edu"))
+                + "."
+                + student_name[1]
+                + ".notreal@pdx.edu"))
 
         # Check that the student id is unique
         assert (student["id"] not in student_ids)
@@ -64,18 +64,18 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(capstone_session);")
     columns = cursor.fetchall()
     assert(
-           # db column name
-           columns[0][1] == "id"
-           # db column type
-           and columns[0][2] == "INTEGER"
-           # if the value in this column can be null
-           # - 1 = NOT NULL
-           # - 0 = NULL
-           and columns[0][3] == 1
-           # the default value for this db column
-           and columns[0][4] is None
-           # the index of the column in the primary key, if it is a part of it (I think). 0 otherwise
-           and columns[0][5] == 1)
+        # db column name
+        columns[0][1] == "id"
+        # db column type
+        and columns[0][2] == "INTEGER"
+        # if the value in this column can be null
+        # - 1 = NOT NULL
+        # - 0 = NULL
+        and columns[0][3] == 1
+        # the default value for this db column
+        and columns[0][4] is None
+        # the index of the column in the primary key, if it is a part of it (I think). 0 otherwise
+        and columns[0][5] == 1)
     assert(columns[1][1] == "start_term"
            and columns[1][2] == "VARCHAR(10)"
            and columns[1][3] == 1

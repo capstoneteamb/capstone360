@@ -1,8 +1,6 @@
-# main file for server management
-import os
+# main file for server management --- Do we still need this?
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from .db_form import db, capstone_session, teams, students, team_members, reports
+
 
 def create_app(test_config=None):
     # create and configure the app

@@ -1,14 +1,15 @@
-from flask import redirect, request, url_for, render_template
+from flask import request, render_template
 from flask.views import MethodView
 import gbmodel
 import datetime
 import dashboard
 
+
 class AddStudent(MethodView):
     def get(self):
-        tName = request.args.get('data')
-        tName = tName.replace(" ", "_")
-        return render_template('addStudent.html', tName = str(tName), error=None)
+        t_name = request.args.get('data')
+        t_name = t_name.replace(" ", "_")
+        return render_template('addStudent.html', t_name=str(t_name), error=None)
 
     def post(self):
         """
@@ -18,23 +19,27 @@ class AddStudent(MethodView):
         session = gbmodel.capstone_session()
         student = gbmodel.students()
 
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
-        if month in range (9, 11):   term = "Fall"
-        elif month in range (3,5):   term = "Spring"
-        elif month in range (6,8):   term = "Summer"
-        else:                        term = "Winter"
+        current_date = datetime.datetime.now()
+        month = int(current_date.month) 
+        year = current_date.year
+        if month in range(9, 11):   
+            term = "Fall"
+        elif month in range(3, 5):   
+            term = "Spring"
+        elif month in range(6, 8):   
+            term = "Summer"
+        else:                        
+            term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
+        session_id = session.get_session_id(term, year)
         teamName = request.form.get('teamName')
-        tName = teamName.replace("_", " ")
-        while student.checkDupStudent(request.form['studentID'], sessionID):
-            student.insertStudent(request.form['studentName'], request.form['studentID'], sessionID, tName)
+        t_name = teamName.replace("_", " ")
+        while student.check_dup_student(request.form['studentID'], session_id):
+            student.insert_student(request.form['student_name'], request.form['studentID'], session_id, t_name)
             lists = dashboard.get()
-            return render_template('dashboard.html', lists = lists)
-        error = "Student id "+ str(request.form['studentID']) + " already exists"
-        return render_template('addStudent.html', tName = teamName, error=error)
+            return render_template('dashboard.html', lists=lists)
+        error = "Student id " + str(request.form['studentID']) + " already exists"
+        return render_template('addStudent.html', t_name=teamName, error=error)
 
 
 class AddTeam(MethodView):
@@ -46,18 +51,22 @@ class AddTeam(MethodView):
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
         error = None
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
-        if month in range (9, 11):   term = "Fall"
-        elif month in range (3,5):   term = "Spring"
-        elif month in range (6,8):   term = "Summer"
-        else:                        term = "Winter"
+        current_date = datetime.datetime.now()
+        month = int(current_date.month)
+        year = current_date.year
+        if month in range(9, 11):
+            term = "Fall"
+        elif month in range(3, 5):
+            term = "Spring"
+        elif month in range(6, 8):
+            term = "Summer"
+        else:
+            term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
-        while team.checkDupTeam(request.form['teamName'], sessionID):
-            team.insertTeam(sessionID,request.form['teamName']) 
+        session_id = session.get_session_id(term, year)
+        while team.check_dup_team(request.form['teamName'], session_id):
+            team.insert_team(session_id, request.form['teamName'])
             lists = dashboard.get()
-            return render_template('dashboard.html', lists = lists) 
+            return render_template('dashboard.html', lists=lists)
         error = "Team name already exists"
         return render_template('addTeam.html', error=error)
