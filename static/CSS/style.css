@@ -95,6 +95,17 @@ input {
     margin-top: 100px;
 }
 
+.student-page-card{
+    background-color: #5D5E61;
+    color: #fff;
+    padding: 50px;
+    border-radius: 10px;
+    width: 95%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: relative;
+    margin: auto;
+}
+
 .student-card h4{
     text-align: center;
 }
@@ -223,4 +234,15 @@ input {
 
 @media (min-width: 576px){
     .container{max-width: 100%;}
+}
+
+#student-page-container{
+    margin-top: 175px;
+}
+
+/* https://stackoverflow.com/questions/8739665/is-background-colornone-valid-css - second answer (by Jitendra Vyas and JGallardo, not the accepted answer, though it might not matter)*/
+#student-page-student-info{
+    background-color: transparent;
+    color: black;
+    padding: 0px;
 }
