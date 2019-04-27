@@ -59,6 +59,10 @@ class teams(db.Model):
         engine.execute("delete from teams where id = :tid AND session_id = :session_id", params)
         return True
 
+    def getTeamNameFromID(self, team_id):
+        params = {"team_id": team_id}
+        result = engine.execute("select name from teams where id = :team_id", params)
+        return result.fetchone()
 
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
@@ -89,14 +93,16 @@ class students(db.Model):
         names = result.fetchall()
         return names
 
+    def getStudentsInfo(self, tid, sessionID):
+        data = {'tid': tid, 'session_id': sessionID}
+        result = engine.execute('select name, id from students where tid =:tid and session_id = :session_id', data)
+        info = result.fetchall()
+        return info
+
     # Used the documentation here as reference: https://docs.sqlalchemy.org/en/13/orm/tutorial.html
-    def getStudent(self, given_name, given_session_id):
-        results = students.query().filter(name==given_name, session_id==session_id).all()
-        if len(results) != 1:
-            print("getStudentError: multiple students with the same name and session")
-            return None
-        else:
-            return results[0]
+    def getStudent(self, given_student_id, given_session_id):
+        result = students.query.filter(students.id==given_student_id, students.session_id==given_session_id).first()
+        return result
 
     def remove_student(self, sts, t_name, session_id):
         if t_name is None:
@@ -187,6 +193,17 @@ class capstone_session(db.Model):
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
+    def checkReportSubmittedForStudent(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
+        params = {"reviewer": reviewing_student_id,
+                  "reviewee": reviewee_student_id,
+                  "tid": team_id,
+                  "is_final": is_final}
+        results = engine.execute(("select time from reports where "
+                                  "reporting = :reviewer "
+                                  "AND report_for = :reviewee "
+                                  "AND tid = :tid AND "
+                                  "is_final = :is_final ;"), params)
+        return results.fetchone() is not None
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']

@@ -1,36 +1,57 @@
 {% extends "menu.html" %}
 {% block content %}
-    <div class="container dashboard-container">
+    <div class="container" id="student-page-container">
+        {% if error %}
+        <div class="row">
+            <div class="col">
+                <h3>{{error}}</h3>
+            </div>
+        </div>
+        {% else %}
         <!-- Student Name -->
         <div class="row" style="text-align: center;">
-            <div class="col-sm">
-                <h3 style="text-align: center;">Student Name</h3>
-                <p><i>Team A</i></p>
-                <hr>
+            <div class="col">
+                <h2 id="student-page-student-info">{{student['name']}}</h2>
+                <p><i>{{student['team']}}</i></p>
             </div>
         </div>
         <!-- Reviews/Report Boxes-->
         <div class="row" style="text-align: center;">
             <div class="col" style="text-align: center;">
-                <div class="student-card">
-                    <h3>Reviews</h3>
+                <div class="student-page-card">
+                    <h3>Midterm</h3>
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
                     <hr style="border: solid white 1px; background-color: white;">
-                    <p>Hi</p>
+                    {% for review_for_student in review_data %}
+                        {% if review_for_student['midterm_completed'] %}
+                        <h4><a href="#">{{'Review for ' + review_for_student['reviewee_name']}}</a></h4>
+                        {% else  %}
+                        <h4 style="color: dark-gray;"><i>{{'Review for ' + review_for_student['reviewee_name'] + ' - not completed'}}</i></h4>
+                        {% endif %}
+                    {% endfor %}
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
                     <hr style="border: solid white 1px; background-color: white;">
+                    <h4><a href="#">Report</a></h4>
                 </div>
             </div>
             <div class="col" style="text-align: center;">
-                <div class="student-card">
-                    <h3>Reports</h3> 
+                <div class="student-page-card">
+                    <h3>Final</h3> 
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
                     <hr style="border: solid white 1px; background-color: white;">
-                    <p>Hi2</p>
+                    {% for review_for_student in review_data %}
+                        {% if review_for_student['final_completed'] %}
+                        <h4><a href="#">{{'Review for ' + review_for_student['reviewee_name']}}</a></h4>
+                        {% else  %}
+                        <h4 style="color: dark-gray;"><i>{{'Review for ' + review_for_student['reviewee_name'] + ' - not completed'}}</i></h4>
+                        {% endif %}
+                    {% endfor %}
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
                     <hr style="border: solid white 1px; background-color: white;">
+                    <h4><a href="#">Report</a></h4>
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 {% endblock %}
