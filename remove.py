@@ -1,8 +1,9 @@
-from flask import redirect, request, url_for, render_template
+from flask import request, render_template
 from flask.views import MethodView
 import removeDashboard
 import gbmodel
 import datetime
+
 
 class RemoveStudent(MethodView):
     def get(self):       
@@ -14,27 +15,31 @@ class RemoveStudent(MethodView):
         student = gbmodel.students()
 
         current_date = datetime.datetime.now()
-        month = int(current_date.month) 
+        month = int(current_date.month)
         year = current_date.year
-        if month in range (9, 11):   term = "Fall"
-        elif month in range (3,5):   term = "Spring"
-        elif month in range (6,8):   term = "Summer"
-        else:                        term = "Winter"
+        if month in range(9, 11):
+            term = "Fall"
+        elif month in range(3, 5):
+            term = "Spring"
+        elif month in range(6, 8):
+            term = "Summer"
+        else:
+            term = "Winter"
 
         session_id = session.get_session_id(term, year)
 
         students = request.form.getlist('removedStudent')
-        t_name = request.form.get('teamName')  
+        t_name = request.form.get('teamName')
         student.remove_student(students, t_name, session_id)
         lists = removeDashboard.get_rm()
-        return render_template('removeDashboard.html', lists = lists) 
+        return render_template('removeDashboard.html', lists=lists)
 
 
 class RemoveTeam(MethodView):
     def get(self):
         t_name = request.args.get('data')
         t_name = t_name.replace(" ", "_")
-        return render_template('removeTeam.html', t_name = t_name)
+        return render_template('removeTeam.html', t_name=t_name)
 
     def post(self):
         """
@@ -46,12 +51,16 @@ class RemoveTeam(MethodView):
         team = gbmodel.teams()
 
         current_date = datetime.datetime.now()
-        month = int(current_date.month) 
+        month = int(current_date.month)
         year = current_date.year
-        if month in range (9, 11):   term = "Fall"
-        elif month in range (3,5):   term = "Spring"
-        elif month in range (6,8):   term = "Summer"
-        else:                        term = "Winter"
+        if month in range(9, 11):
+            term = "Fall"
+        elif month in range(3, 5):
+            term = "Spring"
+        elif month in range(6, 8):
+            term = "Summer"
+        else:
+            term = "Winter"
 
         session_id = session.get_session_id(term, year)
 
@@ -59,4 +68,4 @@ class RemoveTeam(MethodView):
         t_name = t_name.replace("_", " ")
         team.remove_team(t_name, session_id)
         lists = removeDashboard.get_rm()
-        return render_template('removeDashboard.html', lists = lists)
+        return render_template('removeDashboard.html', lists=lists)
