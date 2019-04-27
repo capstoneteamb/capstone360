@@ -7,6 +7,8 @@ import dashboard
 import removeDashboard
 from add import AddTeam
 from add import AddStudent
+from addTeam import CreateTeam
+from csvAddTeam import csvAddTeam
 from index import Index
 from remove import RemoveStudent
 from remove import RemoveTeam
@@ -50,6 +52,14 @@ app.add_url_rule('/addStudent/',
 app.add_url_rule('/addTeam/',
                 view_func=AddTeam.as_view('addTeam'),
                 methods=['GET', 'POST'])
+
+app.add_url_rule('/createTeam/',
+                 view_func=CreateTeam.as_view('createTeam'),
+                 methods=['GET', 'POST'])
+
+app.add_url_rule('/csvAddTeam/',
+                 view_func=csvAddTeam.as_view('csvAddTeam'),
+                 methods=['GET', 'POST'])
 
 app.add_url_rule('/removeStudent/',
                 view_func=RemoveStudent.as_view('removeStudent'),
