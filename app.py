@@ -1,8 +1,7 @@
 """
 Flask entry
 """
-from flask import Flask, redirect, request, url_for, render_template
-from flask.views import MethodView
+from flask import Flask, render_template
 import dashboard
 import removeDashboard
 from add import AddTeam
@@ -36,8 +35,9 @@ app.config['CAS_AFTER_LOGOUT'] = 'logout'
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
 
-#form blueprint, can change to url_rules without blueprint if desired
-app.register_blueprint(form_bp)
+app.add_url_rule('/review/',
+                 view_func=review.as_view('review'),
+                 methods=['GET', 'POST'])
 
 @app.route('/dashboard/', methods=['GET','POST'])
 @login_required
@@ -58,24 +58,24 @@ def logged_out():
 @login_required
 def get_rm():
     lists = removeDashboard.get_rm()
-    return render_template('removeDashboard.html', lists = lists)
+    return render_template('removeDashboard.html', lists=lists)
+
 
 app.add_url_rule('/addStudent/',
-                view_func=AddStudent.as_view('addStudent'),
-                methods=['GET', 'POST'])
-                
+                 view_func=AddStudent.as_view('addStudent'),
+                 methods=['GET', 'POST'])
+
 app.add_url_rule('/addTeam/',
-                view_func=AddTeam.as_view('addTeam'),
-                methods=['GET', 'POST'])
+                 view_func=AddTeam.as_view('addTeam'),
+                 methods=['GET', 'POST'])
 
 app.add_url_rule('/removeStudent/',
-                view_func=RemoveStudent.as_view('removeStudent'),
-                methods=['GET', 'POST'])
+                 view_func=RemoveStudent.as_view('removeStudent'),
+                 methods=['GET', 'POST'])
 
 app.add_url_rule('/removeTeam/',
-                view_func=RemoveTeam.as_view('removeTeam'),
-                methods=['GET', 'POST'])
+                 view_func=RemoveTeam.as_view('removeTeam'),
+                 methods=['GET', 'POST'])
 
 if __name__ == '__main__':
-  
     app.run(host='0.0.0.0', port=8000, debug=True)

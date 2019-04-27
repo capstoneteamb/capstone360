@@ -7,7 +7,6 @@
 
 
 import sqlite3
-import copy
 import datetime
 
 # Needed to generate student data
@@ -184,6 +183,7 @@ def generate_tables(cursor):
                     'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
+
 def submit_review(cursor, student_id, session_id, review):
     # Put midterm review into database
     cursor.execute(('INSERT INTO reports '
@@ -273,7 +273,6 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
             # Add student to the team members table
             cursor.execute('INSERT INTO team_members VALUES(?,?,?)',
                            (team_id, student_id, session_id))
-
 
 
 def run():
