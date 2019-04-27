@@ -51,8 +51,11 @@ h3 {
     text-align: center;
 }
 
-.sub-buttons{
+.sub-buttons, .add-student-btn{
     visibility: hidden;
+}
+.remove-card{
+    display: none;
 }
 
 .edit-btn{

@@ -1,13 +1,10 @@
 {% extends "menu.html" %}
-{% block my_block %}	
-	session=sessions
-{% endblock my_block %}
-{% block content %}
+{% block content %} 
 
 <!-- This is the html code for the layout of the dashboard -->
 <div class="container dashboard-container">
 	{% for data in lists %}
-	<div class="student-card">
+	<div class="student-card display-card">
 		<h4>{{data[0]}}</h4>
 		{% for student in data[1:] %}
 		<p class=entry>
@@ -15,9 +12,37 @@
 				src="{{ url_for('static', filename='Assets/user.png')}}">
 			<span class="name" style="display: inline-block;">{{ student }}</span>
 		</p>
-		{% endfor %}
-		<a href="{{ url_for('addStudent', data=data[0])}}"><button class="my-btn card-btn">Add Student</button></a>
+		{% endfor %}		
+		<a href="{{ url_for('addStudent', data=data[0], sessionID=sessionID)}}"><button class="my-btn card-btn add-student-btn">Add Student</button></a>
+	</div>
+	<div class="student-card remove-card">
+		<form action="{{ url_for('dashboard', sessionID=sessionID) }}" method=POST>
+			<h4>{{data[0]}}</h4>
+			{% for student in data[1:] %}
+			<p class=entry>
+				<img class="user-icon" style="display: inline-block;"
+					src="{{ url_for('static', filename='Assets/user.png')}}">
+				<span class="name" style="display: inline-block;"> {{ student }}
+				</span>
+				<input class="remove-check" type="checkbox" style="display: inline-block;" name="removedStudent"
+					value="{{ student}}"> 
+					<input type="hidden" name="teamName" value="{{data[0]}}">
+					<input type="hidden" value={{sessionID}} name=sessionID>
+				</input>				
+			</p>
+			{% endfor %}
 		
+			<p><input class="my-btn" type=submit value='Remove Student' style="
+						background-color: #BCBCBC;
+						color: white;
+						border: none;
+						border-radius:5px;
+						padding: 10px 20px;
+						cursor: pointer;"></p>
+		
+		</form>
+	 	<a href="{{ url_for('removeTeam', data=data[0], sessionID=sessionID)}}"><button class="my-btn card-btn"
+				style="background-color: #ff9e16">Remove Team</button></a>
 	</div>
 	{% endfor %}
 </div>
