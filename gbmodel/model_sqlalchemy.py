@@ -106,12 +106,12 @@ class students(db.Model):
             # consider another statement to remove the student entry from the team_members table
         return True
     
-    #validate cas username with student name in database for testing purposes only
-    #will use id later
-    def validate(self, username):
-        params = {'name' :username}
-        result = engine.execute('select name from students where name = :name', params)
+    #validate cas username with student id in the database
+    def validate(self, id):
+        params = {'id' :id}
+        result = engine.execute('select session_id from students where id = :id', params)
         result = result.fetchone()
+        result = result[0]
         return result
 
 class capstone_session(db.Model):
