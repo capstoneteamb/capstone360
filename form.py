@@ -119,8 +119,11 @@ class review(MethodView):
         if state == 'Error':
             return False
 
-        students = gbmodel.students()
-        sdt = students.query.filter_by(id=self.get_id()).first()
+        try:
+            students = gbmodel.students()
+            sdt = students.query.filter_by(id=self.get_id()).first()
+        except SQLAlchemyError:
+            self.display_error('student look up error when confirming user')
 
         if sdt is None:
             return False
