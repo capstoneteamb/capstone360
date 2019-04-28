@@ -3,9 +3,11 @@ from flask.views import MethodView
 import gbmodel
 import datetime
 import dashboard
+from flask_cas import login_required
 
 
 class AddStudent(MethodView):
+    @login_required
     def get(self):
         t_name = request.args.get('data')
         t_name = t_name.replace(" ", "_")
@@ -20,15 +22,15 @@ class AddStudent(MethodView):
         student = gbmodel.students()
 
         current_date = datetime.datetime.now()
-        month = int(current_date.month) 
+        month = int(current_date.month)
         year = current_date.year
-        if month in range(9, 11):   
+        if month in range(9, 11):
             term = "Fall"
-        elif month in range(3, 5):   
+        elif month in range(3, 5):
             term = "Spring"
-        elif month in range(6, 8):   
+        elif month in range(6, 8):
             term = "Summer"
-        else:                        
+        else:
             term = "Winter"
 
         session_id = session.get_session_id(term, year)
@@ -43,6 +45,7 @@ class AddStudent(MethodView):
 
 
 class AddTeam(MethodView):
+    @login_required
     def get(self):
         error = None
         return render_template('addTeam.html', error=error)

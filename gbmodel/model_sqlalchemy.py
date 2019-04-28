@@ -2,6 +2,7 @@ import os
 import sys
 import datetime
 from app import db, engine, db_session
+from sqlalchemy import exc
 
 sys.path.append(os.getcwd())
 
@@ -16,7 +17,7 @@ class teams(db.Model):
             return 1
         else:
             return max_id[0] + 1
-            
+
     def check_dup_team(self, t_name, session_id):
         params = {'name': t_name, 'session_id': session_id}
         result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)
@@ -81,7 +82,7 @@ class students(db.Model):
         db.session.add(new_student)
         db.session.commit()
         return True
-    
+
     def get_students(self, tid, sessionID):
         data = {'tid': tid, 'session_id': sessionID}
         result = engine.execute('select name from students where tid =:tid and session_id = :session_id', data)
@@ -95,31 +96,84 @@ class students(db.Model):
         params = {'name': t_name, 'session_id': session_id}
         result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
         id = result.fetchone()
-        tid = id[0] 
+        tid = id[0]
         if sts is None:
-            return False       
+            return False
         for i in sts:
             params = {'name': i, 'tid': tid, 'session_id': session_id}
             result = engine.execute("select * from students where name = :name AND tid= :tid AND session_id = :session_id", params)
             s = result.fetchone()
             removed_student.add_student(s)
-            # students.delete().where(students.id == s[3], students.session_id == session_id) 
             data = {'id': s[0], 'session_id': session_id}
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
             # consider another statement to remove the student entry from the team_members table
         return True
+
+    # validate cas username with student id in the database
+    def validate(self, id):
+        params = {'id': id}
+        print(id)
+        try:
+            result = engine.execute('select session_id from students where name = :id', params)
+            result = result.fetchone()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is None:
+            return -1
+        else:
+            result = result[0]
+        return result
 
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
     def get_session_id(self, term, year):
-        # id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()    
         ses_id = capstone_session.query.filter_by(start_term=term, start_year=year).first()
         if (ses_id):
             return ses_id.id
         else:
             return None
+
+    def get_max(self):
+        max_id = engine.execute('select max(id) from capstone_session ')
+        max_id = max_id.fetchone()
+        if max_id[0] is None:
+            return 1
+        else:
+            return max_id[0] + 1
+
+    def insert_session(self, term, year):
+        e_term = None
+        e_year = 0
+        terms = ["Fall", "Winter", "Spring", "Summer"]
+        for i in range(len(terms)):
+            if terms[i] == term:
+                e_term = terms[(i+1) % 4]
+        if term == 'Winter':
+            e_year = year+1
+        else:
+            e_year = year
+        id = self.get_max()
+        new_sess = capstone_session(id=id, start_term=term, start_year=year, end_term=e_term, end_year=e_year)
+        db.session.add(new_sess)
+        db.session.commit()
+        return id
+
+    def getSessionID(self, term, year):
+        id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()
+        if id is None:
+            return self.insert_session(term, year)
+        else:
+            return id.id
+
+    def get_sessions(self):
+        caps = capstone_session.query.all()
+        lists = []
+        for i in caps:
+            temp = str(i.start_term) + " - " + str(i.start_year)
+            lists.append(temp)
+        return lists
 
 
 class team_members(db.Model):
@@ -138,11 +192,9 @@ class removed_students(db.Model):
             return False
         s = list(s)
         current_date = datetime.datetime.now()
-        date = current_date.strftime("%Y-%m-%d") 
+        date = current_date.strftime("%Y-%m-%d")
         s.append(date)
-        engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, final_done, active, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, :midterm_done, :final_done, :active, :removed_date)", s)
-        # removed_student = removed_students(id = s[0], tid = s[1], session_id = s[2],
-        #     name = str(s[3]), is_lead = bool(not(s[4])), midterm_done = not(bool(s[5])),final_done=not(bool(s[6])), removed_date = current_date) 
-        # db.session.add(removed_student)
-        # db.session.commit()
+        engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, \
+            final_done, active, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
+            :midterm_done, :final_done, :active, :removed_date)", s)
         return True

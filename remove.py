@@ -3,14 +3,16 @@ from flask.views import MethodView
 import removeDashboard
 import gbmodel
 import datetime
+from flask_cas import login_required
 
 
 class RemoveStudent(MethodView):
-    def get(self):       
+    @login_required
+    def get(self):
         return render_template('removeStudent.html')
 
     def post(self):
-   
+
         session = gbmodel.capstone_session()
         student = gbmodel.students()
 
@@ -36,6 +38,7 @@ class RemoveStudent(MethodView):
 
 
 class RemoveTeam(MethodView):
+    @login_required
     def get(self):
         t_name = request.args.get('data')
         t_name = t_name.replace(" ", "_")
