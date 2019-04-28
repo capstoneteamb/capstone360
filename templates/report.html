@@ -1,0 +1,91 @@
+<h1>{{ name }}</h1>
+
+<h2>Team: {{ team }}</h1>
+
+<table border=1>
+    <thead><tr>
+            <th width="30%">ATTRIBUTE</th>
+            <th width="10%">POOR</th>
+            <th width="10%">BELOW<br>AVERAGE</th>
+            <th width="10%">AVERAGE</th>
+            <th width="10%">ABOVE<br>AVERAGE</th>
+            <th width="10%">EXCELLENT</th>
+            <th width="10%">N/A</th>
+    </tr></thead>
+        <tr>
+            <td>TECHNICAL SKILL</td>
+            {% for item in scores['tech_mastery'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>WORK ETHIC</td>
+            {% for item in scores['work_ethic'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>COMMUNICATION</td>
+            {% for item in scores['communication'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>COOPERATION</td>
+            {% for item in scores['cooperation'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>INITIATIVE</td>
+            {% for item in scores['initiative'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>TEAM FOCUS</td>
+            {% for item in scores['team_focus'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>CONTRIBUTION</td>
+            {% for item in scores['contribution'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>LEADERSHIP</td>
+            {% for item in scores['leadership'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>ORGANIZATION</td>
+            {% for item in scores['organization'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>DELEGATION</td>
+            {% for item in scores['delegation'] %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+</table>
+
+<p>
+STRENGTHS:
+<ul>
+    {% for s in strengths %}<li>{{ s }}</li>{% endfor %}
+</ul>
+</p>
+
+<p>
+WEAKNESSES:
+<ul>
+    {% for w in weaknesses %}<li>{{ w }}</li>{% endfor %}
+</ul>
+</p>
+
+<div style="page-break-after:always;"></div>

@@ -290,6 +290,20 @@ class capstone_session(db.Model):
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
+    def get_reports_for_student(self, student_id, term_id, is_final=None):
+        """
+        Gets all available reports for a student, optionally filtering to only midterms or finals.
+        """
+        if is_final is not None:
+            query_string = "select * from reports where report_for=:id and tid=:term_id and is_final=:is_final"
+        else:
+            query_string = "select * from reports where report_for=:id and tid=:term_id"
+
+        params = {'id': student_id, 'term_id': term_id, 'is_final': is_final}
+        reports = engine.execute(query_string, params)
+
+        return reports;
+
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
