@@ -32,8 +32,22 @@
                         <tr>
                             {% if i == 0 %}
                                 <td>Name</td>
+                                {% for mem in mems %}
+                                    <td>{{mem['name']}}</td>
+                                {% endfor %}
                             {% elif i == 1 %}
                                 <td>Technical Mastery</td>
+                                {% for mem in mems %}
+                                    <td>
+                                        {% for j in range(5) %}
+                                            <div class="custom-control custom-radio">
+                                                <input type="radio" id="tm{{5 - j}}_{{mem['id']}}" name="tm_{{mem['id']}}"
+                                                    class="custom-control-input" value="{{5-j}}" required>
+                                                <label class="custom-control-label" for="tm{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </td>
+                                {% endfor %}
                             {% elif i == 2 %}
                                 <td>Work Ethic</td>
                             {% elif i == 3 %}
