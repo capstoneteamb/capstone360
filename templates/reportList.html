@@ -1,0 +1,17 @@
+{% extends "menu.html" %}
+{% block content %}
+<div class="container dashboard-container">
+    Midterm
+    <ul>
+    {% for s in students %}
+    <li><a href="{{ url_for('report', student_id=s.id, session_id=s.session_id, is_final=False) }}">{{ s.name }}</a></li>
+    {% endfor %}
+    </ul>
+    Final
+    <ul>
+    {% for s in students %}
+    <li><a href="{{ url_for('report', student_id=s.id, session_id=s.session_id, is_final=True) }}">{{ s.name }}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}

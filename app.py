@@ -10,7 +10,7 @@ from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
-from report import GeneratedReportView
+from report import TeamReportListView, GeneratedReportView
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -59,6 +59,10 @@ app.add_url_rule('/removeTeam/',
 app.add_url_rule('/setDate/',
                  view_func=SetDate.as_view('setDate'),
                  methods=['GET', 'POST'])
+
+app.add_url_rule('/reportList/<team_id>',
+                view_func=TeamReportListView.as_view('teamReport'),
+                methods=['GET'])
 
 app.add_url_rule('/report/',
                 view_func=GeneratedReportView.as_view('report'),

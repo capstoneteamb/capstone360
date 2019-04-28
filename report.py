@@ -3,40 +3,45 @@ from flask.views import MethodView
 
 import gbmodel
 
-class StudentReportListView(MethodView):
-    def get(self):
-        """
-        Renders a list of reports for a specific student.
-        """
-        pass
-
-
 class TeamReportListView(MethodView):
-    def get(self):
+    def get(self, team_id):
         """
         Renders a list of reports for a specific team.
         """
-        pass
+        # Make list of students on this team
+        students = gbmodel.students.query.filter_by(tid=team_id, session_id=0)
+        return render_template('reportList.html', students=students)
 
 class GeneratedReportView(MethodView):
 
     def get(self):
         """
-        Accepts a GET request and generates a report for a specific student.
-        Should be POST once this PDF is filled with actual data
+        Generates a report for a specific student.
         """
-        pdf = _make_student_report_pdf(6, 0, False)
+        student_id = request.args.get('student_id')
+        session_id = request.args.get('session_id')
+        is_final = request.args.get('is_final')
+        # TODO find a less fragile way to deal with booleans in urls
+        if is_final == "False":
+            is_final = False
+        else:
+            is_final = True
+
+        pdf = _make_student_report_pdf(student_id, session_id, is_final)
         response = make_response(pdf)
         return response
 
-def _make_student_report_pdf(student_id, term_id, is_final):
+def _make_student_report_pdf(student_id, session_id, is_final):
     """
     Renders a pdf for a student, defaulting to midterm review.
     """
     # Get all the info we need to compile the report
-    reports = gbmodel.reports().get_reports_for_student(student_id, term_id, is_final)
-    name = gbmodel.students.query.filter_by(id=student_id).first().name
-    team = "Sample Team"
+    print("student: {} session: {} is_final: {}".format(student_id, session_id, is_final))
+    reports = gbmodel.reports().get_reports_for_student(student_id, session_id, is_final)
+    student = gbmodel.students.query.filter_by(id=student_id, session_id=session_id).first()
+    name = student.name
+    team_id = student.tid
+    team_name = gbmodel.teams.query.filter_by(id=team_id, session_id=session_id).first().name
 
     # init scores
     scores = {
@@ -80,7 +85,7 @@ def _make_student_report_pdf(student_id, term_id, is_final):
     # Render the HTML version of the template
     html = render_template('report.html',
             name=name,
-            team=team,
+            team=team_name,
             scores=scores,
             strengths=strengths,
             weaknesses=weaknesses)
