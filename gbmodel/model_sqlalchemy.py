@@ -1,7 +1,7 @@
 import os
 import sys
 import datetime
-from app import db, engine
+from app import db, engine, db_session
 from sqlalchemy import exc
 
 sys.path.append(os.getcwd())
