@@ -1,12 +1,7 @@
 from flask import request, make_response, render_template
 from flask.views import MethodView
 
-from fpdf import FPDF, HTMLMixin
-
 import gbmodel
-
-class MyFPDF(FPDF, HTMLMixin):
-    pass
 
 class StudentReportListView(MethodView):
     def get(self):
@@ -30,11 +25,8 @@ class GeneratedReportView(MethodView):
         Accepts a GET request and generates a report for a specific student.
         Should be POST once this PDF is filled with actual data
         """
-        pdf = _make_student_report_pdf(0, 0, False)
+        pdf = _make_student_report_pdf(6, 0, False)
         response = make_response(pdf)
-        #response.headers['Content-Type'] = 'application/pdf'
-        #response.headers['Content-Disposition'] = \
-        #    'inline; filename={}.pdf'.format('asdf')
         return response
 
 def _make_student_report_pdf(student_id, term_id, is_final):
@@ -42,7 +34,7 @@ def _make_student_report_pdf(student_id, term_id, is_final):
     Renders a pdf for a student, defaulting to midterm review.
     """
     # Get all the info we need to compile the report
-    reports = gbmodel.reports.get_reports_for_student(student_id, term_id, is_final)
+    reports = gbmodel.reports().get_reports_for_student(student_id, term_id, is_final)
     name = gbmodel.students.query.filter_by(id=student_id).first().name
     team = "Sample Team"
 
@@ -71,9 +63,11 @@ def _make_student_report_pdf(student_id, term_id, is_final):
     for r in reports:
         for key,value in scores.items():
             this_score = getattr(r,key)
+            if this_score is None:
+                this_score = 6
             # Increment the # of votes for this score. Ratings start at 1 and not 0 so we have to shift
             # things left by one in the table.
-            scores[key][this_score-1] = scores[key][this_score] + 1
+            scores[key][this_score-1] = scores[key][this_score-1] + 1
 
         weaknesses.append(r.weaknesses)
         strengths.append(r.strengths)
