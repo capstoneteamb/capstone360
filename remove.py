@@ -8,11 +8,11 @@ from flask_cas import login_required
 
 class RemoveStudent(MethodView):
     @login_required
-    def get(self):       
+    def get(self):
         return render_template('removeStudent.html')
 
     def post(self):
-   
+
         session = gbmodel.capstone_session()
         student = gbmodel.students()
 

@@ -25,7 +25,7 @@ db = SQLAlchemy(app)
 db.Model.metadata.reflect(db.engine)
 db_session = scoped_session(sessionmaker(bind=engine))
 
-#CAS LOGIN
+# CAS LOGIN
 cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
@@ -39,6 +39,7 @@ app.add_url_rule('/review/',
                  view_func=review.as_view('review'),
                  methods=['GET', 'POST'])
 
+
 @app.route('/dashboard/', methods=['GET', 'POST'])
 @login_required
 def get():
@@ -46,7 +47,7 @@ def get():
     if lists is False:
         return render_template('index.html')
     sessions = {'first', 'second'}
-    return render_template('dashboard.html', lists=lists, sessions=sessions)  
+    return render_template('dashboard.html', lists=lists, sessions=sessions)
 
 
 @app.route('/removeDashboard/')

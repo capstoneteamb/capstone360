@@ -22,15 +22,15 @@ class AddStudent(MethodView):
         student = gbmodel.students()
 
         current_date = datetime.datetime.now()
-        month = int(current_date.month) 
+        month = int(current_date.month)
         year = current_date.year
-        if month in range(9, 11):   
+        if month in range(9, 11):
             term = "Fall"
-        elif month in range(3, 5):   
+        elif month in range(3, 5):
             term = "Spring"
-        elif month in range(6, 8):   
+        elif month in range(6, 8):
             term = "Summer"
-        else:                        
+        else:
             term = "Winter"
 
         session_id = session.get_session_id(term, year)
