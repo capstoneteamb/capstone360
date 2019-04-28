@@ -251,12 +251,11 @@ def test_generate_tables():
     # Check that the colums are what we expect them to be
     cursor.execute("PRAGMA table_info(reports);")
     columns = cursor.fetchall()
-
     assert(
            # name
            columns[0][1] == "time"
            # data type
-           and columns[0][2] == "TIME"
+           and columns[0][2] == "DATETIME"
            # can be null
            #  - 1 = NOT NULL
            #  - 0 = NULL
@@ -427,11 +426,6 @@ def test_fill_tables_with_data():
         # student[0] = (student) id of the current student
         assert (student[0] not in student_ids)
         student_ids.append(student[0])
-
-        # Verify that the reports have been submitted
-        # student[4] = (is) midterm_done (boolean)
-        # student[5] = (is) final_done (boolean)
-        assert(student[5] and student[6])
 
     # Verify the data in the team_members table is correct
     # May need to come back and clarify -- the comments are a bit vague
