@@ -3,9 +3,11 @@ from flask.views import MethodView
 import gbmodel
 import datetime
 import dashboard
+from flask_cas import login_required
 
 
 class AddStudent(MethodView):
+    @login_required
     def get(self):
         t_name = request.args.get('data')
         t_name = t_name.replace(" ", "_")
@@ -43,6 +45,7 @@ class AddStudent(MethodView):
 
 
 class AddTeam(MethodView):
+    @login_required
     def get(self):
         error = None
         return render_template('addTeam.html', error=error)

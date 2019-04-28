@@ -2,8 +2,11 @@ from flask import redirect, request, url_for, render_template
 from flask.views import MethodView
 import datetime
 import gbmodel
+import catCas
 # note: waiting for updated code to run through flake8
 def get():
+    if catCas.validate() is False:
+        return False
     """
     get data from model
     """

@@ -109,6 +109,18 @@ class students(db.Model):
             # consider another statement to remove the student entry from the team_members table
         return True
 
+    #validate cas username with student id in the database
+    def validate(self, id):
+        params = {'id' :id}
+        print(id)
+        result = engine.execute('select session_id from students where name = :id', params)
+        result = result.fetchone()
+        if result is None:
+            return -1
+        else:
+            result = result[0]
+        return result
+
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
@@ -120,6 +132,42 @@ class capstone_session(db.Model):
             return ses_id.id
         else:
             return None
+    
+    def get_max(self):
+        max_id = engine.execute('select max(id) from capstone_session ')
+        max_id = max_id.fetchone()
+        if max_id[0] is None:
+            return 1
+        else:
+            return max_id[0] + 1
+    def insert_session(self, term, year):
+        e_term = None
+        e_year = 0
+        terms = ["Fall", "Winter", "Spring", "Summer"]
+        for i in range(len(terms)):
+            if terms[i] == term: e_term = terms[(i+1)%4]
+        if term == 'Winter': e_year = year+1
+        else: e_year = year
+        id = self.get_max()
+        new_sess = capstone_session(id=id,start_term=term,start_year=year, end_term = e_term, end_year = e_year)
+        db.session.add(new_sess)
+        db.session.commit()
+        return id
+            
+    def getSessionID(self, term, year):
+        id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()    
+        if id is None:
+            return self.insert_session(term, year)
+        else:
+            return id.id
+
+    def get_sessions(self):
+        caps = capstone_session.query.all()
+        lists = []
+        for i in caps:
+            temp = str(i.start_term) + " - " + str(i.start_year)
+            lists.append(temp)
+        return lists
 
 
 class team_members(db.Model):
