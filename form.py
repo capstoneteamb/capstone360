@@ -18,7 +18,7 @@ class review(MethodView):
     # input: only self
     # output: the user's ID value
     def get_id(self):
-        sdt_id = 38
+        sdt_id = 0
         return sdt_id
 
     # If an unrecoverable error occurs and there is a need to abort,

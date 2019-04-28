@@ -25,11 +25,45 @@
             <li>Exceeds Exeectations</li>
             <li>Excellent</li>
         </ol>
-        </nav>
         <section class="content">
             <form method="post">
                 <table class="table table-striped" style="table-layout: fixed; font-size: 12px">
-                    <thead class="thead-dark">
+                    {% for i in range(15)%}
+                        <tr>
+                            {% if i == 0 %}
+                                <td>Name</td>
+                            {% elif i == 1 %}
+                                <td>Technical Mastery</td>
+                            {% elif i == 2 %}
+                                <td>Work Ethic</td>
+                            {% elif i == 3 %}
+                                <td>Communication</td>
+                            {% elif i == 4 %}
+                                <td>Cooperation</td>
+                            {% elif i == 5 %}
+                                <td>Initiative</td>
+                            {% elif i == 6 %}
+                                <td>Team Focus</td>
+                            {% elif i == 7 %}
+                                <td>Contribution</td>
+                            {% elif i == 8 %}
+                                <td>Leadership (Team Lead Only)</td>
+                            {% elif i == 9 %}
+                                <td>Organization (Team Lead Only)</td>
+                            {% elif i == 10 %}
+                                <td>Delegation (Team Lead Only)</td>
+                            {% elif i == 11 %}
+                                <td>Points<br>100 across all teammates<br>Enter 0 for yourself</td>
+                            {% elif i == 12 %}
+                                <td>Strengths</td>
+                            {% elif i == 13 %}
+                                <td>Weaknesses</td>
+                            {% elif i == 14 %}
+                                <td>Traits to Work On</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    <!--<thead class="thead-dark">
                         <tr>
                             <th>Name</th>
                             <th>Technical Mastery</th>
@@ -49,7 +83,7 @@
                         </tr>
                     </thead>
                     {% for mem in mems %}
-                        <!-- will change independent radios to for loop rather than listing them all out here-->
+                        
                         <tr>
                             <td>{{mem['name']}}</td>
                             <td>
@@ -347,6 +381,7 @@
                         </tr>
                     {% endfor %}
                     <br>
+                    -->
                 </table>
                 <br>
                 <label for="learned">What you learned</label>
