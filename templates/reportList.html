@@ -4,13 +4,13 @@
     Midterm
     <ul>
     {% for s in students %}
-    <li><a href="{{ url_for('report', student_id=s.id, session_id=s.session_id, is_final=False) }}">{{ s.name }}</a></li>
+    <li><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=False, team_id=team_id) }}">{{ s.name }}</a></li>
     {% endfor %}
     </ul>
     Final
     <ul>
     {% for s in students %}
-    <li><a href="{{ url_for('report', student_id=s.id, session_id=s.session_id, is_final=True) }}">{{ s.name }}</a></li>
+    <li><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=True, team_id=team_id) }}">{{ s.name }}</a></li>
     {% endfor %}
     </ul>
 </div>

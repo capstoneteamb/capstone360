@@ -10,10 +10,12 @@ class TeamReportListView(MethodView):
         """
         # Make list of students on this team
         students = gbmodel.students.query.filter_by(tid=team_id, session_id=0)
-        return render_template('reportList.html', students=students)
+        sessions = {'first','second'}
+        teams = [(row.id,row.name) for row in gbmodel.teams.query.filter_by(session_id=0)]
+        return render_template('reportList.html', students=students, sessions=sessions, teams=teams)
 
-class GeneratedReportView(MethodView):
 
+class GeneratedStudentReportView(MethodView):
     def get(self):
         """
         Generates a report for a specific student.
@@ -31,12 +33,12 @@ class GeneratedReportView(MethodView):
         response = make_response(pdf)
         return response
 
+
 def _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=False):
     """
     Renders a pdf for a student, defaulting to midterm review.
     """
     # Get all the info we need to compile the report
-    print("student: {} session: {} is_final: {}".format(student_id, session_id, is_final))
     reports = gbmodel.reports().get_reports_for_student(student_id, session_id, is_final)
     student = gbmodel.students.query.filter_by(id=student_id, session_id=session_id).first()
     name = student.name
@@ -68,6 +70,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     for r in reports:
         for key,value in scores.items():
             this_score = getattr(r,key)
+            # 6 = N/A in the table
             if this_score is None:
                 this_score = 6
             # Increment the # of votes for this score. Ratings start at 1 and not 0 so we have to shift
