@@ -141,9 +141,9 @@ def generate_tables(cursor):
     cursor.execute(('CREATE TABLE reports('
                     'time DATETIME NOT NULL, '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
-                    'reporting VARCHAR(128) NOT NULL REFERENCES students(id), '
+                    'reviewer VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
-                    'report_for VARCHAR(128) NOT NULL REFERENCES students(id), '
+                    'reviewee VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'tech_mastery INTEGER NULL, '
                     'work_ethic INTEGER NULL, '
                     'communication INTEGER NULL, '
@@ -161,7 +161,7 @@ def generate_tables(cursor):
                     'what_you_learned VARCHAR(4096) NULL, '
                     'proud_of_accomplishment VARCHAR(4096) NULL, '
                     'is_final BOOLEAN NOT NULL, '
-                    'PRIMARY KEY (reporting, tid, report_for, is_final));'))
+                    'PRIMARY KEY (reviewer, tid, reviewee, is_final));'))
 
     # Create removed students table
     cursor.execute(('CREATE TABLE removed_students( '
@@ -183,9 +183,9 @@ def submit_review(cursor, student_id, session_id, review):
                     'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'),
                    (datetime.datetime.now(),
                     session_id,
-                    review["reporting"],
+                    review["reviewer"],
                     review["tid"],
-                    review["report_for"],
+                    review["reviewee"],
                     review["tech_mastery"],
                     review["work_ethic"],
                     review["communication"],

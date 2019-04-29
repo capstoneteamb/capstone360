@@ -336,9 +336,9 @@ class review(MethodView):
                 report = gbmodel.reports()
                 report.session_id = cid
                 report.time = datetime.now()
-                report.reporting = self.get_id()
+                report.reviewer = self.get_id()
                 report.tid = tid
-                report.report_for = i
+                report.reviewee = i
                 report.tech_mastery = tech
                 report.work_ethic = ethic
                 report.communication = com
