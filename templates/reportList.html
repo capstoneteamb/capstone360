@@ -6,20 +6,18 @@
         {% for s in students %}
             <p class=entry>
                 <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
-                <span class="name" style="display: inline-block;"><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=False, team_id=team_id) }}">{{ s.name }}</a></span>
+                <a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=False) }}"><span class="name" style="display: inline-block;">{{ s.name }}</span></a>
             </p>
         {% endfor %}
     </div>
     <div class="student-card">
         <h4>Final</h4>
-        <ul>
         {% for s in students %}
             <p class=entry>
                 <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
-                <span class="name" style="display: inline-block;"><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=True, team_id=team_id) }}">{{ s.name }}</a></span>
+                <a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=True) }}"><span class="name" style="display: inline-block;">{{ s.name }}</span></a>
             </p>
         {% endfor %}
-        </ul>
     </div>
 </div>
 {% endblock %}
