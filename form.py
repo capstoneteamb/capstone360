@@ -40,6 +40,7 @@ class review(MethodView):
                    'contr',
                    'lead',
                    'org',
+                   'dlg',
                    'points',
                    'str',
                    'wkn',
@@ -297,25 +298,25 @@ class review(MethodView):
         if points_pass is True:
             for i in id_list:
                 # Get each radio input and verify that it's an integer
-                tech = request.form[('tm_' + str(i))]
+                tech = request.form[('tech_mast_' + str(i))]
                 tech = self.convert_to_int(tech)
 
-                ethic = request.form[('we_' + str(i))]
+                ethic = request.form[('work_ethic_' + str(i))]
                 ethic = self.convert_to_int(ethic)
 
-                com = request.form[('cm_' + str(i))]
+                com = request.form[('comm_' + str(i))]
                 com = self.convert_to_int(com)
 
-                coop = request.form[('co_' + str(i))]
+                coop = request.form[('coop_' + str(i))]
                 coop = self.convert_to_int(coop)
 
-                init = request.form[('i_' + str(i))]
+                init = request.form[('init_' + str(i))]
                 init = self.convert_to_int(init)
 
-                focus = request.form[('tf_' + str(i))]
+                focus = request.form[('team_focus_' + str(i))]
                 focus = self.convert_to_int(focus)
 
-                cont = request.form[('cr_' + str(i))]
+                cont = request.form[('contr_' + str(i))]
                 cont = self.convert_to_int(cont)
 
                 # default leader skills to None for Null in database
@@ -331,19 +332,19 @@ class review(MethodView):
 
                 if(sdt.is_lead == 1):
                     # get leader values
-                    lead = request.form[('l_' + str(i))]
+                    lead = request.form[('lead_' + str(i))]
                     lead = self.convert_to_int(lead)
 
-                    org = request.form[('o_' + str(i))]
+                    org = request.form[('org_' + str(i))]
                     org = self.convert_to_int(org)
 
-                    dlg = request.form[('d_' + str(i))]
+                    dlg = request.form[('dlg_' + str(i))]
                     dlg = self.convert_to_int(dlg)
 
                 # Get string inputs
                 strn = request.form[('str_' + str(i))]
                 wkn = request.form[('wkn_' + str(i))]
-                traits = request.form[('trait_' + str(i))]
+                traits = request.form[('traits_' + str(i))]
 
                 learned = None
                 if int(i) == self.get_id():
