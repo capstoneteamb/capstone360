@@ -126,17 +126,17 @@ def test_generate_tables():
            and columns[3][5] == 0)
     assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 0
+           and columns[4][3] == 1
            and columns[4][4] == "FALSE"
            and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 0
+           and columns[5][3] == 1
            and columns[5][4] == "FALSE"
            and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
            and columns[6][2] == "BOOLEAN"
-           and columns[6][3] == 0
+           and columns[6][3] == 1
            and columns[6][4] == "FALSE"
            and columns[6][5] == 0)
     assert(columns[7][1] == "active"
@@ -197,17 +197,17 @@ def test_generate_tables():
            and columns[3][5] == 0)
     assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 0
+           and columns[4][3] == 1
            and columns[4][4] == "FALSE"
            and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 0
+           and columns[5][3] == 1
            and columns[5][4] == "FALSE"
            and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
            and columns[6][2] == "BOOLEAN"
-           and columns[6][3] == 0
+           and columns[6][3] == 1
            and columns[6][4] == "FALSE"
            and columns[6][5] == 0)
     assert(columns[7][1] == "active"
