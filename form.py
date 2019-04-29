@@ -14,6 +14,35 @@ import gbmodel
 
 class review(MethodView):
 
+    human_fields = ['Name',
+                    'Technical Mastery',
+                    'Work Ethic',
+                    'Communication',
+                    'Cooperation',
+                    'Initiative',
+                    'Team Focus',
+                    'Contribution',
+                    'Leadership (Team Lead Only)',
+                    'Organization (Team Lead Only)',
+                    'Delegation (Team Lead Only)',
+                    'Points',
+                    'Strengths',
+                    'Weaknesses']
+
+    code_fields = ['name',
+                   'tech_mast',
+                   'work_ethic',
+                   'comm',
+                   'coop',
+                   'init',
+                   'team_focus',
+                   'contr',
+                   'lead',
+                   'org',
+                   'points',
+                   'str',
+                   'wkn']
+
     # This will be changed to account for CAS log in
     # input: only self
     # output: the user's ID value
@@ -187,6 +216,8 @@ class review(MethodView):
         return render_template('review.html',
                                mems=mems,
                                state=state,
+                               human_fields=self.human_fields,
+                               code_fields=self.code_fields,
                                input_error=None,
                                fatal_error=None)
 
@@ -384,4 +415,10 @@ class review(MethodView):
 
             return render_template('submitted.html')
 
-        return render_template('review.html', mems=mems, state=self.get_state(), input_error=True, fatal_error=None)
+        return render_template('review.html',
+                               mems=mems,
+                               human_fields=self.human_fields,
+                               code_fields=self.code_fields,
+                               state=self.get_state(),
+                               input_error=True,
+                               fatal_error=None)

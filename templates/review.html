@@ -30,54 +30,45 @@
                 <table class="table table-striped" style="table-layout: fixed; font-size: 12px">
                     {% for i in range(15)%}
                         <tr>
-                            {% if i == 0 %}
-                                <td>Name</td>
-                                {% for mem in mems %}
+                            <td>{{human_fields[i]}}</td>
+                            {% for mem in mems %}
+                                {% if i == 0 %}
                                     <td>{{mem['name']}}</td>
-                                {% endfor %}
-                            {% elif i == 1 %}
-                                <td>Technical Mastery</td>
-                                {% for mem in mems %}
-                                    <td>
-                                        {% for j in range(5) %}
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" id="tm{{5 - j}}_{{mem['id']}}" name="tm_{{mem['id']}}"
-                                                    class="custom-control-input" value="{{5-j}}" required>
-                                                <label class="custom-control-label" for="tm{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
-                                            </div>
-                                        {% endfor %}
-                                    </td>
-                                {% endfor %}
-                            {% elif i == 2 %}
-                                <td>Work Ethic</td>
-                            {% elif i == 3 %}
-                                <td>Communication</td>
-                            {% elif i == 4 %}
-                                <td>Cooperation</td>
-                            {% elif i == 5 %}
-                                <td>Initiative</td>
-                            {% elif i == 6 %}
-                                <td>Team Focus</td>
-                            {% elif i == 7 %}
-                                <td>Contribution</td>
-                            {% elif i == 8 %}
-                                <td>Leadership (Team Lead Only)</td>
-                            {% elif i == 9 %}
-                                <td>Organization (Team Lead Only)</td>
-                            {% elif i == 10 %}
-                                <td>Delegation (Team Lead Only)</td>
-                            {% elif i == 11 %}
-                                <td>Points<br>100 across all teammates<br>Enter 0 for yourself</td>
-                            {% elif i == 12 %}
-                                <td>Strengths</td>
-                            {% elif i == 13 %}
-                                <td>Weaknesses</td>
-                            {% elif i == 14 %}
-                                <td>Traits to Work On</td>
-                            {% endif %}
+                                {% elif i < 8 %}
+                                        <td>
+                                            {% for j in range(5) %}
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}" name="{{code_fields[i]}}_{{mem['id']}}"
+                                                        class="custom-control-input" value="{{5-j}}" required>
+                                                    <label class="custom-control-label" for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
+                                                </div>
+                                            {% endfor %}
+                                        </td>
+                                {% elif i < 11 %}
+                                        <td>
+                                            {% for j in range(5) %}
+                                                {% if mem['is_lead'] == 1 %}
+                                                    <div class="custom-control custom-radio">
+                                                        <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}" name="{{code_fields[i]}}_{{mem['id']}}"
+                                                            class="custom-control-input" value="{{5-j}}" required>
+                                                        <label class="custom-control-label" for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                {% else %}
+
+                                {% endif %}
+                            {% endfor %}
                         </tr>
                     {% endfor %}
-                    <!--<thead class="thead-dark">
+
+<!--
+
+                
+                                            
+    
+                    <thead class="thead-dark">
                         <tr>
                             <th>Name</th>
                             <th>Technical Mastery</th>
