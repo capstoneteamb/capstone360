@@ -186,10 +186,12 @@ class removed_students(db.Model):
         if s is None:
             return False
         s = list(s)
+        del s[7] # Remove the 'active' attribute. ihttps://docs.python.org/3/tutorial/datastructures.html
+
         current_date = datetime.datetime.now()
         date = current_date.strftime("%Y-%m-%d")
         s.append(date)
         engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, \
-            final_done, active, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
-            :midterm_done, :final_done, :active, :removed_date)", s)
+            final_done, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
+            :midterm_done, :final_done, :removed_date)", s)
         return True
