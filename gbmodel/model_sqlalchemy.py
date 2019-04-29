@@ -1,4 +1,3 @@
-import os
 import sys
 import datetime
 from app import db, engine, db_session
@@ -186,8 +185,7 @@ class removed_students(db.Model):
         if s is None:
             return False
         s = list(s)
-        del s[7] # Remove the 'active' attribute. ihttps://docs.python.org/3/tutorial/datastructures.html
-
+        del s[7] # Remove the 'active' attribute. https://docs.python.org/3/tutorial/datastructures.html
         current_date = datetime.datetime.now()
         date = current_date.strftime("%Y-%m-%d")
         s.append(date)
