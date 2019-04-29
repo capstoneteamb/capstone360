@@ -172,7 +172,6 @@ def generate_tables(cursor):
                     'is_lead BOOLEAN NOT NULL DEFAULT FALSE, '
                     'midterm_done BOOLEAN NOT NULL DEFAULT FALSE, '
                     'final_done BOOLEAN NOT NULL DEFAULT FALSE, '
-                    'active VARCHAR(128) NULL, '
                     'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
