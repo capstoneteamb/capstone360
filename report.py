@@ -31,7 +31,7 @@ class GeneratedReportView(MethodView):
         response = make_response(pdf)
         return response
 
-def _make_student_report_pdf(student_id, session_id, is_final):
+def _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=False):
     """
     Renders a pdf for a student, defaulting to midterm review.
     """
@@ -43,7 +43,7 @@ def _make_student_report_pdf(student_id, session_id, is_final):
     team_id = student.tid
     team_name = gbmodel.teams.query.filter_by(id=team_id, session_id=session_id).first().name
 
-    # init scores
+    # init scores so we can tally how many 1s we got, 2s, etc.
     scores = {
             'tech_mastery': [],
             'work_ethic': [],
@@ -74,8 +74,13 @@ def _make_student_report_pdf(student_id, session_id, is_final):
             # things left by one in the table.
             scores[key][this_score-1] = scores[key][this_score-1] + 1
 
-        weaknesses.append(r.weaknesses)
-        strengths.append(r.strengths)
+        if is_professor_report:
+            reporter_name = gbmodel.students.query.filter_by(id=r.reporting).first().name
+            weaknesses.append(reporter_name + ": " + r.weaknesses)
+            strengths.append(reporter_name + ": " + r.strengths)
+        else:
+            weaknesses.append(r.weaknesses)
+            strengths.append(r.strengths)
 
     # TODO Mark all the self reported scores
     for r in reports:
