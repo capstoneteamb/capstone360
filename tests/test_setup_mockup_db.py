@@ -246,7 +246,7 @@ def test_generate_tables():
            and columns[1][3] == 1
            and columns[1][4] is None
            and columns[1][5] == 0)
-    assert(columns[2][1] == "reporting"
+    assert(columns[2][1] == "reviewer"
            and columns[2][2] == "VARCHAR(128)"
            and columns[2][3] == 1
            and columns[2][4] is None
@@ -256,7 +256,7 @@ def test_generate_tables():
            and columns[3][3] == 1
            and columns[3][4] is None
            and columns[3][5] == 2)
-    assert(columns[4][1] == "report_for"
+    assert(columns[4][1] == "reviewee"
            and columns[4][2] == "VARCHAR(128)"
            and columns[4][3] == 1
            and columns[4][4] is None
@@ -417,7 +417,7 @@ def test_fill_tables_with_data():
         # review[1] = session id associated with the report
         assert (review[1] in session_ids)
 
-        # Verify that the "reporting" field contains a valid student id
+        # Verify that the "reviewer" field contains a valid student id
         # review[2] = the student_id of the one submitting the report
         assert (review[2] in student_ids)
 
@@ -426,7 +426,7 @@ def test_fill_tables_with_data():
         # reviewed and the one submitting the review should be the same)
         assert (review[3] in team_ids)
 
-        # Verify that the "report_for" field is valid
+        # Verify that the "reviewee" field is valid
         # review[4] = the student id of the student being reviewed
         assert (review[4] in student_ids)
 
