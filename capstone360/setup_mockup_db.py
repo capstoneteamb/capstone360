@@ -265,7 +265,7 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
 
 def run():
     # Part 1: Create database and add tables
-    connection = sqlite3.connect('mockup_database.db')
+    connection = sqlite3.connect('capstone360.db')
     cursor = connection.cursor()
     generate_tables(cursor)
 
