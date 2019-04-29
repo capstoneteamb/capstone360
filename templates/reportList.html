@@ -1,17 +1,25 @@
 {% extends "menu.html" %}
 {% block content %}
 <div class="container dashboard-container">
-    Midterm
-    <ul>
-    {% for s in students %}
-    <li><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=False, team_id=team_id) }}">{{ s.name }}</a></li>
-    {% endfor %}
-    </ul>
-    Final
-    <ul>
-    {% for s in students %}
-    <li><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=True, team_id=team_id) }}">{{ s.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <div class="student-card">
+        <h4>Midterm</h4>
+        {% for s in students %}
+            <p class=entry>
+                <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
+                <span class="name" style="display: inline-block;"><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=False, team_id=team_id) }}">{{ s.name }}</a></span>
+            </p>
+        {% endfor %}
+    </div>
+    <div class="student-card">
+        <h4>Final</h4>
+        <ul>
+        {% for s in students %}
+            <p class=entry>
+                <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
+                <span class="name" style="display: inline-block;"><a href="{{ url_for('studentReport', student_id=s.id, session_id=s.session_id, is_final=True, team_id=team_id) }}">{{ s.name }}</a></span>
+            </p>
+        {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}
