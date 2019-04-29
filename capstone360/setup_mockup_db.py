@@ -131,9 +131,9 @@ def generate_tables(cursor):
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL, '
-                    'is_lead BOOLEAN NULL DEFAULT FALSE, '
-                    'midterm_done BOOLEAN NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NULL DEFAULT FALSE, '
+                    'is_lead BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'midterm_done BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'final_done BOOLEAN NOT NULL DEFAULT FALSE, '
                     'active VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
@@ -169,9 +169,9 @@ def generate_tables(cursor):
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL , '
-                    'is_lead BOOLEAN NULL DEFAULT FALSE, '
-                    'midterm_done BOOLEAN NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NULL DEFAULT FALSE, '
+                    'is_lead BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'midterm_done BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'final_done BOOLEAN NOT NULL DEFAULT FALSE, '
                     'active VARCHAR(128) NULL, '
                     'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
