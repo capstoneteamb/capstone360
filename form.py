@@ -95,6 +95,24 @@ class review(MethodView):
 
         return cap
 
+    # This method returns the current user's name to display on the web page
+    # input: only self
+    # output: A string representing the user's name
+    def get_self_name(self):
+        # query database to get student
+        try:
+            students = gbmodel.students()
+            sdt = students.query.filter_by(id=self.get_id()).first()
+        except SQLAlchemyError:
+            self.display_error('student look up error - getting their name')
+
+        # get name
+        name = sdt.name
+        if name is None:
+            self.display_error('The user has no name')
+
+        return name
+
     # This method returns the current user's team id value while testing if
     # the user exists in the database.
     # input: only self
@@ -247,6 +265,7 @@ class review(MethodView):
             mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
         except SQLAlchemyError:
             return render_template('review.html',
+                                   name=self.get_self_name(),
                                    mems=None,
                                    state=None,
                                    input_error=None,
@@ -419,6 +438,7 @@ class review(MethodView):
             return render_template('submitted.html')
 
         return render_template('review.html',
+                               name=self.get_self_name(),
                                mems=mems,
                                human_fields=self.human_fields,
                                code_fields=self.code_fields,

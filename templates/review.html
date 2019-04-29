@@ -9,6 +9,7 @@
 {% if fatal_error %}
 {{ fatal_error }}
 {% else %}
+<h3>Welcome to your Capstone 360 Review. Please fill out the review form below, {{name}}</h3>
 {% if input_error %}
 <ul>
     {% for alert in get_flashed_messages() %}
