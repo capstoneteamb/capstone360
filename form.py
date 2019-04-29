@@ -27,7 +27,8 @@ class review(MethodView):
                     'Delegation (Team Lead Only)',
                     'Points',
                     'Strengths',
-                    'Weaknesses']
+                    'Weaknesses',
+                    'Traits to Work On']
 
     code_fields = ['name',
                    'tech_mast',
@@ -41,7 +42,8 @@ class review(MethodView):
                    'org',
                    'points',
                    'str',
-                   'wkn']
+                   'wkn',
+                   'traits']
 
     # This will be changed to account for CAS log in
     # input: only self
