@@ -14,6 +14,8 @@ import gbmodel
 
 class review(MethodView):
 
+    # holds fields that should appear in the table on the review page
+    # -- these are what people will see
     human_fields = ['Name',
                     'Technical Mastery',
                     'Work Ethic',
@@ -30,6 +32,8 @@ class review(MethodView):
                     'Weaknesses',
                     'Traits to Work On']
 
+    # holds fields that should appear in the table on the review page
+    # -- this is what the form's html will use
     code_fields = ['name',
                    'tech_mast',
                    'work_ethic',
