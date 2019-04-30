@@ -96,6 +96,11 @@ def test_generate_tables():
            and columns[4][3] == 1
            and columns[4][4] is None
            and columns[4][5] == 0)
+    assert(columns[5][1] == "title"
+           and columns[5][2] == "VARCHAR(20)"
+           and columns[5][3] == 1
+           and columns[5][4] is None
+           and columns[5][5] == 0)
 
     # Verify that the students table was created, and that it is empty
     cursor.execute("SELECT * FROM students;")
@@ -127,17 +132,17 @@ def test_generate_tables():
     assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
            and columns[4][3] == 1
-           and columns[4][4] == "FALSE"
+           and columns[4][4] is None
            and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
            and columns[5][3] == 1
-           and columns[5][4] == "FALSE"
+           and columns[5][4] is None
            and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
            and columns[6][2] == "BOOLEAN"
            and columns[6][3] == 1
-           and columns[6][4] == "FALSE"
+           and columns[6][4] is None
            and columns[6][5] == 0)
     assert(columns[7][1] == "active"
            and columns[7][2] == "VARCHAR(128)"
@@ -198,17 +203,17 @@ def test_generate_tables():
     assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
            and columns[4][3] == 1
-           and columns[4][4] == "FALSE"
+           and columns[4][4] is None
            and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
            and columns[5][3] == 1
-           and columns[5][4] == "FALSE"
+           and columns[5][4] is None
            and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
            and columns[6][2] == "BOOLEAN"
            and columns[6][3] == 1
-           and columns[6][4] == "FALSE"
+           and columns[6][4] is None
            and columns[6][5] == 0)
     assert(columns[7][1] == "removed_date"
            and columns[7][2] == "DATETIME"
@@ -365,7 +370,8 @@ def test_fill_tables_with_data():
         assert (session[0] not in session_ids)
         session_ids.append(session[0])
 
-        # start_term, start_year, end_term, end_year in that order
+        # Verify that the title is correct (that it is "*start_term* *start_year*")
+        assert(session[5] == session[1] + " " + str(session[2]))
 
     # Verify that the data in the teams table is correct
     cursor.execute("SELECT * FROM teams;")

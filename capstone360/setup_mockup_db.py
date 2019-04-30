@@ -117,7 +117,8 @@ def generate_tables(cursor):
                     'start_term VARCHAR(10) NOT NULL, '
                     'start_year INTEGER NOT NULL, '
                     'end_term VARCHAR(10) NOT NULL, '
-                    'end_year INTEGER NOT NULL );'))
+                    'end_year INTEGER NOT NULL, '
+                    'title VARCHAR(20) NOT NULL );'))
 
     # Create teams table and insert some rows
     cursor.execute(('CREATE TABLE teams( '
@@ -131,9 +132,9 @@ def generate_tables(cursor):
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL, '
-                    'is_lead BOOLEAN NOT NULL DEFAULT FALSE, '
-                    'midterm_done BOOLEAN NOT NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'is_lead BOOLEAN NOT NULL, '
+                    'midterm_done BOOLEAN NOT NULL, '
+                    'final_done BOOLEAN NOT NULL, '
                     'active VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
@@ -169,67 +170,42 @@ def generate_tables(cursor):
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL , '
-                    'is_lead BOOLEAN NOT NULL DEFAULT FALSE, '
-                    'midterm_done BOOLEAN NOT NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NOT NULL DEFAULT FALSE, '
+                    'is_lead BOOLEAN NOT NULL, '
+                    'midterm_done BOOLEAN NOT NULL, '
+                    'final_done BOOLEAN NOT NULL, '
                     'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
-
-
-def submit_review(cursor, student_id, session_id, review):
-    # Put midterm review into database
-    cursor.execute(('INSERT INTO reports '
-                    'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'),
-                   (datetime.datetime.now(),
-                    session_id,
-                    review["reviewer"],
-                    review["tid"],
-                    review["reviewee"],
-                    review["tech_mastery"],
-                    review["work_ethic"],
-                    review["communication"],
-                    review["cooperation"],
-                    review["initiative"],
-                    review["team_focus"],
-                    review["contribution"],
-                    review["leadership"],
-                    review["organization"],
-                    review["delegation"],
-                    review["points"],
-                    review["strengths"],
-                    review["weaknesses"],
-                    review["traits_to_work_on"],
-                    review["what_you_learned"],
-                    review["proud_of_accomplishment"],
-                    review["is_final"]))
 
 
 def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
     start_year = 2019
     end_year = 2019
-    term_index_start = 0
-    term_index_end = 1
+    start_term_index = 0
+    end_term_index = 1
     terms = ["Winter", "Spring", "Summer", "Fall"]
 
     for session_id in range(num_sessions):
         # Get new days and years
-        if (term_index_start > 3):
-            term_index_start = 0
+        if (start_term_index > 3):
+            start_term_index = 0
             start_year = start_year + 1
 
-        if (term_index_end > 3):
-            term_index_end = 0
+        if (end_term_index > 3):
+            end_term_index = 0
             end_year = end_year + 1
 
         # Put new session entry into the database
-        cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?)',
+        cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?,?)',
                        (session_id,
-                        terms[term_index_start],
+                        terms[start_term_index],
                         start_year,
-                        terms[term_index_end],
-                        end_year))
-        term_index_start = term_index_start + 1
-        term_index_end = term_index_end + 1
+                        terms[end_term_index],
+                        end_year,
+                        terms[start_term_index] + " " + str(start_year)))
+
+        # Increment some variables we use to help us enter realistic looking start and end terms
+        start_term_index = start_term_index + 1
+        end_term_index = end_term_index + 1
 
         # Put new team entry into the database
         for team_id in range(num_teams):
