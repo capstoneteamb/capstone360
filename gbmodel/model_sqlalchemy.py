@@ -106,7 +106,6 @@ class students(db.Model):
             removed_student.add_student(s)
             data = {'id': s[0], 'session_id': session_id}
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
-            # consider another statement to remove the student entry from the team_members table
         return True
 
     # validate cas username with student id in the database
@@ -176,10 +175,6 @@ class capstone_session(db.Model):
         return lists
 
 
-class team_members(db.Model):
-    __table__ = db.Model.metadata.tables['team_members']
-
-
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
@@ -191,10 +186,11 @@ class removed_students(db.Model):
         if s is None:
             return False
         s = list(s)
+        del s[7] # Remove the 'active' attribute. https://docs.python.org/3/tutorial/datastructures.html
         current_date = datetime.datetime.now()
         date = current_date.strftime("%Y-%m-%d")
         s.append(date)
         engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, \
-            final_done, active, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
-            :midterm_done, :final_done, :active, :removed_date)", s)
+            final_done, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
+            :midterm_done, :final_done, :removed_date)", s)
         return True

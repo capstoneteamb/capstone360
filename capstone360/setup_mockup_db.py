@@ -99,7 +99,7 @@ def generate_student_data():
                          + ".notreal@pdx.edu")
 
         # Get student id
-        student_id = id_num
+        student_id = str(id_num)
         id_num = id_num + 1
 
         # Add Data To List
@@ -117,7 +117,8 @@ def generate_tables(cursor):
                     'start_term VARCHAR(10) NOT NULL, '
                     'start_year INTEGER NOT NULL, '
                     'end_term VARCHAR(10) NOT NULL, '
-                    'end_year INTEGER NOT NULL );'))
+                    'end_year INTEGER NOT NULL, '
+                    'title VARCHAR(20) NOT NULL );'))
 
     # Create teams table and insert some rows
     cursor.execute(('CREATE TABLE teams( '
@@ -127,30 +128,23 @@ def generate_tables(cursor):
 
     # Create Students Table
     cursor.execute(('CREATE TABLE students( '
-                    'id INTEGER NOT NULL, '
+                    'id VARCHAR(128) NOT NULL, '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL, '
-                    'is_lead BOOLEAN NULL DEFAULT FALSE, '
-                    'midterm_done BOOLEAN NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NULL DEFAULT FALSE, '
+                    'is_lead BOOLEAN NOT NULL, '
+                    'midterm_done BOOLEAN NOT NULL, '
+                    'final_done BOOLEAN NOT NULL, '
                     'active VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
-
-    # Create Team Members table
-    cursor.execute(('CREATE TABLE team_members( '
-                    'tid INTEGER NOT NULL REFERENCES teams(id), '
-                    'sid INTEGER NOT NULL REFERENCES students(id), '
-                    'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
-                    'PRIMARY KEY (tid, sid, session_id) );'))
 
     # Create Reports table
     cursor.execute(('CREATE TABLE reports('
                     'time DATETIME NOT NULL, '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
-                    'reporting INTEGER NOT NULL REFERENCES students(id), '
+                    'reviewer VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
-                    'report_for INTEGER NOT NULL REFERENCES students(id), '
+                    'reviewee VARCHAR(128) NOT NULL REFERENCES students(id), '
                     'tech_mastery INTEGER NULL, '
                     'work_ethic INTEGER NULL, '
                     'communication INTEGER NULL, '
@@ -168,76 +162,50 @@ def generate_tables(cursor):
                     'what_you_learned VARCHAR(4096) NULL, '
                     'proud_of_accomplishment VARCHAR(4096) NULL, '
                     'is_final BOOLEAN NOT NULL, '
-                    'PRIMARY KEY (reporting, tid, report_for, is_final));'))
+                    'PRIMARY KEY (reviewer, tid, reviewee, is_final));'))
 
     # Create removed students table
     cursor.execute(('CREATE TABLE removed_students( '
-                    'id INTEGER NOT NULL, '
+                    'id VARCHAR(128) NOT NULL, '
                     'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL , '
-                    'is_lead BOOLEAN NULL DEFAULT FALSE, '
-                    'midterm_done BOOLEAN NULL DEFAULT FALSE, '
-                    'final_done BOOLEAN NULL DEFAULT FALSE, '
-                    'active VARCHAR(128) NULL, '
+                    'is_lead BOOLEAN NOT NULL, '
+                    'midterm_done BOOLEAN NOT NULL, '
+                    'final_done BOOLEAN NOT NULL, '
                     'removed_date DATETIME NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
-
-
-def submit_review(cursor, student_id, session_id, review):
-    # Put midterm review into database
-    cursor.execute(('INSERT INTO reports '
-                    'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'),
-                   (datetime.datetime.now(),
-                    session_id,
-                    review["reporting"],
-                    review["tid"],
-                    review["report_for"],
-                    review["tech_mastery"],
-                    review["work_ethic"],
-                    review["communication"],
-                    review["cooperation"],
-                    review["initiative"],
-                    review["team_focus"],
-                    review["contribution"],
-                    review["leadership"],
-                    review["organization"],
-                    review["delegation"],
-                    review["points"],
-                    review["strengths"],
-                    review["weaknesses"],
-                    review["traits_to_work_on"],
-                    review["what_you_learned"],
-                    review["proud_of_accomplishment"],
-                    review["is_final"]))
 
 
 def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
     start_year = 2019
     end_year = 2019
-    term_index_start = 0
-    term_index_end = 1
+    start_term_index = 0
+    end_term_index = 1
     terms = ["Winter", "Spring", "Summer", "Fall"]
 
     for session_id in range(num_sessions):
         # Get new days and years
-        if (term_index_start > 3):
-            term_index_start = 0
+        if (start_term_index > 3):
+            start_term_index = 0
             start_year = start_year + 1
 
-        if (term_index_end > 3):
-            term_index_end = 0
+        if (end_term_index > 3):
+            end_term_index = 0
             end_year = end_year + 1
 
         # Put new session entry into the database
-        cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?)',
+        cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?,?)',
                        (session_id,
-                        terms[term_index_start],
+                        terms[start_term_index],
                         start_year,
-                        terms[term_index_end],
-                        end_year))
-        term_index_start = term_index_start + 1
-        term_index_end = term_index_end + 1
+                        terms[end_term_index],
+                        end_year,
+                        terms[start_term_index] + " " + str(start_year)))
+
+        # Increment some variables we use to help us enter realistic looking start and end terms
+        start_term_index = start_term_index + 1
+        end_term_index = end_term_index + 1
 
         # Put new team entry into the database
         for team_id in range(num_teams):
@@ -247,16 +215,16 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             session_id,
                             "Team " + str(team_number)))
 
-        # Put data into the students, teams, team members, and reports tables
+        # Put data into the students and teams tables
         for student in student_data:
-            student_id = student["id"] + (len(student_data) * session_id)
-            team_id = student["id"] % num_teams + (num_teams * session_id)
+            student_id = int(student["id"]) + (len(student_data) * session_id)
+            team_id = int(student["id"]) % num_teams + (num_teams * session_id)
 
             # Figure out if student is team lead
             # The conditional will be true if the current student is the first one on the team. If they are
             # the first one, they are the team lead
             is_team_lead = False
-            if (student["id"] < num_teams):
+            if (int(student["id"]) < num_teams):
                 is_team_lead = True
 
             # Add student to the students table
@@ -270,14 +238,10 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             False,
                             'midterm'))
 
-            # Add student to the team members table
-            cursor.execute('INSERT INTO team_members VALUES(?,?,?)',
-                           (team_id, student_id, session_id))
-
 
 def run():
     # Part 1: Create database and add tables
-    connection = sqlite3.connect('mockup_database.db')
+    connection = sqlite3.connect('capstone360.db')
     cursor = connection.cursor()
     generate_tables(cursor)
 
