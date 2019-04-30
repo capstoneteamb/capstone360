@@ -7,7 +7,6 @@
 
 
 import sqlite3
-import datetime
 
 # Needed to generate student data
 names = [
