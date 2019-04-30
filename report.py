@@ -106,7 +106,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             scores[key][this_score-1] = scores[key][this_score-1] + 1
 
         if is_professor_report:
-            reporter_name = gbmodel.students.query.filter_by(id=r.reporting).first().name
+            reporter_name = gbmodel.students.query.filter_by(id=r.reviewer).first().name
             weaknesses.append(reporter_name + ": " + r.weaknesses)
             strengths.append(reporter_name + ": " + r.strengths)
         else:

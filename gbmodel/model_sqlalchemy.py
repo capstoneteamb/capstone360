@@ -295,9 +295,9 @@ class reports(db.Model):
         Gets all available reports for a student, optionally filtering to only midterms or finals.
         """
         if is_final is not None:
-            query_string = "select * from reports where report_for=:id and tid=:term_id and is_final=:is_final"
+            query_string = "select * from reports where reviewee=:id and tid=:term_id and is_final=:is_final"
         else:
-            query_string = "select * from reports where report_for=:id and tid=:term_id"
+            query_string = "select * from reports where reviewee=:id and tid=:term_id"
 
         params = {'id': student_id, 'term_id': term_id, 'is_final': is_final}
         reports = engine.execute(query_string, params)
