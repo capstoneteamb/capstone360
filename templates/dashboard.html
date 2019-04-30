@@ -2,7 +2,7 @@
 {% block content %} 
 
 <div class="container dashboard-container">
-		<!-- <a href="{{ url_for('setDate', sessionID=sessionID)}}"><button class="my-btn">Set Date?</button></a> -->
+		<!-- <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Date?</button></a> -->
 	{% for data in lists %}
 	<div class="student-card display-card">
 		<h4>{{data[0]}}</h4>
@@ -13,11 +13,11 @@
 			<span class="name" style="display: inline-block;">{{ student }}</span>
 		</p>
 		{% endfor %}		
-		<a href="{{ url_for('addStudent', data=data[0], sessionID=sessionID)}}"><button class="my-btn card-btn add-student-btn">Add Student</button></a>
+		<a href="{{ url_for('addStudent', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn add-student-btn">Add Student</button></a>
 	</div>
 	
 	<div class="student-card remove-card">
-		<form action="{{ url_for('dashboard', sessionID=sessionID) }}" method=POST>
+		<form action="{{ url_for('dashboard', session_id=session_id) }}" method=POST>
 			<h4>{{data[0]}}</h4>
 			{% for student in data[1:] %}
 			<p class=entry>
@@ -25,10 +25,10 @@
 					src="{{ url_for('static', filename='Assets/user.png')}}">
 				<span class="name" style="display: inline-block;"> {{ student }}
 				</span>
-				<input class="remove-check" type="checkbox" style="display: inline-block;" name="removedStudent"
+				<input class="remove-check" type="checkbox" style="display: inline-block;" name="removed_student"
 					value="{{ student}}"> 
-					<input type="hidden" name="teamName" value="{{data[0]}}">
-					<input type="hidden" value={{sessionID}} name=sessionID>
+					<input type="hidden" name="team" value="{{data[0]}}">
+					<input type="hidden" value={{session_id}} name=session_id>
 				</input>				
 			</p>
 			{% endfor %}
@@ -42,7 +42,7 @@
 						cursor: pointer;"></p>
 		
 		</form>
-	 	<a href="{{ url_for('removeTeam', data=data[0], sessionID=sessionID)}}"><button class="my-btn card-btn"
+	 	<a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"
 				style="background-color: #ff9e16">Remove Team</button></a>
 	</div>
 	{% endfor %}

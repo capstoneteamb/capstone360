@@ -1,4 +1,4 @@
-from flask import redirect, request, url_for, render_template
+from flask import request, render_template
 from flask.views import MethodView
 import gbmodel
 import datetime
@@ -11,28 +11,22 @@ class Dashboard(MethodView):
     def get(self):
         if validate() is False:
             return render_template('index.html')
-
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
-
-        # Get sessionID from the prefvious selected session
+        # Get session_id from the prefvious selected session
         # If None returned then request for a selection.
-        # Otherwise, display the current sessionID
-
-        sessionID = request.args.get('sessionID')
-
-        if sessionID is None:
+        # Otherwise, display the current session_id
+        session_id = request.args.get('session_id')
+        if session_id is None:
             user_session = request.args.get('selected_session')
-
             if user_session is not None:
                 user_session = user_session.split('-')
                 term = str(user_session[0].strip())
                 year = int(user_session[1].strip())
-
             else:
-                currentDate = datetime.datetime.now()
-                month = int(currentDate.month)       
-                year = currentDate.year
+                current_date = datetime.datetime.now()
+                month = int(current_date.month)
+                year = current_date.year
                 if month in range(9, 11):
                     term = "Fall"
                 elif month in range(3, 5):
@@ -41,90 +35,80 @@ class Dashboard(MethodView):
                     term = "Summer"
                 else:
                     term = "Winter"
-
-            sessionID = session.get_session_id(term, year)
-
+            session_id = session.get_session_id(term, year)
         # Lists - a list of teams and students of a selected session to display on the dashboard
         # Sessions - a list of sessions to display in drop downs
-        lists, sessions = team.dashboard(sessionID)
-
-        return render_template('dashboard.html', lists=lists, sessions=sessions, sessionID=sessionID)
+        lists, sessions = team.dashboard(session_id)
+        return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
 
     def post(self):
         session = gbmodel.capstone_session()
         student = gbmodel.students()
-        team = gbmodel.teams()       
-        sessionID = request.form['sessionID']
-        sessionID = int(sessionID[0])
-
+        team = gbmodel.teams()
+        session_id = request.form['session_id']
+        session_id = int(session_id[0])
         # If ADD STUDENT form was submitted (addStudent)
-        if 'studentName' in request.form:
-            teamName = request.form.get('teamName')
-            tName = teamName.replace("_", " ")
-            while not student.check_dup_student(request.form['studentID'], sessionID):
-                error = "Student id " + str(request.form['studentID']) + " already exists"
-                return render_template('addStudent.html', tName=teamName, sessionID=sessionID, error=error)         
-            student.insert_student(request.form['studentName'], request.form['studentID'], sessionID, tName)  
-            lists, sessions = team.dashboard(sessionID)       
-            return render_template('dashboard.html', lists=lists, sessions=sessions, sessionID=sessionID)
-
+        if 'student_name' in request.form:
+            team_name = request.form.get('team_name')
+            team_name = team_name.replace("_", " ")
+            while not student.check_dup_student(request.form['student_id'], session_id):
+                error = "Student id " + str(request.form['student_id']) + " already exists"
+                return render_template('addStudent.html', team_name=team_name, session_id=session_id, error=error)
+            student.insert_student(request.form['student_name'], request.form['student_id'], session_id, team_name)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If REMOVE STUDENT was submitted (in dashboard)
-        elif 'removedStudent' in request.form:
-            students = request.form.getlist('removedStudent')  
-            teamName = request.form.get('teamName')
-            tName = teamName.replace("_", " ")   
-            student.remove_student(students, tName, sessionID)
-            lists, sessions = team.dashboard(sessionID)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, sessionID=sessionID)  
-
-        # If REMOVE TEAM was submitted (removeTeam)
-        elif 'removeTeam' in request.form:
-            teamName = request.form.get('removeTeam')
-            tName = teamName.replace("_", " ")
-            team.remove_team(tName, sessionID)
-            lists, sessions = team.dashboard(sessionID)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, sessionID=sessionID)   
-
+        elif 'team' in request.form:
+            students = request.form.getlist('removed_student')
+            team_name = request.form.get('team')
+            team_name = team_name.replace("_", " ")
+            student.remove_student(students, team_name, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+        # If REMOVE TEAM was submitted (removed_team)
+        elif 'removed_team' in request.form:
+            team_name = request.form.get('removed_team')
+            team_name = team_name.replace("_", " ")
+            team.remove_team(team_name, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If ADD TEAM was submitted (addTeam)
-        elif 'teamName' in request.form:   
-            while not team.check_dup_team(request.form['teamName'], sessionID):
+        elif 'team_name' in request.form:
+            while not team.check_dup_team(request.form['team_name'], session_id):
                 error = "Team name already exists"
-                return render_template('addTeam.html', error=error, sessionID=sessionID)
-            teamName = request.form.get('teamName')
-            tName = teamName.replace("_", " ")
-            team.insert_team(sessionID, teamName)      
-            lists, sessions = team.dashboard(sessionID)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, sessionID=sessionID)   
-
-        # If SET DATE for reviews was submitted (setDate)  
-        elif 'midtermStart' in request.form:
-            midtermStart = request.form.get('midtermStart')
-            midtermEnd = request.form.get('midtermEnd')
-            finalStart = request.form.get('finalStart')
-            finalEnd = request.form.get('finalEnd')
-            # params = {'mStart': midtermStart, 'mEnd': midtermEnd, 'fStart': finalStart, 'fEnd': finalEnd}
-
-            session.insert_dates(midtermStart, midtermEnd, finalStart, finalEnd, sessionID)
-            lists, sessions = team.dashboard(sessionID)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, sessionID=sessionID) 
+                return render_template('addTeam.html', error=error, session_id=session_id)
+            team_name = request.form.get('team_name')
+            team_name = team_name.replace("_", " ")
+            team.insert_team(session_id, team_name)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+        # If SET DATE for reviews was submitted (setDate)
+        elif 'midterm_start' in request.form:
+            midterm_start = request.form.get('midterm_start')
+            midterm_end = request.form.get('midterm_end')
+            final_start = request.form.get('final_start')
+            final_end = request.form.get('final_end')
+            session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
 
 
 class AddStudent(MethodView):
     @login_required
     def get(self):
         # Get team_id, team name and session id from dashboard
-        tName = request.args.get('data')
-        tName = tName.replace(" ", "_")
-        sessionID = request.args.get('sessionID')
-        return render_template('addStudent.html', tName=str(tName), sessionID=sessionID, error=None)
+        team_name = request.args.get('data')
+        team_name = team_name.replace(" ", "_")
+        session_id = request.args.get('session_id')
+        return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
 
 
 class AddTeam(MethodView):
     @login_required
     def get(self):
         # Get seesion id from dashboard
-        sessionID = request.args.get('sessionID')
-        return render_template('addTeam.html', error=None, sessionID=sessionID)
+        session_id = request.args.get('session_id')
+        return render_template('addTeam.html', error=None, session_id=session_id)
 
 
 class RemoveTeam(MethodView):
@@ -133,14 +117,14 @@ class RemoveTeam(MethodView):
         # Get team name, the spaces were replaced with '_' in order to keep the entire name.
         # Otherwise the part after spaces would be cut (for some reason)
         # Also, Get session id from dashboard
-        tName = request.args.get('data')
-        tName = tName.replace(" ", "_")
-        sessionID = request.args.get('sessionID')
-        return render_template('removeTeam.html', tName=tName, sessionID=sessionID)
+        team_name = request.args.get('data')
+        team_name = team_name.replace(" ", "_")
+        session_id = request.args.get('session_id')
+        return render_template('removeTeam.html', team_name=team_name, session_id=session_id)
 
 
 class SetDate(MethodView):
     @login_required
     def get(self):
-        sessionID = request.args.get('sessionID')
-        return render_template('setDate.html', sessionID=sessionID)
+        session_id = request.args.get('session_id')
+        return render_template('setDate.html', session_id=session_id)

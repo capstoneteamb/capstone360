@@ -3,7 +3,7 @@
 <div class="container nav-container">
     <div class="row nav">
         <div class="col-sm" method='POST'>Sessions 
-            <form style="display: inline;">{{sessionID}}
+            <form style="display: inline;">{{session_id}}
                 <select name="selected_session" onchange="this.form.submit()">
                     {% for i in sessions %}
                     <option value="{{i}}">{{i}}</option>
@@ -23,16 +23,16 @@
     <div class="row button sub-buttons">
         <div class="col-sm"></div>
         <div class="col-sm">
-            <a href="{{ url_for('addTeam', sessionID=sessionID)}}"><button class="my-btn">Add Team</button></a>
+            <a href="{{ url_for('addTeam', session_id=session_id)}}"><button class="my-btn">Add Team</button></a>
         </div>
         <div class="col-sm">
             <button class="my-btn remove-btn" style="background-color: #ff9e16">Remove</button>
         </div>
         <div class="col-sm">
-		    <a href="{{ url_for('setDate', sessionID=sessionID)}}"><button class="my-btn">Set Date</button></a>
+		    <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Date</button></a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('dashboard', sessionID=sessionID) }}"><button class="my-btn">Cancel</button></a>
+            <a href="{{ url_for('dashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
         </div>
         <div class="col-sm"></div>
     </div>

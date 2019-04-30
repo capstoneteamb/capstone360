@@ -1,14 +1,9 @@
 """
 Flask entry
 """
-from flask import Flask, render_template
+from flask import Flask
 from index import Index
 import dashboard
-# import removeDashboard
-# from add import AddTeam
-# from add import AddStudent
-# from remove import RemoveStudent
-# from remove import RemoveTeam
 from prof_dashboard import Dashboard
 from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent

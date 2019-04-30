@@ -21,20 +21,18 @@ def validate():
         term = "Winter"
 
     # get current capstone session id
-    sessionID = session.get_session_id(term, year)
+    session_id = session.get_session_id(term, year)
 
     cas = CAS()
     username = cas.username
     students = gbmodel.students()
-    found_sessionID = students.validate(username)
-    
-
+    found_session_id = students.validate(username)
     # check to see if student's session_id is the current capstone session id
     # if not then check if they are in the 2nd half of their capstone session
-    if found_sessionID == -1:
+    if found_session_id == -1:
         return False
-    elif found_sessionID == sessionID:
+    elif found_session_id == session_id:
         return True
-    elif (1 + found_sessionID) == sessionID:
+    elif (1 + found_session_id) == session_id:
         return True
     return False
