@@ -1,22 +1,23 @@
 {% extends "menu.html" %}
 {% block content %}
 <!-- This is the input frontend where users can input information about recipes -->
-    <h3>Remove Team</h3>
-    <div class="remove-container">
-    <div class="input-card">
-        <form action="{{ url_for('removeTeam') }}" method=POST>
-            <p class="heading" style="display: inline-block;">Team Name: {{t_name}}</p> 
-            <input type="hidden" value={{t_name}} name=teamName>
-            <p><input class="my-btn" type=submit value='Remove Team' style="
-                background-color: #ff9e16";
-                color: white;
-                border: none;
-                border-radius:5px;
-                padding: 10px 20px;
-                cursor: pointer;></p>						
-        </form>
-        <a href="/removeDashboard/"><button class="my-btn">Cancel</button></a>
-    </div>
-    </div>
+	<h3>Remove Team</h3>
+	<div class="remove-container">
+	<div class="input-card">
+		<form action="{{ url_for('dashboard', sessionID=sessionID) }}" method=POST>
+			<p class="heading" style="display: inline-block;">Team Name: {{tName}}</p> 
+			<input type="hidden" value={{tName}} name=removeTeam>
+			<input type="hidden" value={{sessionID}} name=sessionID>	
+			<p><input class="my-btn" type=submit value='Remove Team' style="
+				background-color: #ff9e16";
+				color: white;
+				border: none;
+				border-radius:5px;
+				padding: 10px 20px;
+				cursor: pointer;></p>						
+		</form>
+		<a href="{{ url_for('dashboard', sessionID=sessionID) }}"><button class="my-btn">Cancel</button></a>
+	</div>
+	</div>
 
 {% endblock %}

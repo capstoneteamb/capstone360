@@ -1,6 +1,6 @@
 import gbmodel
 import datetime
-from app import cas
+from flask_cas import CAS
 
 # function to grab cas username and passes the value to gbmmodel to vaidate
 
@@ -21,12 +21,13 @@ def validate():
         term = "Winter"
 
     # get current capstone session id
-    sessionID = session.getSessionID(term, year)
+    sessionID = session.get_session_id(term, year)
 
+    cas = CAS()
     username = cas.username
     students = gbmodel.students()
     found_sessionID = students.validate(username)
-    print(found_sessionID)
+    
 
     # check to see if student's session_id is the current capstone session id
     # if not then check if they are in the 2nd half of their capstone session
