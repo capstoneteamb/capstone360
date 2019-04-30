@@ -46,7 +46,7 @@ class teams(db.Model):
         tid = id[0]
         params = {'tid': tid, 'session_id': session_id}
         list_students = student.get_students(tid, session_id)
-        print(list_students)
+      
         if list_students is not None:
             for i in list_students:
                 params = {'name': i[0], 'session_id': session_id}
@@ -58,6 +58,21 @@ class teams(db.Model):
         engine.execute("delete from students where tid = :tid AND session_id = :session_id", params)
         engine.execute("delete from teams where id = :tid AND session_id = :session_id", params)
         return True
+
+    def dashboard(self, sessionID):
+        student = students()
+        session = capstone_session()
+        tids = [row[0] for row in self.get_team_session_id(sessionID)]
+        teamNames = [row[2] for row in self.get_team_session_id(sessionID)]
+        lists = [[] for _ in range(len(tids))]    
+        for i in range(len(tids)):
+            names = student.get_students(tids[i], sessionID)
+            temp = [teamNames[i]]
+            for name in names:
+                temp.append(name[0])
+            lists[i] = temp
+        sessions = session.get_sessions()
+        return lists, sessions
 
 
 class students(db.Model):
@@ -112,7 +127,6 @@ class students(db.Model):
     # validate cas username with student id in the database
     def validate(self, id):
         params = {'id': id}
-        print(id)
         try:
             result = engine.execute('select session_id from students where name = :id', params)
             result = result.fetchone()
@@ -128,12 +142,12 @@ class students(db.Model):
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
-    def get_session_id(self, term, year):
-        ses_id = capstone_session.query.filter_by(start_term=term, start_year=year).first()
-        if (ses_id):
-            return ses_id.id
-        else:
-            return None
+    # def get_session_id(self, term, year):
+    #     ses_id = capstone_session.query.filter_by(start_term=term, start_year=year).first()
+    #     if (ses_id):
+    #         return ses_id.id
+    #     else:
+    #         return None
 
     def get_max(self):
         max_id = engine.execute('select max(id) from capstone_session ')
@@ -160,7 +174,7 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
-    def getSessionID(self, term, year):
+    def get_session_id(self, term, year):
         id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()
         if id is None:
             return self.insert_session(term, year)
@@ -174,6 +188,16 @@ class capstone_session(db.Model):
             temp = str(i.start_term) + " - " + str(i.start_year)
             lists.append(temp)
         return lists
+
+    def insert_dates(self, midterm_start, midterm_end, final_start, final_end, session_id):
+        params = {'mStart': midterm_start, 'mEnd': midterm_end, 'fStart': final_start, 'fEnd': final_end, 'sessionID': session_id}
+        for i in params:
+            if params[i]:
+                params[i] = params[i]
+            else:
+                params[i] = None
+        engine.execute("update capstone_session set mid_start =:mStart, mid_end =:mEnd, final_start=:fStart, final_end=:fEnd where id=:sessionID", params)
+        return True
 
 
 class team_members(db.Model):

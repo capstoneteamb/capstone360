@@ -7,13 +7,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask.views import MethodView
 from datetime import datetime
 import gbmodel
+from flask_cas import login_required
 
 # The review class handles get and post requests for review.html, and it
 # includes helper functions for cleanliness
 
 
 class review(MethodView):
-
+    @login_required
     # This will be changed to account for CAS log in
     # input: only self
     # output: the user's ID value
