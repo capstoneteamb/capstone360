@@ -3,6 +3,7 @@ from flask.views import MethodView
 
 import gbmodel
 
+
 class TeamReportListView(MethodView):
     def get(self, team_id):
         """
@@ -12,13 +13,13 @@ class TeamReportListView(MethodView):
         students = gbmodel.students.query.filter_by(tid=team_id, session_id=0)
         sessions = {'first','second'}
         teams = [(row.id,row.name) for row in gbmodel.teams.query.filter_by(session_id=0)]
-        return render_template('reportList.html', students=students, sessions=sessions, teams=teams)
+        return render_template('reportList.html', students=students, sessions=sessions, teams=teams, team_id=team_id, session_id=0)
 
 
-class GeneratedStudentReportView(MethodView):
+class GeneratedProfessorReportView(MethodView):
     def get(self):
         """
-        Generates a report for a specific student.
+        Generates a report for a specific student for viewing by a professor.
         """
         student_id = request.args.get('student_id')
         session_id = request.args.get('session_id')
@@ -29,9 +30,36 @@ class GeneratedStudentReportView(MethodView):
         else:
             is_final = True
 
-        pdf = _make_student_report_pdf(student_id, session_id, is_final)
+        pdf = _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=True)
         response = make_response(pdf)
         return response
+
+class GeneratedAnonymousReportView(MethodView):
+    def get(self):
+        """
+        Generates anonymized reports for printing and handing out to students.
+        """
+        team_id = request.args.get('team_id')
+        session_id = request.args.get('session_id')
+        is_final = request.args.get('is_final')
+        # TODO find a less fragile way to deal with booleans in urls
+        if is_final == "False":
+            is_final = False
+        else:
+            is_final = True
+
+        pdf = _make_printable_reports(session_id, team_id, is_final)
+        response = make_response(pdf)
+        return response
+
+
+def _make_printable_reports(session_id, team_id, is_final):
+    students = gbmodel.students.query.filter_by(tid=team_id, session_id=session_id)
+    report = ""
+    # Concatenate anonymized reports for all students on the team
+    for s in students:
+        report = report + _make_student_report_pdf(s.id, session_id, is_final)
+    return report
 
 
 def _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=False):

@@ -10,7 +10,7 @@ from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
-from report import TeamReportListView, GeneratedStudentReportView
+from report import TeamReportListView, GeneratedProfessorReportView, GeneratedAnonymousReportView
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -64,8 +64,12 @@ app.add_url_rule('/reportList/<team_id>',
                 view_func=TeamReportListView.as_view('reportList'),
                 methods=['GET'])
 
+app.add_url_rule('/professorReport/',
+                view_func=GeneratedProfessorReportView.as_view('professorReport'),
+                methods=['GET'])
+
 app.add_url_rule('/studentReport/',
-                view_func=GeneratedStudentReportView.as_view('studentReport'),
+                view_func=GeneratedAnonymousReportView.as_view('studentReport'),
                 methods=['GET'])
 
 if __name__ == '__main__':
