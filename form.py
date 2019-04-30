@@ -14,11 +14,47 @@ import gbmodel
 
 class review(MethodView):
 
+    # holds fields that should appear in the table on the review page
+    # -- these are what people will see
+    human_fields = ['Name',
+                    'Technical Mastery',
+                    'Work Ethic',
+                    'Communication',
+                    'Cooperation',
+                    'Initiative',
+                    'Team Focus',
+                    'Contribution',
+                    'Leadership (Team Lead Only)',
+                    'Organization (Team Lead Only)',
+                    'Delegation (Team Lead Only)',
+                    'Points',
+                    'Strengths',
+                    'Weaknesses',
+                    'Traits to Work On']
+
+    # holds fields that should appear in the table on the review page
+    # -- this is what the form's html will use
+    code_fields = ['name',
+                   'tech_mast',
+                   'work_ethic',
+                   'comm',
+                   'coop',
+                   'init',
+                   'team_focus',
+                   'contr',
+                   'lead',
+                   'org',
+                   'dlg',
+                   'points',
+                   'str',
+                   'wkn',
+                   'traits']
+
     # This will be changed to account for CAS log in
     # input: only self
     # output: the user's ID value
     def get_id(self):
-        sdt_id = 38
+        sdt_id = 0
         return sdt_id
 
     # If an unrecoverable error occurs and there is a need to abort,
@@ -62,6 +98,24 @@ class review(MethodView):
             self.display_error('No user capstone id found in database')
 
         return cap
+
+    # This method returns the current user's name to display on the web page
+    # input: only self
+    # output: A string representing the user's name
+    def get_self_name(self):
+        # query database to get student
+        try:
+            students = gbmodel.students()
+            sdt = students.query.filter_by(id=self.get_id()).first()
+        except SQLAlchemyError:
+            self.display_error('student look up error - getting their name')
+
+        # get name
+        name = sdt.name
+        if name is None:
+            self.display_error('The user has no name')
+
+        return name
 
     # This method returns the current user's team id value while testing if
     # the user exists in the database.
@@ -187,6 +241,8 @@ class review(MethodView):
         return render_template('review.html',
                                mems=mems,
                                state=state,
+                               human_fields=self.human_fields,
+                               code_fields=self.code_fields,
                                input_error=None,
                                fatal_error=None)
 
@@ -213,6 +269,7 @@ class review(MethodView):
             mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
         except SQLAlchemyError:
             return render_template('review.html',
+                                   name=self.get_self_name(),
                                    mems=None,
                                    state=None,
                                    input_error=None,
@@ -264,25 +321,25 @@ class review(MethodView):
         if points_pass is True:
             for i in id_list:
                 # Get each radio input and verify that it's an integer
-                tech = request.form[('tm_' + str(i))]
+                tech = request.form[('tech_mast_' + str(i))]
                 tech = self.convert_to_int(tech)
 
-                ethic = request.form[('we_' + str(i))]
+                ethic = request.form[('work_ethic_' + str(i))]
                 ethic = self.convert_to_int(ethic)
 
-                com = request.form[('cm_' + str(i))]
+                com = request.form[('comm_' + str(i))]
                 com = self.convert_to_int(com)
 
-                coop = request.form[('co_' + str(i))]
+                coop = request.form[('coop_' + str(i))]
                 coop = self.convert_to_int(coop)
 
-                init = request.form[('i_' + str(i))]
+                init = request.form[('init_' + str(i))]
                 init = self.convert_to_int(init)
 
-                focus = request.form[('tf_' + str(i))]
+                focus = request.form[('team_focus_' + str(i))]
                 focus = self.convert_to_int(focus)
 
-                cont = request.form[('cr_' + str(i))]
+                cont = request.form[('contr_' + str(i))]
                 cont = self.convert_to_int(cont)
 
                 # default leader skills to None for Null in database
@@ -298,19 +355,19 @@ class review(MethodView):
 
                 if(sdt.is_lead == 1):
                     # get leader values
-                    lead = request.form[('l_' + str(i))]
+                    lead = request.form[('lead_' + str(i))]
                     lead = self.convert_to_int(lead)
 
-                    org = request.form[('o_' + str(i))]
+                    org = request.form[('org_' + str(i))]
                     org = self.convert_to_int(org)
 
-                    dlg = request.form[('d_' + str(i))]
+                    dlg = request.form[('dlg_' + str(i))]
                     dlg = self.convert_to_int(dlg)
 
                 # Get string inputs
                 strn = request.form[('str_' + str(i))]
                 wkn = request.form[('wkn_' + str(i))]
-                traits = request.form[('trait_' + str(i))]
+                traits = request.form[('traits_' + str(i))]
 
                 learned = None
                 if int(i) == self.get_id():
@@ -384,4 +441,11 @@ class review(MethodView):
 
             return render_template('submitted.html')
 
-        return render_template('review.html', mems=mems, state=self.get_state(), input_error=True, fatal_error=None)
+        return render_template('review.html',
+                               name=self.get_self_name(),
+                               mems=mems,
+                               human_fields=self.human_fields,
+                               code_fields=self.code_fields,
+                               state=self.get_state(),
+                               input_error=True,
+                               fatal_error=None)
