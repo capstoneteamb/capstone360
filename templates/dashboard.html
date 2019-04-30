@@ -1,26 +1,26 @@
 {% extends "menu.html" %}
 {% block my_block %}	
-	session=sessions
+    session=sessions
 {% endblock my_block %}
 {% block content %}
 
 <!-- This is the html code for the layout of the dashboard -->
 <div class="container dashboard-container">
-	{% for data in lists %}
-	<div class="student-card">
-		<h4>{{data[0]}}</h4>
-		{% for student in data[1:] %}
-		<p class=entry>
-			<img class="user-icon" style="display: inline-block;"
-				src="{{ url_for('static', filename='Assets/user.png')}}">
-			<span class="name" style="display: inline-block;">{{ student }}</span>
-		</p>
-		{% endfor %}
-		<a href="{{ url_for('addStudent', data=data[0])}}"><button class="my-btn card-btn">Add Student</button></a>
-		
-	</div>
-	{% endfor %}
+    {% for data in lists %}
+    <div class="student-card">
+        <h4>{{data[0]}}</h4>
+        {% for student in data[1:] %}
+        <p class=entry>
+            <img class="user-icon" style="display: inline-block;"
+                src="{{ url_for('static', filename='Assets/user.png')}}">
+            <span class="name" style="display: inline-block;">{{ student }}</span>
+        </p>
+        {% endfor %}
+        <a href="{{ url_for('addStudent', data=data[0])}}"><button class="my-btn card-btn">Add Student</button></a>
+        
+    </div>
+    {% endfor %}
 </div>
-	<a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>
+    <a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>
 
 {% endblock %}

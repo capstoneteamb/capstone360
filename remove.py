@@ -1,40 +1,48 @@
-from flask import redirect, request, url_for, render_template
+from flask import request, render_template
 from flask.views import MethodView
 import removeDashboard
 import gbmodel
 import datetime
+from flask_cas import login_required
+
 
 class RemoveStudent(MethodView):
-    def get(self):       
+    @login_required
+    def get(self):
         return render_template('removeStudent.html')
 
     def post(self):
-   
+
         session = gbmodel.capstone_session()
         student = gbmodel.students()
 
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
-        if month in range (9, 11):   term = "Fall"
-        elif month in range (3,5):   term = "Spring"
-        elif month in range (6,8):   term = "Summer"
-        else:                        term = "Winter"
+        current_date = datetime.datetime.now()
+        month = int(current_date.month)
+        year = current_date.year
+        if month in range(9, 11):
+            term = "Fall"
+        elif month in range(3, 5):
+            term = "Spring"
+        elif month in range(6, 8):
+            term = "Summer"
+        else:
+            term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
+        session_id = session.get_session_id(term, year)
 
         students = request.form.getlist('removedStudent')
-        tName = request.form.get('teamName')  
-        student.removeStudent(students, tName, sessionID)
+        t_name = request.form.get('teamName')
+        student.remove_student(students, t_name, session_id)
         lists = removeDashboard.get_rm()
-        return render_template('removeDashboard.html', lists = lists) 
+        return render_template('removeDashboard.html', lists=lists)
 
 
 class RemoveTeam(MethodView):
+    @login_required
     def get(self):
-        tName = request.args.get('data')
-        tName = tName.replace(" ", "_")
-        return render_template('removeTeam.html', tName = tName)
+        t_name = request.args.get('data')
+        t_name = t_name.replace(" ", "_")
+        return render_template('removeTeam.html', t_name=t_name)
 
     def post(self):
         """
@@ -45,18 +53,22 @@ class RemoveTeam(MethodView):
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
 
-        currentDate = datetime.datetime.now()
-        month = int(currentDate.month) 
-        year = currentDate.year
-        if month in range (9, 11):   term = "Fall"
-        elif month in range (3,5):   term = "Spring"
-        elif month in range (6,8):   term = "Summer"
-        else:                        term = "Winter"
+        current_date = datetime.datetime.now()
+        month = int(current_date.month)
+        year = current_date.year
+        if month in range(9, 11):
+            term = "Fall"
+        elif month in range(3, 5):
+            term = "Spring"
+        elif month in range(6, 8):
+            term = "Summer"
+        else:
+            term = "Winter"
 
-        sessionID = session.getSessionID(term, year)
+        session_id = session.get_session_id(term, year)
 
-        tName = request.form.get('teamName')
-        tName = tName.replace("_", " ")
-        team.removeTeam(tName, sessionID)
+        t_name = request.form.get('teamName')
+        t_name = t_name.replace("_", " ")
+        team.remove_team(t_name, session_id)
         lists = removeDashboard.get_rm()
-        return render_template('removeDashboard.html', lists = lists)
+        return render_template('removeDashboard.html', lists=lists)
