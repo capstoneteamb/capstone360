@@ -54,7 +54,7 @@ class review(MethodView):
     # input: only self
     # output: the user's ID value
     def get_id(self):
-        sdt_id = 0
+        sdt_id = "0"
         return sdt_id
 
     # If an unrecoverable error occurs and there is a need to abort,
@@ -304,7 +304,7 @@ class review(MethodView):
                     # add up the total points
                     total = total + points
 
-                    if int(j) == self.get_id():
+                    if j == self.get_id():
                         # make sure own score is 0
                         if points > 0 or points < 0:
                             flash('Points must be 0 for self')
@@ -370,13 +370,13 @@ class review(MethodView):
                 traits = request.form[('traits_' + str(i))]
 
                 learned = None
-                if int(i) == self.get_id():
+                if i == self.get_id():
                     learned = request.form[('learned')]
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
                 if self.get_state() == 'final':
-                    if int(i) == self.get_id():
+                    if i == self.get_id():
                         proud = request.form[('proud')]
 
                 points = request.form[('points_' + str(i))]
