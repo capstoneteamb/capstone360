@@ -98,7 +98,7 @@ def generate_student_data():
                          + ".notreal@pdx.edu")
 
         # Get student id
-        student_id = str(id_num)
+        student_id = id_num
         id_num = id_num + 1
 
         # Add Data To List
@@ -216,19 +216,19 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
 
         # Put data into the students and teams tables
         for student in student_data:
-            student_id = int(student["id"]) + (len(student_data) * session_id)
-            team_id = int(student["id"]) % num_teams + (num_teams * session_id)
+            student_id = student["id"] + (len(student_data) * session_id)
+            team_id = student["id"] % num_teams + (num_teams * session_id)
 
             # Figure out if student is team lead
             # The conditional will be true if the current student is the first one on the team. If they are
             # the first one, they are the team lead
             is_team_lead = False
-            if (int(student["id"]) < num_teams):
+            if (student["id"] < num_teams):
                 is_team_lead = True
 
             # Add student to the students table
             cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?,?)',
-                           (student_id,
+                           (str(student_id),
                             team_id,
                             session_id,
                             student["name"],
