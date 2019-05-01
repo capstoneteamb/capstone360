@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h3>Add Team</h3>
+<div class="add-container">
+	<div class="input-card date-card">
+		<form action="{{ url_for('dashboard', session_id=session_id) }}" method=POST>
+			<p class="heading">Midterm Start Date:</p>
+				<input type=date name=midterm_start>
+			<p class="heading">Midterm End Date:</p>
+				<input type=date name=midterm_end></p>
+			<p class="heading">Final Start Date:</p>
+				<input type=date name=final_start></p>
+			<p class="heading">Final End Date:</p>
+				<input type=date name=final_end></p>
+			<input type="hidden" value={{session_id}} name=session_id>
+			<p><input class="my-btn" type=submit value='Submit' style="
+				background-color: #b7c229;
+				color: white;
+				border: none;
+				border-radius:5px;
+				padding: 10px 20px;
+				cursor: pointer;"></p>
+		</form>
+
+		<a href="{{ url_for('dashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+
+	</div>
+</div>
+
+{% endblock %}

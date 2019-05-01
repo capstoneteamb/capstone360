@@ -1,41 +1,41 @@
 {% extends "layout.html" %}
 {% block menu %}
 <div class="container nav-container">
-        <div class="row nav">
-            <div class="col-sm">Sessions 
-                <form id="myform" action="/dashboard" method="POST">
-                    <select name="selected_session">
-                            <option value="none">Select Term</option>
-                        {% for i in sessions %}
-                            <option value= "{{i.id}}">{{i}}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" value="Submit" name="session_id" class="my-btn">
-                </form>
-            </div> 
-            <a class="col-sm edit-btn">
+    <div class="row nav">
+        <div class="col-sm" method='POST'>Sessions 
+            <form style="display: inline;">{{session_id}}
+                <select name="selected_session" onchange="this.form.submit()">
+                    {% for i in sessions %}
+                    <option value="{{i}}">{{i}}</option>
+                    {% endfor %}
+                    <option selected disabled hidden>Select Term</option>
+                </select>
+                <noscript><input type="submit" value="Submit"></noscript>
+            </form>
+        </div>
+        <a class="col-sm edit-btn">
             <div>Edit</div>
-            </a>
-            <div class="col-sm">Generate Reports</div>
-            <a class="col-sm" href="{{ url_for('index')}}">
-                <div>Logout</div>
-            </a>
-        </div>
-        <div class="row button sub-buttons">
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
-            <div class="col-sm">
-                <a href="{{ url_for('addTeam')}}"><button class="my-btn">Add Team</button></a>
-            </div>
-            <div class="col-sm">
-                <a href="/removeDashboard"><button class="my-btn"
-                        style="background-color: #ff9e16">Remove</button></a>
-            </div>
-            <div class="col-sm">
-                <a href="/dashboard"><button class="my-btn">Cancel</button></a>
-            </div>
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
-        </div>
+        </a>
+        <div class="col-sm">Generate Reports</div>
+        <a class="col-sm" href="{{ url_for('cas.logout')}}">
+            <div>Logout</div>
+        </a>
     </div>
+    <div class="row button sub-buttons">
+        <div class="col-sm"></div>
+        <div class="col-sm">
+            <a href="{{ url_for('addTeam', session_id=session_id)}}"><button class="my-btn">Add Team</button></a>
+        </div>
+        <div class="col-sm">
+            <button class="my-btn remove-btn" style="background-color: #ff9e16">Remove</button>
+        </div>
+        <div class="col-sm">
+		    <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Date</button></a>
+        </div>
+        <div class="col-sm">
+            <a href="{{ url_for('dashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+        </div>
+        <div class="col-sm"></div>
+    </div>
+</div>
 {% endblock %}

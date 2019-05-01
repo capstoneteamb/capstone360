@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!--better solution later-->
+<br>
+<br>
+<br>
+<br>
+{% if fatal_error %}
+{{ fatal_error }}
+{% else %}
+<h3>Welcome to your Capstone 360 Review. Please fill out the review form below, {{name}}</h3>
+{% if input_error %}
+<ul>
+    {% for alert in get_flashed_messages() %}
+    <li><b>{{alert}}</b></li>
+    {% endfor %}
+</ul>
+<br>
+{% endif %}
+<h4 style="font-size:16px">Key:</h4>
+<ol style="font-size: 14px">
+    <li>Poor</li>
+    <li>Does Not Meet Expectations</li>
+    <li>Meets Expectations</li>
+    <li>Exceeds Exeectations</li>
+    <li>Excellent</li>
+</ol>
+<section class="content">
+    <form method="post">
+        <div class="table-responsive" style="width: 100%; overflow-x:auto; overflow-y:auto">
+            <table class="table table-striped" style="font-size: 12px">
+                {% for i in range(15)%}
+                <tr>
+                    <td>{{human_fields[i]}}</td>
+                    {% for mem in mems %}
+                    {% if i == 0 %}
+                    <td>{{mem['name']}}</td>
+                    {% elif i < 8 %}
+                    <td>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-4">
+                                    Score for {{mem['name']}}'s {{human_fields[i]}}
+                                </div>
+                                <div class="col-2">
+                                        
+                                </div>
+                                <div class="col-6">
+                                    {% for j in range(5) %}
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
+                                            name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
+                                            value="{{5-j}}" required>
+                                        <label class="custom-control-label"
+                                            for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    {% elif i < 11 %}
+                    <td>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-6">
+                                    {% if mem['is_lead'] == 1 %}
+                                    Score for {{mem['name']}}'s {{human_fields[i]}}
+                                    {% endif %}
+                                </div>
+                                <div class="col-6">
+                                    {% for j in range(5) %}
+                                    {% if mem['is_lead'] == 1 %}
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
+                                            name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
+                                            value="{{5-j}}" required>
+                                        <label class="custom-control-label"
+                                            for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    {% elif i < 12 %}
+                    <td>
+                        <input type="text" placeholder="0" class="form-control" name="{{code_fields[i]}}_{{mem['id']}}"
+                            id="{{code_fields[i]}}_{{mem['id']}}" required>
+                    </td>
+                    {% else %}
+                    <td>
+                        <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
+                            name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
+                            required></textarea>
+                    </td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <br>
+        <label for="learned">What you learned</label>
+        <textarea placeholder="What did you learn?" class="form-control" name="learned" id="learned" required></textarea>
+        {% if state == 'final' %}
+        <br>
+        <label for="proud">Are you proud of your accomplishment for this project?</label>
+        <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required></textarea>
+        {% endif %}
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+</section>
+{% endif %}
+{% endblock %}
