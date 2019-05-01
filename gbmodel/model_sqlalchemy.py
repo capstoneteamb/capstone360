@@ -278,14 +278,8 @@ class removed_students(db.Model):
         current_date = datetime.datetime.now()
         date = current_date.strftime("%Y-%m-%d")
         s.append(date)
-<<<<<<< HEAD
         engine.execute("insert into removed_students (id, tid, session_id, \
             name, is_lead, midterm_done, final_done, active, removed_date) \
                 VALUES (:id, :tid, :session_id, :name, :is_lead, :midterm_done,\
                      :final_done, :active, :removed_date)", s)
-=======
-        engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, \
-            final_done, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
-            :midterm_done, :final_done, :removed_date)", s)
->>>>>>> master
         return True

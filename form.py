@@ -14,47 +14,7 @@ from flask_cas import login_required
 
 
 class review(MethodView):
-<<<<<<< HEAD
     @login_required
-=======
-
-    # holds fields that should appear in the table on the review page
-    # -- these are what people will see
-    human_fields = ['Name',
-                    'Technical Mastery',
-                    'Work Ethic',
-                    'Communication',
-                    'Cooperation',
-                    'Initiative',
-                    'Team Focus',
-                    'Contribution',
-                    'Leadership (Team Lead Only)',
-                    'Organization (Team Lead Only)',
-                    'Delegation (Team Lead Only)',
-                    'Points',
-                    'Strengths',
-                    'Weaknesses',
-                    'Traits to Work On']
-
-    # holds fields that should appear in the table on the review page
-    # -- this is what the form's html will use
-    code_fields = ['name',
-                   'tech_mast',
-                   'work_ethic',
-                   'comm',
-                   'coop',
-                   'init',
-                   'team_focus',
-                   'contr',
-                   'lead',
-                   'org',
-                   'dlg',
-                   'points',
-                   'str',
-                   'wkn',
-                   'traits']
-
->>>>>>> master
     # This will be changed to account for CAS log in
     # input: only self
     # output: the user's ID value
