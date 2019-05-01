@@ -1,6 +1,7 @@
-from flask import redirect, request, url_for, render_template
+from flask import request, render_template
 from flask.views import MethodView
 import gbmodel
+
 
 # A function to add some descriptor words to flush out our numerical rating system a little bit
 def interperate_rating(rating):
@@ -30,36 +31,24 @@ class ViewReview(MethodView):
         teams = gbmodel.teams()
         students = gbmodel.students()
 
-        # Get the student_id
-        # Will need to be adjusted for CAS login
-        student_id = "1"
+        # Get data from the POST request
+        # This helped: https://stackoverflow.com/questions/23205577/python-flask-immutablemultidict
+        reviewer_name = request.form.getlist('reviewer_name')[0]
+        reviewee_name = request.form.getlist('reviewee_name')[0]
+        tid = request.form.getlist('tid')[0]
+        try:
+            is_final = int(request.form.getlist('is_final')[0])
+        except ValueError:
+            print("Error converting is_final to int in viewReview.py")
+            error = "Something went wrong"
+            return render_template('viewReview.html', error=error)
 
         # We will need some way to verify that the one logged in is a professor
         # Will need an isProf function
-        #if not (prof or name == student_name):
+        # if not (prof or name == student_name):
         #    error = "You aren't allowed to access this page"
         #    return render_template('errorPage.html', error=error)
-       
-        # Get data from post
-        # Get name of reivewer and reviewee -- not just the id
-        # This helped: https://stackoverflow.com/questions/23205577/python-flask-immutablemultidict
-        #session_id = 1
-        print(request.form)
-        session_id = request.form.getlist('session_id')[0]
-        #reviewer_id = 38
-        reviewer_name = request.form.getlist('reviewer_name')[0]
-        #reviewee_id = 44
-        reviewee_name = request.form.getlist('reviewee_name')[0]
-        #tid = 6
-        tid = request.form.getlist('tid')[0]
-        #is_final = False
-        try:
-            is_final = int(request.form.getlist('is_final')[0])
-        except:
-            print("Error converting is_final to int in viewReview.py")
-            error = "Something went wrong"
-            return render_template('viewReview.html', error = error)
-        
+
         # Get student_ids from name
         reviewer_id = students.get_student_from_name_and_tid(reviewer_name, tid).id
         reviewee_id = students.get_student_from_name_and_tid(reviewee_name, tid).id
@@ -130,12 +119,12 @@ class ViewReview(MethodView):
                                               "answer": reports.proud_of_accomplishment})
 
                 # Send the data off to the client
-                return render_template("viewReview.html", details = review_details, review_data = parsed_review)
+                return render_template("viewReview.html", details=review_details, review_data=parsed_review)
             else:
                 error = "We couldn't find the report :("
-                return render_template('viewReview.html', error = error)
+                return render_template('viewReview.html', error=error)
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
-        except Exception as error:
-            #error = "Something went wrong :("
-            return render_template('viewReview.html', error = error)
+        except Exception:
+            error = "Something went wrong :("
+            return render_template('viewReview.html', error=error)
