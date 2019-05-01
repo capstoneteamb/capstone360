@@ -68,7 +68,7 @@ class teams(db.Model):
         if list_students is not None:
             for i in list_students:
                 params = {'name': i[0], 'session_id': session_id}
-                result = engine.execute("select * from students where \
+                result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where \
                     name = :name AND session_id = :session_id", params)
                 s = result.fetchone()
                 removed_student.add_student(s)
@@ -157,7 +157,7 @@ class students(db.Model):
 
         for i in sts:
             params = {'name': i, 'tid': tid, 'session_id': session_id}
-            result = engine.execute("select * from students where name = :name AND tid= :tid AND session_id = :session_id", params)
+            result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where name = :name AND tid= :tid AND session_id = :session_id", params)
             s = result.fetchone()
             removed_student.add_student(s)
             data = {'id': s[0], 'session_id': session_id}
@@ -274,12 +274,11 @@ class removed_students(db.Model):
         if s is None:
             return False
         s = list(s)
-        del s[7]  # Remove the 'active' attribute. https://docs.python.org/3/tutorial/datastructures.html
         current_date = datetime.datetime.now()
         date = current_date.strftime("%Y-%m-%d")
         s.append(date)
         engine.execute("insert into removed_students (id, tid, session_id, \
-            name, is_lead, midterm_done, final_done, active, removed_date) \
+            name, is_lead, midterm_done, final_done, removed_date) \
                 VALUES (:id, :tid, :session_id, :name, :is_lead, :midterm_done,\
-                     :final_done, :active, :removed_date)", s)
+                     :final_done, :removed_date)", s)
         return True
