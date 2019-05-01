@@ -9,7 +9,7 @@ from add import AddStudent
 from index import Index
 from remove import RemoveStudent
 from remove import RemoveTeam
-from student import ViewStudent
+from viewStudent import ViewStudent
 from viewReview import ViewReview
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine

@@ -1,0 +1,55 @@
+{% extends "menu.html" %}
+{% block content %}
+    <div class="container" id="student-page-container">
+        {% if error %}
+        <div class="row">
+            <div class="col">
+                <h3>{{error}}</h3>
+            </div>
+        </div>
+        {% else %}
+        <!-- Student Name -->
+        <div class="row" style="text-align: center;">
+            <div class="col">
+                <h2 id="student-page-student-info">{{student['name']}}</h2>
+                <p><i>{{student['team']}}</i></p>
+            </div>
+        </div>
+        <!-- Reviews/Report Boxes-->
+        <div class="row">
+            {% for i in range(2) %}
+            <div class="col" style="text-align: center;">
+                <div class="student-page-card">
+                    {% if i == 0 %}
+                    <h3>Midterm</h3>
+                    {% else %}
+                    <h3>Final</h3>
+                    {% endif %}
+                    <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
+                    <hr style="border: solid white 1px; background-color: white;">
+                    {% for review_for_student in review_data %} 
+                    <p>
+                        {% if review_for_student['completed'][i] %}
+                        <form action="{{url_for('viewReview')}}" method="POST">
+                            <input type="hidden" name="tid" value="{{student['tid']}}">
+                            <input type="hidden" name="reviewer_name" value="{{student['name']}}">
+                            <input type="hidden" name="reviewee_name" value="{{review_for_student['reviewee_name']}}">
+                            <!--<input type="hidden" name="session_id" value="{{student['session_id']}}">-->
+                            <input type="hidden" name="is_final" value="{{i}}">
+                            <input class="text-look-alike-button" type="submit" value="{{('Review for ' + review_for_student['reviewee_name'])}}">
+                        </form>
+                        {% else  %}
+                        <button class="text-look-alike-button"><i>{{('Review for ' + review_for_student['reviewee_name'] + ' - not completed')}}</i></button>
+                        {% endif %}
+                    </p>
+                    {% endfor %}
+                    <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
+                    <hr style="border: solid white 1px; background-color: white;">
+                    <h4><a href="#">Report</a></h4>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

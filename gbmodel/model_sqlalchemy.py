@@ -204,7 +204,7 @@ class capstone_session(db.Model):
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
-    def check_report_submitted_for_student(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
+    def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
         params = {"reviewer": reviewing_student_id,
                   "reviewee": reviewee_student_id,
                   "tid": team_id,
