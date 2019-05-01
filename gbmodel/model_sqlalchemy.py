@@ -259,10 +259,6 @@ class capstone_session(db.Model):
         return True
 
 
-class team_members(db.Model):
-    __table__ = db.Model.metadata.tables['team_members']
-
-
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
@@ -278,11 +274,18 @@ class removed_students(db.Model):
         if s is None:
             return False
         s = list(s)
+        del s[7]  # Remove the 'active' attribute. https://docs.python.org/3/tutorial/datastructures.html
         current_date = datetime.datetime.now()
         date = current_date.strftime("%Y-%m-%d")
         s.append(date)
+<<<<<<< HEAD
         engine.execute("insert into removed_students (id, tid, session_id, \
             name, is_lead, midterm_done, final_done, active, removed_date) \
                 VALUES (:id, :tid, :session_id, :name, :is_lead, :midterm_done,\
                      :final_done, :active, :removed_date)", s)
+=======
+        engine.execute("insert into removed_students (id, tid, session_id, name, is_lead, midterm_done, \
+            final_done, removed_date) VALUES (:id, :tid, :session_id, :name, :is_lead, \
+            :midterm_done, :final_done, :removed_date)", s)
+>>>>>>> master
         return True

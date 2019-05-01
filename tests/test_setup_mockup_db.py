@@ -96,6 +96,11 @@ def test_generate_tables():
            and columns[4][3] == 1
            and columns[4][4] is None
            and columns[4][5] == 0)
+    assert(columns[5][1] == "title"
+           and columns[5][2] == "VARCHAR(20)"
+           and columns[5][3] == 1
+           and columns[5][4] is None
+           and columns[5][5] == 0)
 
     # Verify that the students table was created, and that it is empty
     cursor.execute("SELECT * FROM students;")
@@ -105,7 +110,7 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(students);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
+           and columns[0][2] == "VARCHAR(128)"
            and columns[0][3] == 1
            and columns[0][4] is None
            and columns[0][5] == 1)
@@ -126,18 +131,18 @@ def test_generate_tables():
            and columns[3][5] == 0)
     assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 0
-           and columns[4][4] == "FALSE"
+           and columns[4][3] == 1
+           and columns[4][4] is None
            and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 0
-           and columns[5][4] == "FALSE"
+           and columns[5][3] == 1
+           and columns[5][4] is None
            and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
            and columns[6][2] == "BOOLEAN"
-           and columns[6][3] == 0
-           and columns[6][4] == "FALSE"
+           and columns[6][3] == 1
+           and columns[6][4] is None
            and columns[6][5] == 0)
     assert(columns[7][1] == "active"
            and columns[7][2] == "VARCHAR(128)"
@@ -168,29 +173,6 @@ def test_generate_tables():
            and columns[2][4] is None
            and columns[2][5] == 0)
 
-    # Check that the team_members table was created, and that it is empty
-    cursor.execute("SELECT * FROM team_members;")
-    assert (not cursor.fetchall())
-
-    # Now check that the columns of the table are what we expect them to be
-    cursor.execute("PRAGMA table_info(team_members);")
-    columns = cursor.fetchall()
-    assert(columns[0][1] == "tid"
-           and columns[0][2] == "INTEGER"
-           and columns[0][3] == 1
-           and columns[0][4] is None
-           and columns[0][5] == 1)
-    assert(columns[1][1] == "sid"
-           and columns[1][2] == "INTEGER"
-           and columns[1][3] == 1
-           and columns[1][4] is None
-           and columns[1][5] == 2)
-    assert(columns[2][1] == "session_id"
-           and columns[2][2] == "INTEGER"
-           and columns[2][3] == 1
-           and columns[2][4] is None
-           and columns[2][5] == 3)
-
     # Check that the table was created and that it is empty
     cursor.execute("SELECT * FROM removed_students;")
     assert (not cursor.fetchall())
@@ -199,7 +181,7 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(removed_students);")
     columns = cursor.fetchall()
     assert(columns[0][1] == "id"
-           and columns[0][2] == "INTEGER"
+           and columns[0][2] == "VARCHAR(128)"
            and columns[0][3] == 1
            and columns[0][4] is None
            and columns[0][5] == 1)
@@ -220,29 +202,24 @@ def test_generate_tables():
            and columns[3][5] == 0)
     assert(columns[4][1] == "is_lead"
            and columns[4][2] == "BOOLEAN"
-           and columns[4][3] == 0
-           and columns[4][4] == "FALSE"
+           and columns[4][3] == 1
+           and columns[4][4] is None
            and columns[4][5] == 0)
     assert(columns[5][1] == "midterm_done"
            and columns[5][2] == "BOOLEAN"
-           and columns[5][3] == 0
-           and columns[5][4] == "FALSE"
+           and columns[5][3] == 1
+           and columns[5][4] is None
            and columns[5][5] == 0)
     assert(columns[6][1] == "final_done"
            and columns[6][2] == "BOOLEAN"
-           and columns[6][3] == 0
-           and columns[6][4] == "FALSE"
+           and columns[6][3] == 1
+           and columns[6][4] is None
            and columns[6][5] == 0)
-    assert(columns[7][1] == "active"
-           and columns[7][2] == "VARCHAR(128)"
-           and columns[7][3] == 0
+    assert(columns[7][1] == "removed_date"
+           and columns[7][2] == "DATETIME"
+           and columns[7][3] == 1
            and columns[7][4] is None
            and columns[7][5] == 0)
-    assert(columns[8][1] == "removed_date"
-           and columns[8][2] == "DATETIME"
-           and columns[8][3] == 1
-           and columns[8][4] is None
-           and columns[8][5] == 0)
 
     # Check if the reports table exists, and that it is empty
     cursor.execute("SELECT * FROM reports;")
@@ -269,8 +246,8 @@ def test_generate_tables():
            and columns[1][3] == 1
            and columns[1][4] is None
            and columns[1][5] == 0)
-    assert(columns[2][1] == "reporting"
-           and columns[2][2] == "INTEGER"
+    assert(columns[2][1] == "reviewer"
+           and columns[2][2] == "VARCHAR(128)"
            and columns[2][3] == 1
            and columns[2][4] is None
            and columns[2][5] == 1)
@@ -279,8 +256,8 @@ def test_generate_tables():
            and columns[3][3] == 1
            and columns[3][4] is None
            and columns[3][5] == 2)
-    assert(columns[4][1] == "report_for"
-           and columns[4][2] == "INTEGER"
+    assert(columns[4][1] == "reviewee"
+           and columns[4][2] == "VARCHAR(128)"
            and columns[4][3] == 1
            and columns[4][4] is None
            and columns[4][5] == 3)
@@ -393,7 +370,8 @@ def test_fill_tables_with_data():
         assert (session[0] not in session_ids)
         session_ids.append(session[0])
 
-        # start_term, start_year, end_term, end_year in that order
+        # Verify that the title is correct (that it is "*start_term* *start_year*")
+        assert(session[5] == session[1] + " " + str(session[2]))
 
     # Verify that the data in the teams table is correct
     cursor.execute("SELECT * FROM teams;")
@@ -427,23 +405,6 @@ def test_fill_tables_with_data():
         assert (student[0] not in student_ids)
         student_ids.append(student[0])
 
-    # Verify the data in the team_members table is correct
-    # May need to come back and clarify -- the comments are a bit vague
-    cursor.execute("SELECT * FROM team_members;")
-    team_members = cursor.fetchall()
-    for team_member in team_members:
-        # Verify that the team id is valid
-        # team_member[0] = the team id associated with the given table entry
-        assert (team_member[0] in team_ids)
-
-        # Verify that the student id is valid
-        # team_member[1] = student id associated with the given table entry
-        assert (team_member[1] in student_ids)
-
-        # Verify that the session_id exists
-        # team_member[2] = session_id associated with the given table entry
-        assert (team_member[2] in session_ids)
-
     # Verify the data in the reports table is correct
     # Might want to change comments here as well
     cursor.execute("SELECT * FROM reports;")
@@ -457,7 +418,7 @@ def test_fill_tables_with_data():
         # review[1] = session id associated with the report
         assert (review[1] in session_ids)
 
-        # Verify that the "reporting" field contains a valid student id
+        # Verify that the "reviewer" field contains a valid student id
         # review[2] = the student_id of the one submitting the report
         assert (review[2] in student_ids)
 
@@ -466,7 +427,7 @@ def test_fill_tables_with_data():
         # reviewed and the one submitting the review should be the same)
         assert (review[3] in team_ids)
 
-        # Verify that the "report_for" field is valid
+        # Verify that the "reviewee" field is valid
         # review[4] = the student id of the student being reviewed
         assert (review[4] in student_ids)
 
