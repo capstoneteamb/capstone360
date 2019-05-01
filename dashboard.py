@@ -37,5 +37,5 @@ def get():
         temp = [team_names[i]]
         for name in names:
             temp.append(name[0])
-        lists[i] = temp
-    return lists
+        lists[i] = (temp, tids[i], session_id)
+    return lists 

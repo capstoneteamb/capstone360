@@ -10,6 +10,7 @@ from index import Index
 from remove import RemoveStudent
 from remove import RemoveTeam
 from student import ViewStudent
+from viewReview import ViewReview
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -77,7 +78,11 @@ app.add_url_rule('/removeTeam/',
 
 app.add_url_rule('/viewStudent/',
                 view_func=ViewStudent.as_view('viewStudent'),
-                methods=['GET'])
+                methods=['POST'])
+
+app.add_url_rule('/viewReview/',
+                view_func=ViewReview.as_view('viewReview'),
+                methods=['POST'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)

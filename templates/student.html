@@ -24,9 +24,18 @@
                     <hr style="border: solid white 1px; background-color: white;">
                     {% for review_for_student in review_data %}
                         {% if review_for_student['midterm_completed'] %}
-                        <h4><a href="#">{{'Review for ' + review_for_student['reviewee_name']}}</a></h4>
+                        <form action="{{url_for('viewReview')}}" method="POST">
+                            <input type="hidden" name="tid" value="{{student['tid']}}">
+                            <input type="hidden" name="reviewer_name" value="{{student['name']}}">
+                            <input type="hidden" name="reviewee_name" value="{{review_for_student['reviewee_name']}}">
+                            <input type="hidden" name="session_id" value="{{student['session_id']}}">
+                            <input type="hidden" name="is_final" value="0">
+                            <input class="text-look-alike-button" type="submit" value="{{('Review for ' + review_for_student['reviewee_name'])}}">
+                        </form>
+                        <!-- <h4><a href="/viewReview/">{{'Review for ' + review_for_student['reviewee_name']}}</a></h4> -->
                         {% else  %}
-                        <h4 style="color: dark-gray;"><i>{{'Review for ' + review_for_student['reviewee_name'] + ' - not completed'}}</i></h4>
+                        <button class="text-look-alike-button">{{('Review for ' + review_for_student['reviewee_name'] + ' - not completed')}}</button>
+                        <!--<p style="color: dark-gray;"><i>{{'Review for ' + review_for_student['reviewee_name'] + ' - not completed'}}</i></p>-->
                         {% endif %}
                     {% endfor %}
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
@@ -41,9 +50,13 @@
                     <hr style="border: solid white 1px; background-color: white;">
                     {% for review_for_student in review_data %}
                         {% if review_for_student['final_completed'] %}
-                        <h4><a href="#">{{'Review for ' + review_for_student['reviewee_name']}}</a></h4>
+                        <form action="{{ url_for('viewReview') }}" method=POST>
+                            <input type="hidden" name="tid" value="{{student['tid']}}">
+                            <input type="hidden" name="name" value="{{review_for_student['reviewee_name']}}">
+                            <input class="text-look-alike-button" type="submit" value="{{('Review for ' + review_for_student['reviewee_name'])}}">
+                        </form>
                         {% else  %}
-                        <h4 style="color: dark-gray;"><i>{{'Review for ' + review_for_student['reviewee_name'] + ' - not completed'}}</i></h4>
+                        <button class="text-look-alike-button"><i>{{('Review for ' + review_for_student['reviewee_name'] + ' - not completed')}}</i></button>
                         {% endif %}
                     {% endfor %}
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
