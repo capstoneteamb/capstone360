@@ -55,7 +55,32 @@ def test_generate_tables():
     except sqlite3.OperationalError:
         assert (True)
 
-    # Check that every table we expect to exist exists and check that it has all of the columns we expect
+    # Check that the professors table was created, and that it is empty
+    cursor.execute("SELECT * FROM professors;")
+    assert (not cursor.fetchall())
+
+    # Verify that the columns of the professors table are as we expect
+    cursor.execute("PRAGMA table_info(professors);")
+    columns = cursor.fetchall()
+    assert(
+        # db column name
+        columns[0][1] == "id"
+        # db column type
+        and columns[0][2] == "VARCHAR(128)"
+        # if the value in this column can be null
+        # - 1 = NOT NULL
+        # - 0 = NULL
+        and columns[0][3] == 1
+        # the default value for this db column
+        and columns[0][4] is None
+        # the index of the column in the primary key, if it is a part of it (I think). 0 otherwise
+        and columns[0][5] == 1)
+    assert(columns[1][1] == "name"
+           and columns[1][2] == "VARCHAR(128)"
+           and columns[1][3] == 1
+           and columns[1][4] is None
+           and columns[1][5] == 0)
+
     # Check that the capstone_session table was created, and that it is empty
     cursor.execute("SELECT * FROM capstone_session;")
     assert (not cursor.fetchall())
@@ -64,17 +89,10 @@ def test_generate_tables():
     cursor.execute("PRAGMA table_info(capstone_session);")
     columns = cursor.fetchall()
     assert(
-        # db column name
         columns[0][1] == "id"
-        # db column type
         and columns[0][2] == "INTEGER"
-        # if the value in this column can be null
-        # - 1 = NOT NULL
-        # - 0 = NULL
         and columns[0][3] == 1
-        # the default value for this db column
         and columns[0][4] is None
-        # the index of the column in the primary key, if it is a part of it (I think). 0 otherwise
         and columns[0][5] == 1)
     assert(columns[1][1] == "start_term"
            and columns[1][2] == "VARCHAR(10)"
@@ -96,11 +114,31 @@ def test_generate_tables():
            and columns[4][3] == 1
            and columns[4][4] is None
            and columns[4][5] == 0)
-    assert(columns[5][1] == "title"
-           and columns[5][2] == "VARCHAR(20)"
-           and columns[5][3] == 1
+    assert(columns[5][1] == "midterm_start"
+           and columns[5][2] == "DATETIME"
+           and columns[5][3] == 0
            and columns[5][4] is None
            and columns[5][5] == 0)
+    assert(columns[6][1] == "midterm_end"
+           and columns[6][2] == "DATETIME"
+           and columns[6][3] == 0
+           and columns[6][4] is None
+           and columns[6][5] == 0)
+    assert(columns[7][1] == "final_start"
+           and columns[7][2] == "DATETIME"
+           and columns[7][3] == 0
+           and columns[7][4] is None
+           and columns[7][5] == 0)
+    assert(columns[8][1] == "final_end"
+           and columns[8][2] == "DATETIME"
+           and columns[8][3] == 0
+           and columns[8][4] is None
+           and columns[8][5] == 0)
+    assert(columns[9][1] == "professor_id"
+           and columns[9][2] == "VARCHAR(128)"
+           and columns[9][3] == 1
+           and columns[9][4] is None
+           and columns[9][5] == 0)
 
     # Verify that the students table was created, and that it is empty
     cursor.execute("SELECT * FROM students;")
@@ -359,6 +397,15 @@ def test_fill_tables_with_data():
     # Get student data
     fill_tables_with_data(cursor, generate_student_data(), 2, 4)
 
+    # Verify that the data in the professors table is correct
+    cursor.execute("SELECT * FROM professors;")
+    professors = cursor.fetchall()
+    professor_ids = []
+    for professor in professors:
+        # Vefify that the professor id is unique
+        assert (professor[0] not in professor_ids)
+        professor_ids.append(professor[0])
+
     # Verify that the data in the session table is correct
     cursor.execute("SELECT * FROM capstone_session;")
     sessions = cursor.fetchall()
@@ -370,8 +417,8 @@ def test_fill_tables_with_data():
         assert (session[0] not in session_ids)
         session_ids.append(session[0])
 
-        # Verify that the title is correct (that it is "*start_term* *start_year*")
-        assert(session[5] == session[1] + " " + str(session[2]))
+        # Verify that professor id is in the professors table
+        assert(session[9] in professor_ids)
 
     # Verify that the data in the teams table is correct
     cursor.execute("SELECT * FROM teams;")
