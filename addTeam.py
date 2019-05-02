@@ -33,13 +33,15 @@ class CreateTeam(MethodView): # Was orignally called addTeam, name was changed d
 		elif month in range (6,8):   term = "Summer"
 		else:                        term = "Winter"
 		sessionID = session.getSessionID(term, year)
-		teams.insertTeam(sessionID, teamName)
+		teams.insert_team(sessionID, teamName)
+		nextID = teams.get_max_team_id()
 		'''
-		nextID = teams.getMaxTeamID() + 1
-		teams.insertTeam(nextID, teamName) # Insert the new team to the DB
+		teams.check_dup_team(teamName, sessionID)
+		teams.insert_team(sessionID, teamName) # Insert the new team to the DB
 		'''
 		for s in students: # For loop that updates all students TID to their new teams TID
-			studentsTable.updateTeam(s, sessionID)
+			print(s)
+			studentsTable.update_team(s, nextID, sessionID)
 
 		return render_template('profAddTeam.html')
 

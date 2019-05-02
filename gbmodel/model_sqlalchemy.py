@@ -3,6 +3,7 @@ import sys
 import datetime
 from app import db, engine, db_session
 from sqlalchemy import exc
+from sqlalchemy import update
 
 sys.path.append(os.getcwd())
 
@@ -89,9 +90,8 @@ class students(db.Model):
         names = result.fetchall()
         return names
 
-    def updateTeam(self, name, tid):
-        data = {'name': name, 'tid': tid}
-        result = engine.execute("UPDATE students SET tid=:tid WHERE name=:name", data)
+    def update_team(self, member_name, member_tid, member_sessionID):
+        stmt = update(students).where(students.name == member_name).where(students.session_id == member_sessionID).values(tid=member_tid)
         db.session.commit()
         return True
 
