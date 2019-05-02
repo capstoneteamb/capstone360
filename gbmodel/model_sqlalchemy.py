@@ -93,19 +93,6 @@ class students(db.Model):
         names = result.fetchall()
         return names
 
-    # Get the names and ids for all the students in a team
-    def get_students_info(self, tid, sessionID):
-        data = {'tid': tid, 'session_id': sessionID}
-        result = engine.execute('select name, id from students where tid =:tid and session_id = :session_id', data)
-        info = result.fetchall()
-        return info
-
-    # Used the documentation here as reference: https://docs.sqlalchemy.org/en/13/orm/tutorial.html
-    # Get the information for a student using their student_id and session_id
-    def get_student(self, given_student_id, given_session_id):
-        result = students.query.filter(students.id==given_student_id, students.session_id==given_session_id).first()
-        return result
-
     # Get the information for a student using their name and tid
     # This function exists on the presumption that we won't have two students with the same name in each team
     # If there are, we will only return the first one
@@ -204,24 +191,6 @@ class capstone_session(db.Model):
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
-    def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
-        params = {"reviewer": reviewing_student_id,
-                  "reviewee": reviewee_student_id,
-                  "tid": team_id,
-                  "is_final": is_final}
-        results = engine.execute(("select time from reports where "
-                                  "reporting = :reviewer "
-                                  "AND report_for = :reviewee "
-                                  "AND tid = :tid AND "
-                                  "is_final = :is_final ;"), params)
-        return results.fetchone() is not None
-
-    def get_report(self, reviewer_id, reviewee_id, tid, is_final):
-        params = {"reviewer": reviewer_id, "reviewee": reviewee_id, "tid": tid, "is_final": is_final}
-        result = engine.execute(("select * from reports where reporting = :reviewer AND tid = :tid"
-                                 " AND report_for = :reviewee AND is_final = :is_final"), params)
-        print(params)
-        return result.fetchone()
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']

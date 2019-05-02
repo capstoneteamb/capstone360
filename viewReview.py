@@ -1,5 +1,6 @@
 from flask import request, render_template
 from flask.views import MethodView
+from flask_cas import login_required
 import gbmodel
 
 
@@ -25,6 +26,7 @@ def interperate_rating(rating):
 # A method view class that facillitates the seeing of individual student reviews
 # We might need to start thinking about security
 class ViewReview(MethodView):
+    @login_required
     def post(self):
         # Get the database object we will need
         reports = gbmodel.reports()
@@ -35,7 +37,7 @@ class ViewReview(MethodView):
         # This helped: https://stackoverflow.com/questions/23205577/python-flask-immutablemultidict
         reviewer_name = request.form.getlist('reviewer_name')[0]
         reviewee_name = request.form.getlist('reviewee_name')[0]
-        tid = request.form.getlist('tid')[0]
+        team_id = request.form.getlist('tid')[0]
         try:
             is_final = int(request.form.getlist('is_final')[0])
         except ValueError:
@@ -50,24 +52,25 @@ class ViewReview(MethodView):
         #    return render_template('errorPage.html', error=error)
 
         # Get student_ids from name
-        reviewer_id = students.get_student_from_name_and_tid(reviewer_name, tid).id
-        reviewee_id = students.get_student_from_name_and_tid(reviewee_name, tid).id
+        reviewer_id = students.get_student_from_name_and_tid(reviewer_name, team_id).id
+        reviewee_id = students.get_student_from_name_and_tid(reviewee_name, team_id).id
 
         # Otherwise, load the review page
         try:
             # Get Team name
-            team_name = teams.get_team_name_from_id(tid)[0]
+            team_name = teams.get_team_name_from_id(team_id)[0]
 
             # Get report data and, if the report is there, parse it
-            report = reports.get_report(reviewer_id, reviewee_id, tid, is_final)
+            report = reports.query.filter_by(reviewer=reviewer_id,
+                                             reviewee=reviewee_id,
+                                             tid=team_id,
+                                             is_final=is_final).first()
             if report is not None:
                 review_details = {"time": report.time,
                                   "reviewer": reviewer_name,
                                   "reviewee": reviewee_name,
                                   "team_name": team_name,
                                   "is_final": (is_final == 1)}
-                print(is_final == 1)
-
                 parsed_review = [
                         {"question": ("[Technical Skill] Mastery of the skills involved in their role(s) with"
                                       " the project. This may be programming, database design, management,"
