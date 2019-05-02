@@ -59,6 +59,10 @@ class teams(db.Model):
         engine.execute("delete from teams where id = :tid AND session_id = :session_id", params)
         return True
 
+    def get_team_name_from_id(self, team_id):
+        params = {"team_id": team_id}
+        result = engine.execute("select name from teams where id = :team_id", params)
+        return result.fetchone()
 
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
@@ -88,6 +92,15 @@ class students(db.Model):
         result = engine.execute('select name from students where tid =:tid and session_id = :session_id', data)
         names = result.fetchall()
         return names
+
+    # Get the information for a student using their name and tid
+    # This function exists on the presumption that we won't have two students with the same name in each team
+    # If there are, we will only return the first one
+    # WARNING: unless we finalize the rule that we can't have two people with the same name on the same team
+    #          this will be a problem
+    def get_student_from_name_and_tid(self, given_student_name, given_tid):
+        result = students.query.filter(students.name==given_student_name, students.tid==given_tid).first()
+        return result
 
     def remove_student(self, sts, t_name, session_id):
         if t_name is None:
@@ -178,6 +191,24 @@ class capstone_session(db.Model):
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
+    def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
+        params = {"reviewer": reviewing_student_id,
+                  "reviewee": reviewee_student_id,
+                  "tid": team_id,
+                  "is_final": is_final}
+        results = engine.execute(("select time from reports where "
+                                  "reporting = :reviewer "
+                                  "AND report_for = :reviewee "
+                                  "AND tid = :tid AND "
+                                  "is_final = :is_final ;"), params)
+        return results.fetchone() is not None
+
+    def get_report(self, reviewer_id, reviewee_id, tid, is_final):
+        params = {"reviewer": reviewer_id, "reviewee": reviewee_id, "tid": tid, "is_final": is_final}
+        result = engine.execute(("select * from reports where reporting = :reviewer AND tid = :tid"
+                                 " AND report_for = :reviewee AND is_final = :is_final"), params)
+        print(params)
+        return result.fetchone()
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']

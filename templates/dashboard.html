@@ -8,13 +8,20 @@
 <div class="container dashboard-container">
     {% for data in lists %}
     <div class="student-card">
-        <h4>{{data[0]}}</h4>
-        {% for student in data[1:] %}
-        <p class=entry>
-            <img class="user-icon" style="display: inline-block;"
-                src="{{ url_for('static', filename='Assets/user.png')}}">
-            <span class="name" style="display: inline-block;">{{ student }}</span>
-        </p>
+        <h4>{{data[0][0]}}</h4>
+        {% for student in data[0][1:] %}
+        <form method="post" action={{url_for('viewStudent')}}>
+            <p class="entry">
+                 <span class="name" style="display: inline-block;">
+                    <img class="user-icon" style="display: inline-block;"
+                        src="{{ url_for('static', filename='Assets/user.png')}}">
+                    <input type="hidden" name="team_id" value="{{data[1]}}">
+                    <input type="hidden" name="student_name" value="{{student}}">
+                    <input type="hidden" name="session_id" value="{{data[2]}}">
+                    <input class="text-look-alike-button" style="display: inline-block; margin-left: 10px;" type="submit" value="{{student}}">
+                </span>
+            </p>
+        </form>
         {% endfor %}
         <a href="{{ url_for('addStudent', data=data[0])}}"><button class="my-btn card-btn">Add Student</button></a>
         
