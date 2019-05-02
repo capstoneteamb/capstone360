@@ -61,16 +61,16 @@ app.add_url_rule('/setDate/',
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/reportList/<team_id>',
-                view_func=TeamReportListView.as_view('reportList'),
-                methods=['GET'])
+                 view_func=TeamReportListView.as_view('reportList'),
+                 methods=['GET'])
 
 app.add_url_rule('/professorReport/',
-                view_func=GeneratedProfessorReportView.as_view('professorReport'),
-                methods=['GET'])
+                 view_func=GeneratedProfessorReportView.as_view('professorReport'),
+                 methods=['GET'])
 
 app.add_url_rule('/studentReport/',
-                view_func=GeneratedAnonymousReportView.as_view('studentReport'),
-                methods=['GET'])
+                 view_func=GeneratedAnonymousReportView.as_view('studentReport'),
+                 methods=['GET'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)

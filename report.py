@@ -11,9 +11,14 @@ class TeamReportListView(MethodView):
         """
         # Make list of students on this team
         students = gbmodel.students.query.filter_by(tid=team_id, session_id=0)
-        sessions = {'first','second'}
-        teams = [(row.id,row.name) for row in gbmodel.teams.query.filter_by(session_id=0)]
-        return render_template('reportList.html', students=students, sessions=sessions, teams=teams, team_id=team_id, session_id=0)
+        sessions = {'first', 'second'}
+        teams = [(row.id, row.name) for row in gbmodel.teams.query.filter_by(session_id=0)]
+        return render_template('reportList.html',
+                               students=students,
+                               sessions=sessions,
+                               teams=teams,
+                               team_id=team_id,
+                               session_id=0)
 
 
 class GeneratedProfessorReportView(MethodView):
@@ -33,6 +38,7 @@ class GeneratedProfessorReportView(MethodView):
         pdf = _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=True)
         response = make_response(pdf)
         return response
+
 
 class GeneratedAnonymousReportView(MethodView):
     def get(self):
@@ -87,7 +93,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             'delegation': []
             }
 
-    for _,value in scores.items():
+    for _, value in scores.items():
         for i in range(6):
             value.append(0)
 
@@ -96,8 +102,8 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     strengths = []
     weaknesses = []
     for r in reports:
-        for key,value in scores.items():
-            this_score = getattr(r,key)
+        for key, value in scores.items():
+            this_score = getattr(r, key)
             # 6 = N/A in the table
             if this_score is None:
                 this_score = 6
@@ -120,10 +126,10 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
 
     # Render the HTML version of the template
     html = render_template('report.html',
-            name=name,
-            team=team_name,
-            scores=scores,
-            strengths=strengths,
-            weaknesses=weaknesses)
+                           name=name,
+                           team=team_name,
+                           scores=scores,
+                           strengths=strengths,
+                           weaknesses=weaknesses)
 
     return html

@@ -302,7 +302,7 @@ class reports(db.Model):
         params = {'id': student_id, 'term_id': term_id, 'is_final': is_final}
         reports = engine.execute(query_string, params)
 
-        return reports;
+        return reports
 
 
 class removed_students(db.Model):
