@@ -69,5 +69,5 @@ class ViewStudent(MethodView):
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
         except Exception as error:
-            #error = "Something went wrong :("
+            error = "Something went wrong :("
             return render_template('viewStudent.html', error=error)
