@@ -81,14 +81,19 @@ class teams(db.Model):
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
         for i in range(len(tids)):
-            names = student.get_students(tids[i], session_id)
+            #names = student.get_students(tids[i], session_id)
+            team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
-            for name in names:
-                temp.append(name)
+            for member in team_members:
+                temp.append({"name": member.name, "id": member.id})
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
 
+    def get_team_name_from_id(self, team_id):
+        params = {"team_id": team_id}
+        result = engine.execute("select name from teams where id = :team_id", params)
+        return result.fetchone()
 
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
@@ -290,6 +295,24 @@ class capstone_session(db.Model):
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
 
+    def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
+        params = {"reviewer": reviewing_student_id,
+                  "reviewee": reviewee_student_id,
+                  "tid": team_id,
+                  "is_final": is_final}
+        results = engine.execute(("select time from reports where "
+                                  "reporting = :reviewer "
+                                  "AND report_for = :reviewee "
+                                  "AND tid = :tid AND "
+                                  "is_final = :is_final ;"), params)
+        return results.fetchone() is not None
+
+    def get_report(self, reviewer_id, reviewee_id, tid, is_final):
+        params = {"reviewer": reviewer_id, "reviewee": reviewee_id, "tid": tid, "is_final": is_final}
+        result = engine.execute(("select * from reports where reporting = :reviewer AND tid = :tid"
+                                 " AND report_for = :reviewee AND is_final = :is_final"), params)
+        print(params)
+        return result.fetchone()
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
