@@ -12,8 +12,8 @@ class CreateTeam(MethodView): # Was orignally called addTeam, name was changed d
   def post(self):
     session = gbmodel.capstone_session()
     teams = gbmodel.teams() # Accessor to the teams table
-    studentsTable = gbmodel.students() # Accessor to the students table
-    teamName = request.form['Team Name']
+    students_table = gbmodel.students() # Accessor to the students table
+    team_name = request.form['Team Name']
     #Let s represent a single student
     s1 = request.form['student1']
     s2 = request.form['student2']
@@ -25,22 +25,17 @@ class CreateTeam(MethodView): # Was orignally called addTeam, name was changed d
     s8 = request.form['student8']
     students = [s1, s2, s3, s4, s5, s6, s7, s8] # An array containing all students
     # Get date to determine session id
-    currentDate = datetime.datetime.now()
-    month = int(currentDate.month) 
-    year = currentDate.year
+    current_date = datetime.datetime.now()
+    month = int(current_date.month) 
+    year = current_date.year
     if month in range (9, 11):   term = "Fall"
     elif month in range (3,5):   term = "Spring"
     elif month in range (6,8):   term = "Summer"
     else:                        term = "Winter"
-    sessionID = session.getSessionID(term, year)
-    teams.insert_team(sessionID, teamName)
+    sessionID = session.get_session_id(term, year)
     nextID = teams.get_max_team_id()
-    '''
-    teams.check_dup_team(teamName, sessionID)
-    teams.insert_team(sessionID, teamName) # Insert the new team to the DB
-    '''
+    teams.insert_team(sessionID, team_name)
     for s in students: # For loop that updates all students TID to their new teams TID
-      print(s)
-      studentsTable.update_team(s, nextID, sessionID)
+      students_table.update_team(s, nextID, sessionID)
     return render_template('profAddTeam.html')
 

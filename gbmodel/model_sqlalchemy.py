@@ -91,7 +91,7 @@ class students(db.Model):
         return names
 
     def update_team(self, member_name, member_tid, member_sessionID):
-        stmt = update(students).where(students.name == member_name).where(students.session_id == member_sessionID).values(tid=member_tid)
+        update = students.query.filter_by(name=member_name).filter_by(session_id=member_sessionID).update(dict(tid=member_tid))
         db.session.commit()
         return True
 
