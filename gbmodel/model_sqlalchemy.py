@@ -3,7 +3,7 @@ import os
 import sys
 import datetime
 from app import db, engine, db_session
-from sqlalchemy import exc
+from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
 
@@ -16,23 +16,20 @@ class teams(db.Model):
     # Otherwise, return the max id+1
     def get_max_team_id(self):
         try:
-            max_id = engine.execute('select max(id) from teams ')
-            max_id = max_id.fetchone()
+            max_id = db.session.query(func.max(teams.id)).scalar()
         except exc.SQLAlchemyError:
             max_id = None
-        if max_id[0] is None:
+        if max_id is None:
             return 1
         else:
-            return max_id[0] + 1
+            return max_id + 1
 
     # Check if the new team name already existed in the given session
     # Input: name of the new team and session id of the selected session
     # Output: return False if the team already exists, True otherwise
     def check_dup_team(self, t_name, session_id):
-        params = {'name': t_name, 'session_id': session_id}
         try:
-            result = engine.execute('select * from teams where name = :name and session_id = :session_id', params)
-            result = result.fetchone()
+            result = teams().query.filter_by(name=t_name, session_id=session_id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is not None:
@@ -50,24 +47,21 @@ class teams(db.Model):
     # Input: session id of the selected session
     # Output: list of teams and their info. from the selected session
     def get_team_session_id(self, session_id):
-        result = engine.execute('select * from teams where session_id = :session_id', session_id)
-        teams = result.fetchall()
-        return teams
+        team = teams.query.filter_by(session_id=session_id).all()
+        return team
 
     # Remove a team and all the students from that team
     # Input: name of the team and session id
     def remove_team(self, name, session_id):
         student = students()
         removed_student = removed_students()
-        params = {'name': name, 'session_id': session_id}
-        result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
-        id = result.fetchone()
-        tid = id[0]
+        result = teams.query.filter(teams.name==name, teams.session_id==session_id).first()
+        tid = result.id
         params = {'tid': tid, 'session_id': session_id}
         list_students = student.get_students(tid, session_id)
         if list_students is not None:
             for i in list_students:
-                params = {'name': i[0], 'session_id': session_id}
+                params = {'name': i, 'session_id': session_id}
                 result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where \
                     name = :name AND session_id = :session_id", params)
                 s = result.fetchone()
@@ -83,14 +77,14 @@ class teams(db.Model):
     def dashboard(self, session_id):
         student = students()
         session = capstone_session()
-        tids = [row[0] for row in self.get_team_session_id(session_id)]
-        teamNames = [row[2] for row in self.get_team_session_id(session_id)]
+        tids = [row.id for row in self.get_team_session_id(session_id)]
+        teamNames = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
         for i in range(len(tids)):
             names = student.get_students(tids[i], session_id)
             temp = [teamNames[i]]
             for name in names:
-                temp.append(name[0])
+                temp.append(name)
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
@@ -104,11 +98,8 @@ class students(db.Model):
     # Output: return False if the student was already in
     #         return True otherwise
     def check_dup_student(self, id, session_id):
-        params = {'id': id, 'session_id': session_id}
         try:
-            result = engine.execute('select * from students where id = :id\
-                 and session_id = :session_id', params)
-            result = result.fetchone()
+            result = students.query.filter_by(id=id, session_id=session_id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is not None:
@@ -120,13 +111,8 @@ class students(db.Model):
     # Output: return False if student id already exists in the current session
     #         add student to the database and return True otherwise
     def insert_student(self, name, id, session_id, t_name):
-        params = {'name': t_name, 'session_id': session_id}
-        if not self.check_dup_student(id, session_id):
-            return False
-        result = engine.execute("select id from teams where name = :name \
-            AND session_id = :session_id", params)
-        tid = result.fetchone()
-        tid = tid[0]
+        result = teams.query.filter(teams.name==t_name, teams.session_id==session_id).first()
+        tid = result.id
         new_student = students(id=id, tid=tid, session_id=session_id, name=name, is_lead=0, midterm_done=0, final_done=0)
         db.session.add(new_student)
         db.session.commit()
@@ -136,11 +122,8 @@ class students(db.Model):
     # Input: team id, session id
     # Output: list of student name
     def get_students(self, tid, session_id):
-        data = {'tid': tid, 'session_id': session_id}
-        result = engine.execute('select name from students where tid =:tid\
-             and session_id = :session_id', data)
-        names = result.fetchall()
-        return names
+        result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
+        return result
 
     # Remove a list of selected students
     # Input: list of students, team name and session id
@@ -181,13 +164,6 @@ class students(db.Model):
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
-
-    # def get_session_id(self, term, year):
-    #     ses_id = capstone_session.query.filter_by(start_term=term, start_year=year).first()
-    #     if (ses_id):
-    #         return ses_id.id
-    #     else:
-    #         return None
 
     # Calculate the next id for a newly added session
     # if the table is empty, returns 1
@@ -243,18 +219,67 @@ class capstone_session(db.Model):
             lists.append(temp)
         return lists
 
+    # Check if start and end dates are valid
+    # Input: start and end dates
+    # Output: Return 0 if valid, return 1 if start date is after the end date
+    #         Return 1 if either start or end date is empty
+    def check_dates(self, start, end):
+        params = {'start': start, 'end': end}
+        if params['start'] and params['end']:
+            if int(params['start']) > int(params['end']):
+                return 1
+            else:
+                return 0
+        elif params['start'] is None and params['end'] is None:
+            return 0
+        return 2
+
+    # Display msg error for inserting dates
+    def date_error(self, params):
+        error_msg = None
+        for i in params:
+            if params[i]:
+                params[i] = params[i].replace('-', '')               
+            else:
+                params[i] = None
+        mid = self.check_dates(params['midterm_start'], params['midterm_end'])
+        final = self.check_dates(params['final_start'], params['final_end'])
+        if mid == 2:
+            error_msg = "Please fill out both start and end dates for the Midterm dates"
+            return error_msg
+        if final == 2:
+            error_msg = "Please fill out both start and end dates for the Final dates"
+            return error_msg
+        elif mid == 1 or final == 1:
+            error_msg = "Please choose an end date that starts after the start date"
+            return error_msg
+        return error_msg
+
+    # Split dates into integer year, month and day
+    # to convert the string to datetime object
+    def split_dates(self,params):
+        for i in params:
+            if params[i]:
+                params[i] = params[i].split('-')
+                params[i] = datetime.datetime(int(params[i][0]), int(params[i][1]), int(params[i][2]))       
+            else:
+                params[i] = None
+        return params
+
     # Insert a start and end date for midterm and final review
     # Input: start and end date for midterm review and final reviews
     # Output: update the dates in the database
     def insert_dates(self, midterm_start, midterm_end, final_start, final_end, session_id):
-        params = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end, 'session_id': session_id}
+        dates = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
+        midterm_start, midterm_end, final_start, final_end = self.split_dates(dates)
+        params = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end, 'session_id': session_id}     
         for i in params:
             if params[i]:
                 params[i] = params[i]
             else:
                 params[i] = None
-        engine.execute("update capstone_session set mid_start =:midterm_start, \
-            mid_end =:midterm_end, final_start=:final_start, \
+        engine.execute("update capstone_session set midterm_start =:midterm_start, \
+            midterm_end =:midterm_end, final_start=:final_start, \
                 final_end=:final_end where id=:session_id", params)
         return True
 

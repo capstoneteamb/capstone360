@@ -50,6 +50,9 @@ names = [
         "Ruth Farrari"
 ]
 
+# Mock professor data
+professors = [("gpld", "George Portland"), ("rdren", "Rick Darren")]
+
 # A model review to base the midterm and final review off of
 example_review = {
         "time": 1,
@@ -110,6 +113,11 @@ def generate_student_data():
 
 
 def generate_tables(cursor):
+    # Create the professors table
+    cursor.execute(('CREATE TABLE professors( '
+                    'id VARCHAR(128) NOT NULL PRIMARY KEY, '
+                    'name VARCHAR(128) NOT NULL);'))
+
     # Create capstone session table and insert a row
     cursor.execute(('CREATE TABLE capstone_session( '
                     'id INTEGER NOT NULL PRIMARY KEY, '
@@ -117,7 +125,11 @@ def generate_tables(cursor):
                     'start_year INTEGER NOT NULL, '
                     'end_term VARCHAR(10) NOT NULL, '
                     'end_year INTEGER NOT NULL, '
-                    'title VARCHAR(20) NOT NULL );'))
+                    'midterm_start DATETIME NULL, '
+                    'midterm_end DATETIME NULL, '
+                    'final_start DATETIME NULL, '
+                    'final_end DATETIME NULL, '
+                    'professor_id VARCHAR(128) NOT NULL REFERENCES professors(id));'))
 
     # Create teams table and insert some rows
     cursor.execute(('CREATE TABLE teams( '
@@ -177,14 +189,20 @@ def generate_tables(cursor):
 
 
 def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
+    # Variables that we will need
     start_year = 2019
     end_year = 2019
     start_term_index = 0
     end_term_index = 1
     terms = ["Winter", "Spring", "Summer", "Fall"]
 
+    # Put some entries in the professors table
+    for professor in professors:
+        cursor.execute('INSERT INTO professors VALUES(?,?)', professor)
+
+    # Put some entries in the capstone_session, students and teams tables
     for session_id in range(num_sessions):
-        # Get new days and years
+        # Check and, if necessary, reset some variables we use to get our start and end term values
         if (start_term_index > 3):
             start_term_index = 0
             start_year = start_year + 1
@@ -193,20 +211,21 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
             end_term_index = 0
             end_year = end_year + 1
 
-        # Put new session entry into the database
-        cursor.execute('INSERT INTO capstone_session VALUES(?,?,?,?,?,?)',
+        # Create a new capstone_session table entry
+        cursor.execute(('INSERT INTO capstone_session (id, start_term, start_year, end_term, end_year, '
+                        ' professor_id) VALUES(?,?,?,?,?,?)'),
                        (session_id,
                         terms[start_term_index],
                         start_year,
                         terms[end_term_index],
                         end_year,
-                        terms[start_term_index] + " " + str(start_year)))
+                        professors[session_id % 2][0]))
 
-        # Increment some variables we use to help us enter realistic looking start and end terms
+        # Increment the variables we use to help us get realistic looking start and end term values
         start_term_index = start_term_index + 1
         end_term_index = end_term_index + 1
 
-        # Put new team entry into the database
+        # Create a teams table entry
         for team_id in range(num_teams):
             team_number = team_id + (session_id * num_teams)
             cursor.execute('INSERT INTO teams VALUES(?,?,?)',
@@ -214,19 +233,19 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             session_id,
                             "Team " + str(team_number)))
 
-        # Put data into the students and teams tables
+        # Create new entries for the students table, using the student_data variable we were given
         for student in student_data:
+            # Figure out the student and team ids for the current student
             student_id = student["id"] + (len(student_data) * session_id)
             team_id = student["id"] % num_teams + (num_teams * session_id)
 
-            # Figure out if student is team lead
-            # The conditional will be true if the current student is the first one on the team. If they are
-            # the first one, they are the team lead
+            # Figure out if student is team lead. The will be if they are the first person on the team (the
+            # conditional will be true if this is the case)
             is_team_lead = False
             if (student["id"] < num_teams):
                 is_team_lead = True
 
-            # Add student to the students table
+            # Create a students table entry
             cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?,?)',
                            (str(student_id),
                             team_id,
