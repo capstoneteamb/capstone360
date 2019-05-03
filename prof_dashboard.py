@@ -29,9 +29,9 @@ class Dashboard(MethodView):
                 year = current_date.year
                 if month in range(9, 11):
                     term = "Fall"
-                elif month in range(3, 5):
-                    term = "Spring"
-                elif month in range(6, 8):
+                elif month in range(3, 6):
+                    term = "Spring"        
+                elif month in range(6, 9):
                     term = "Summer"
                 else:
                     term = "Winter"
