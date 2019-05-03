@@ -55,7 +55,7 @@ class teams(db.Model):
     def remove_team(self, name, session_id):
         student = students()
         removed_student = removed_students()
-        result = teams.query.filter(teams.name==name, teams.session_id==session_id).first()
+        result = teams.query.filter(teams.name == name, teams.session_id == session_id).first()
         tid = result.id
         params = {'tid': tid, 'session_id': session_id}
         list_students = student.get_students(tid, session_id)
@@ -111,7 +111,7 @@ class students(db.Model):
     # Output: return False if student id already exists in the current session
     #         add student to the database and return True otherwise
     def insert_student(self, name, id, session_id, t_name):
-        result = teams.query.filter(teams.name==t_name, teams.session_id==session_id).first()
+        result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
         new_student = students(id=id, tid=tid, session_id=session_id, name=name, is_lead=0, midterm_done=0, final_done=0)
         db.session.add(new_student)
@@ -239,7 +239,7 @@ class capstone_session(db.Model):
         error_msg = None
         for i in params:
             if params[i]:
-                params[i] = params[i].replace('-', '')               
+                params[i] = params[i].replace('-', '')
             else:
                 params[i] = None
         mid = self.check_dates(params['midterm_start'], params['midterm_end'])
@@ -257,11 +257,11 @@ class capstone_session(db.Model):
 
     # Split dates into integer year, month and day
     # to convert the string to datetime object
-    def split_dates(self,params):
+    def split_dates(self, params):
         for i in params:
             if params[i]:
                 params[i] = params[i].split('-')
-                params[i] = datetime.datetime(int(params[i][0]), int(params[i][1]), int(params[i][2]))    
+                params[i] = datetime.datetime(int(params[i][0]), int(params[i][1]), int(params[i][2]))
             else:
                 params[i] = None
         return params
@@ -272,7 +272,7 @@ class capstone_session(db.Model):
     def insert_dates(self, midterm_start, midterm_end, final_start, final_end, session_id):
         review_dates = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
         dates = self.split_dates(review_dates)
-        params = {'midterm_start': dates['midterm_start'], 'midterm_end': dates['midterm_end'], 'final_start': dates['final_start'], 'final_end': dates['final_end'], 'session_id': session_id}    
+        params = {'midterm_start': dates['midterm_start'], 'midterm_end': dates['midterm_end'], 'final_start': dates['final_start'], 'final_end': dates['final_end'], 'session_id': session_id}
         for i in params:
             if params[i]:
                 params[i] = params[i]
