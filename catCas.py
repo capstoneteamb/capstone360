@@ -32,7 +32,18 @@ def validate():
     if found_session_id == -1:
         return False
     elif found_session_id == session_id:
-        return True
+        return username
     elif (1 + found_session_id) == session_id:
-        return True
+        return username
     return False
+
+
+def validate_professor():
+    cas = CAS()
+    username = cas.username
+    professors = gbmodel.professors()
+    found_professors = professors.get_professors(username)
+    if found_professors is None:
+        return False
+    else:
+        return True

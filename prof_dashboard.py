@@ -3,14 +3,27 @@ from flask.views import MethodView
 import gbmodel
 import datetime
 from catCas import validate
+from catCas import validate_professor
 from flask_cas import login_required
+from form import review
 
 
 class Dashboard(MethodView):
     @login_required
     def get(self):
-        if validate() is False:
-            return render_template('index.html')
+
+        # Validate that the username from CAS is in the professor table
+        # If not then checks if the username is in the student table
+        # If neither than redirects to homescreen
+        get_review = review()
+        if validate_professor() is False:
+            user_id = validate()
+            if user_id is False:
+                return render_template('index.html')
+            else:
+                print("else in dash")
+                return get_review.get(user_id)
+
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
         # Get session_id from the prefvious selected session

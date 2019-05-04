@@ -8,6 +8,17 @@ from sqlalchemy import exc, func
 sys.path.append(os.getcwd())
 
 
+class professors(db.Model):
+    __table__ = db.Model.metadata.tables['professors']
+
+    # Get a list of professors
+    # Input: team id, session id
+    # Output: list of professors id
+    def get_professors(self, id):
+        result = professors.query.filter(professors.id==id).first()
+        return result
+
+
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
 
@@ -147,19 +158,18 @@ class students(db.Model):
             engine.execute('delete from students where id = :id and session_id = :session_id', data)
         return True
 
-    # validate cas username with student id in the database
+    # Validate cas username with student id in the database
+    # Input: student_id
+    # Output: session_id
     def validate(self, id):
-        params = {'id': id}
         try:
-            result = engine.execute('select session_id from students where name = :id', params)
-            result = result.fetchone()
+            result = students.query.filter_by(id=id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is None:
-            return -1
+            return False
         else:
-            result = result[0]
-        return result
+            return result.session_id
 
 
 class capstone_session(db.Model):

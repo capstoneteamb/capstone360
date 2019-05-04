@@ -119,14 +119,14 @@ class review(MethodView):
 
     # This method returns the current user's team id value while testing if
     # the user exists in the database.
-    # input: only self
+    # input: only self and user_id
     # output: the user's tid as an integer
-    def get_tid(self):
+    def get_tid(self, user_id):
         # get the user's team id
         tid = 0
         try:
             students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
+            sdt = students.query.filter_by(id=user_id).first()
         except SQLAlchemyError:
             self.display_error('student look up error - tid')
 
@@ -205,7 +205,7 @@ class review(MethodView):
     # team members to displate, the student's open reports state,
     # if there are any user input errors to report, and if there are
     # any fatal errors to report as a result of user action.
-    def get(self):
+    def get(self, user_id):
         # check if user exists
         test_user = self.confirm_user()
         if test_user is False:
@@ -216,7 +216,7 @@ class review(MethodView):
                                    fatal_error='You have no open reviews.')
 
         # get user's team id
-        tid = self.get_tid()
+        tid = self.get_tid(user_id)
 
         # get user's team members
         try:
