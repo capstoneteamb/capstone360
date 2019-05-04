@@ -278,7 +278,7 @@ class capstone_session(db.Model):
                 params[i] = params[i]
             else:
                 params[i] = None
-        session = capstone_session.query.filter(capstone_session.id==session_id).first()
+        session = capstone_session.query.filter(capstone_session.id == session_id).first()
         session.midterm_start = params['midterm_start']
         session.midterm_end = params['midterm_end']
         session.final_start = params['final_start']

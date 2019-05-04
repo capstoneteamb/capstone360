@@ -91,7 +91,7 @@ class Dashboard(MethodView):
             final_end = request.form.get('final_end')
             params = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
             while session.date_error(params) is not None:
-                error_msg=session.date_error(params)
+                error_msg = session.date_error(params)
                 return render_template('setDate.html', error=error_msg, session_id=session_id)
             session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
             lists, sessions = team.dashboard(session_id)
