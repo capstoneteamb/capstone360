@@ -30,7 +30,7 @@ class Dashboard(MethodView):
                 if month in range(9, 11):
                     term = "Fall"
                 elif month in range(3, 6):
-                    term = "Spring"        
+                    term = "Spring"
                 elif month in range(6, 9):
                     term = "Summer"
                 else:
