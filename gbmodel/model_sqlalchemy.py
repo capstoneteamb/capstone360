@@ -55,7 +55,7 @@ class teams(db.Model):
     def remove_team(self, name, session_id):
         student = students()
         removed_student = removed_students()
-        result = teams.query.filter(teams.name==name, teams.session_id==session_id).first()
+        result = teams.query.filter(teams.name == name, teams.session_id == session_id).first()
         tid = result.id
         params = {'tid': tid, 'session_id': session_id}
         list_students = student.get_students(tid, session_id)
@@ -78,11 +78,11 @@ class teams(db.Model):
         student = students()
         session = capstone_session()
         tids = [row.id for row in self.get_team_session_id(session_id)]
-        teamNames = [row.name for row in self.get_team_session_id(session_id)]
+        team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
         for i in range(len(tids)):
             names = student.get_students(tids[i], session_id)
-            temp = [teamNames[i]]
+            temp = [team_names[i]]
             for name in names:
                 temp.append(name)
             lists[i] = temp
@@ -111,7 +111,7 @@ class students(db.Model):
     # Output: return False if student id already exists in the current session
     #         add student to the database and return True otherwise
     def insert_student(self, name, id, session_id, t_name):
-        result = teams.query.filter(teams.name==t_name, teams.session_id==session_id).first()
+        result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
         new_student = students(id=id, tid=tid, session_id=session_id, name=name, is_lead=0, midterm_done=0, final_done=0)
         db.session.add(new_student)
@@ -239,7 +239,7 @@ class capstone_session(db.Model):
         error_msg = None
         for i in params:
             if params[i]:
-                params[i] = params[i].replace('-', '')               
+                params[i] = params[i].replace('-', '')
             else:
                 params[i] = None
         mid = self.check_dates(params['midterm_start'], params['midterm_end'])
@@ -257,11 +257,11 @@ class capstone_session(db.Model):
 
     # Split dates into integer year, month and day
     # to convert the string to datetime object
-    def split_dates(self,params):
+    def split_dates(self, params):
         for i in params:
             if params[i]:
                 params[i] = params[i].split('-')
-                params[i] = datetime.datetime(int(params[i][0]), int(params[i][1]), int(params[i][2]))       
+                params[i] = datetime.datetime(int(params[i][0]), int(params[i][1]), int(params[i][2]))
             else:
                 params[i] = None
         return params
@@ -270,17 +270,20 @@ class capstone_session(db.Model):
     # Input: start and end date for midterm review and final reviews
     # Output: update the dates in the database
     def insert_dates(self, midterm_start, midterm_end, final_start, final_end, session_id):
-        dates = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
-        midterm_start, midterm_end, final_start, final_end = self.split_dates(dates)
-        params = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end, 'session_id': session_id}     
+        review_dates = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
+        dates = self.split_dates(review_dates)
+        params = {'midterm_start': dates['midterm_start'], 'midterm_end': dates['midterm_end'], 'final_start': dates['final_start'], 'final_end': dates['final_end'], 'session_id': session_id}
         for i in params:
             if params[i]:
                 params[i] = params[i]
             else:
                 params[i] = None
-        engine.execute("update capstone_session set midterm_start =:midterm_start, \
-            midterm_end =:midterm_end, final_start=:final_start, \
-                final_end=:final_end where id=:session_id", params)
+        session = capstone_session.query.filter(capstone_session.id == session_id).first()
+        session.midterm_start = params['midterm_start']
+        session.midterm_end = params['midterm_end']
+        session.final_start = params['final_start']
+        session.final_end = params['final_end']
+        db.session.commit()
         return True
 
 

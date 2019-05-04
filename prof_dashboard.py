@@ -29,9 +29,9 @@ class Dashboard(MethodView):
                 year = current_date.year
                 if month in range(9, 11):
                     term = "Fall"
-                elif month in range(3, 5):
+                elif month in range(3, 6):
                     term = "Spring"
-                elif month in range(6, 8):
+                elif month in range(6, 9):
                     term = "Summer"
                 else:
                     term = "Winter"
@@ -91,7 +91,7 @@ class Dashboard(MethodView):
             final_end = request.form.get('final_end')
             params = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
             while session.date_error(params) is not None:
-                error_msg=session.date_error(params)
+                error_msg = session.date_error(params)
                 return render_template('setDate.html', error=error_msg, session_id=session_id)
             session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
             lists, sessions = team.dashboard(session_id)
