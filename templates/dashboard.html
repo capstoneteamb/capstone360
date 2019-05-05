@@ -12,8 +12,8 @@
                         <span class="name" style="display: inline-block;">
                             <img class="user-icon" style="display: inline-block;"
                                 src="{{ url_for('static', filename='Assets/user.png')}}">
+
                             <input type="hidden" name="student_id" value="{{student['id']}}">
-                            <input type="hidden" name="student_name" value="{{student['name']}}">
                             <input type="hidden" name="session_id" value="{{session_id}}">
                             <input class="text-look-alike-button" style="display: inline-block; margin-left: 10px;" type="submit" value="{{student['name']}}">
                         </span>

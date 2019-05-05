@@ -5,6 +5,7 @@ import gbmodel
 
 
 # A function to add some descriptor words to flush out our numerical rating system a little bit
+# Input: rating (the numerical rating that we will flush out)
 def interperate_rating(rating):
     if rating is None:
         return "No Rating Given"
@@ -33,42 +34,37 @@ class ViewReview(MethodView):
         teams = gbmodel.teams()
         students = gbmodel.students()
 
-        # Get data from the POST request
-        # This helped: https://stackoverflow.com/questions/23205577/python-flask-immutablemultidict
-        reviewer_name = request.form.getlist('reviewer_name')[0]
-        reviewee_name = request.form.getlist('reviewee_name')[0]
-        team_id = request.form.getlist('tid')[0]
-        try:
-            is_final = int(request.form.getlist('is_final')[0])
-        except ValueError:
-            print("Error converting is_final to int in viewReview.py")
-            error = "Something went wrong"
-            return render_template('viewReview.html', error=error)
-
         # We will need some way to verify that the one logged in is a professor
         # Will need an isProf function
         # if not (prof or name == student_name):
         #    error = "You aren't allowed to access this page"
         #    return render_template('errorPage.html', error=error)
 
-        # Get student_ids from name
-        reviewer_id = students.get_student_from_name_and_tid(reviewer_name, team_id).id
-        reviewee_id = students.get_student_from_name_and_tid(reviewee_name, team_id).id
-
-        # Otherwise, load the review page
         try:
-            # Get Team name
-            team_name = teams.get_team_name_from_id(team_id)[0]
+            # Get data from the POST request
+            # This helped: https://stackoverflow.com/questions/23205577/python-flask-immutablemultidict
+            reviewer_id = request.form.getlist('reviewer_id')[0]
+            reviewee_id = request.form.getlist('reviewee_id')[0]
+            is_final = int(request.form.getlist('is_final')[0])
 
-            # Get report data and, if the report is there, parse it
+            # Get student info from name
+            reviewer = students.query.filter_by(id=reviewer_id).first()
+            reviewee = students.query.filter_by(id=reviewee_id).first()
+
+            # Get Team name
+            team_name = teams.get_team_name_from_id(reviewer.tid)[0]
+
+            # Try to get the report
             report = reports.query.filter_by(reviewer=reviewer_id,
                                              reviewee=reviewee_id,
-                                             tid=team_id,
+                                             tid=reviewer.tid,
                                              is_final=is_final).first()
+
+            # If we found one, parse it
             if report is not None:
                 review_details = {"time": report.time,
-                                  "reviewer": reviewer_name,
-                                  "reviewee": reviewee_name,
+                                  "reviewer": reviewer.name,
+                                  "reviewee": reviewee.name,
                                   "team_name": team_name,
                                   "is_final": (is_final == 1)}
                 parsed_review = [
@@ -116,6 +112,8 @@ class ViewReview(MethodView):
                 if report.is_final:
                     parsed_review.append({"question": "What did you learn from this experience",
                                           "answer": reports.what_you_learned})
+                    # Only self reviews will ask if the team members are proud of their team's product and
+                    # their role in it
                     if reviewer_id == reviewee_id:
                         parsed_review.append({"question": ("Are you proud of your team's product and your:"
                                                            " role in it? Please explain"),
@@ -128,6 +126,6 @@ class ViewReview(MethodView):
                 return render_template('viewReview.html', error=error)
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
-        except Exception:
+        except Exception as error:
             error = "Something went wrong :("
             return render_template('viewReview.html', error=error)

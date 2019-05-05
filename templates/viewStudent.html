@@ -31,10 +31,8 @@
                     <p>
                         {% if review_for_student['completed'][i] %}
                         <form action="{{url_for('viewReview')}}" method="POST">
-                            <input type="hidden" name="tid" value="{{student['tid']}}">
-                            <input type="hidden" name="reviewer_name" value="{{student['name']}}">
-                            <input type="hidden" name="reviewee_name" value="{{review_for_student['reviewee_name']}}">
-                            <!--<input type="hidden" name="session_id" value="{{student['session_id']}}">-->
+                            <input type="hidden" name="reviewer_id" value="{{student['id']}}">
+                            <input type="hidden" name="reviewee_id" value="{{review_for_student['reviewee_id']}}">
                             <input type="hidden" name="is_final" value="{{i}}">
                             <input class="text-look-alike-button" type="submit" value="{{('Review for ' + review_for_student['reviewee_name'])}}">
                         </form>
