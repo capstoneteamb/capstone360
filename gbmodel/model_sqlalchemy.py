@@ -128,10 +128,13 @@ class students(db.Model):
     # Input: team id, session id
     # Output: list of student name
     def get_students(self, tid, session_id):
-        result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
-        for r in result:
-            r = cipher.decrypt(r.name)
-            r = r.name.decode('UTF8')
+        e_result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
+        result = []
+        for r in e_result: # Decrypt and decode bit string
+            r = cipher.decrypt(r)
+            r = r.decode('UTF8')
+            print(r)
+            result.append(r)
         return result
 
     # Remove a list of selected students
