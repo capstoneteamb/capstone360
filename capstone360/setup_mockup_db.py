@@ -7,6 +7,14 @@
 
 
 import sqlite3
+from cryptography.fernet import Fernet
+
+# Get encryption key.
+#key_file = open("../../key.txt")
+#key = key_file.readline()
+key = 'FbR9YKJHJGqXzGSrqY9Fjlz_6_IQFd3fNM823uD24_o='
+key = bytes(key.encode("UTF8"))
+cipher = Fernet(key)
 
 # Needed to generate student data
 names = [
@@ -103,6 +111,11 @@ def generate_student_data():
         # Get student id
         student_id = id_num
         id_num = id_num + 1
+
+        # encrypt the students name and email.
+        # String need to be converted to byte arrays
+        name = cipher.encrypt(bytes(name,encoding='UTF8'))
+        email_address = cipher.encrypt(bytes(email_address, encoding='UTF8'))
 
         # Add Data To List
         student_data.append({"name": name,

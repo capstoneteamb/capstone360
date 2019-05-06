@@ -4,8 +4,13 @@ import sys
 import datetime
 from app import db, engine, db_session
 from sqlalchemy import exc, func
+from cryptography.fernet import Fernet
 
 sys.path.append(os.getcwd())
+
+key = 'FbR9YKJHJGqXzGSrqY9Fjlz_6_IQFd3fNM823uD24_o='
+key = bytes(key.encode("UTF8"))
+cipher = Fernet(key)
 
 
 class teams(db.Model):
@@ -113,6 +118,7 @@ class students(db.Model):
     def insert_student(self, name, id, session_id, t_name):
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
+        name = cipher.encrypt(bytes(name, encoding='UTF8')) # Encrypt name
         new_student = students(id=id, tid=tid, session_id=session_id, name=name, is_lead=0, midterm_done=0, final_done=0)
         db.session.add(new_student)
         db.session.commit()
@@ -123,6 +129,9 @@ class students(db.Model):
     # Output: list of student name
     def get_students(self, tid, session_id):
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
+        for r in result:
+            r = cipher.decrypt(r.name)
+            r = r.name.decode('UTF8')
         return result
 
     # Remove a list of selected students
