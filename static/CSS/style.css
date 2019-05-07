@@ -271,10 +271,6 @@ input {
     font-size: 12px;
 }
 
-#student-page-container{
-    margin-top: 175px;
-}
-
 /* https://stackoverflow.com/questions/8739665/is-background-colornone-valid-css - second answer (by Jitendra Vyas and JGallardo, not the accepted answer, though it might not matter)*/
 #student-page-student-info{
     background-color: transparent;
