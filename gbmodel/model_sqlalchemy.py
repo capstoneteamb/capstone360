@@ -81,11 +81,10 @@ class teams(db.Model):
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
         for i in range(len(tids)):
-            #names = student.get_students(tids[i], session_id)
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
-            for member in team_members:
-                temp.append({"name": member.name, "id": member.id})
+            for team_member in team_members:
+                temp.append({"name": team_member.name, "id": team_member.id})
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
