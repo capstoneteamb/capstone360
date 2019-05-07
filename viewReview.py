@@ -66,24 +66,21 @@ class ViewReview(MethodView):
             # Query the database for the the reviewing student
             reviewer = students.query.filter_by(id=reviewer_id).first()
             if reviewer is None:
-                return self.handle_error("We couldn't find the reviewer in the database")
+                return self.handle_error("Reviewer not found in the database")
 
             # Query the database for the student being reviewed
             reviewee = students.query.filter_by(id=reviewee_id).first()
             if reviewee is None:
-                return self.handle_error("We couldn't find the reviewee in the database")
+                return self.handle_error("Reviewee not found in the database")
 
             # Verify the reviewer and reviewee are are on the same team
             if reviewer.tid != reviewee.tid:
-                return self.handle_error("The reviewer and reviewee don't appear to be on the same team")
+                return self.handle_error("Reviewer and reviewee don't appear to be on the same team")
 
             # Get the the name of the team the reviewer and reviewee are on
-            team_name_tuple = teams.get_team_name_from_id(reviewer.tid)
-            if team_name_tuple is None:
-                return self.handle_error(("We couldn't find the name of the reviewer and reviewee's team in"
-                                          " the database"))
-            else:
-                team_name = team_name_tuple[0]
+            team_name = teams.get_team_name_from_id(reviewer.tid)
+            if team_name is None:
+                return self.handle_error("Name of reviewer and reviewee's team not found in database")
 
             # Finally, get the review and parse it (if we find it in the database)
             report = reports.query.filter_by(reviewer=reviewer_id,
