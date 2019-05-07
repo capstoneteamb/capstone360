@@ -56,7 +56,6 @@ class ViewReview(MethodView):
         # if not (prof or name == student_name):
         #    error = "You aren't allowed to access this page"
         #    return render_template('errorPage.html', error=error)
-
         try:
             # Get data from the POST request
             # This helped: https://stackoverflow.com/questions/23205577/python-flask-immutablemultidict
