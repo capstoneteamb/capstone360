@@ -1,0 +1,37 @@
+{% extends "menu.html" %}
+{% block content %}
+{% if has_errors %}
+<ul>
+    {% for alert in get_flashed_messages() %}
+    <li><b>{{alert}}</b></li>
+    {% endfor %}
+</ul>
+<br>
+{% endif %}
+<div class="container dashboard-container">
+    <div class="student-card">
+        <h4>Midterm</h4>
+        {% for s in students %}
+            <p class=entry>
+                <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
+                <a href="{{ url_for('professorReport', student_id=s.id, session_id=s.session_id, is_final=False) }}"><span class="name" style="display: inline-block;">{{ s.name }}</span></a>
+            </p>
+        {% else %}
+        No students found.
+        {% endfor %}
+        <a href="{{ url_for('studentReport', session_id=session_id, team_id=team_id, is_final=False) }}"><button class="my-btn card-btn">Anonymize/Print</button></a>
+    </div>
+    <div class="student-card">
+        <h4>Final</h4>
+        {% for s in students %}
+            <p class=entry>
+                <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
+                <a href="{{ url_for('professorReport', student_id=s.id, session_id=s.session_id, is_final=True) }}"><span class="name" style="display: inline-block;">{{ s.name }}</span></a>
+            </p>
+        {% else %}
+        No students found.
+        {% endfor %}
+        <a href=""><button class="my-btn card-btn">Anonymize/Print</button></a>
+    </div>
+</div>
+{% endblock %}
