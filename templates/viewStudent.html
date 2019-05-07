@@ -1,6 +1,7 @@
-{% extends "menu.html" %}
+{% extends "layout.html" %}
 {% block content %}
-    <div class="container" id="student-page-container">
+<div class="body">
+    <div class="container">
         {% if error %}
         <div class="row">
             <div class="col">
@@ -50,4 +51,5 @@
         </div>
         {% endif %}
     </div>
+</div>
 {% endblock %}
