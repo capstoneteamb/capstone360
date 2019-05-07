@@ -1,4 +1,4 @@
-from flask import request, render_template
+from flask import request, redirect, render_template
 from flask.views import MethodView
 import gbmodel
 import datetime
@@ -11,10 +11,6 @@ from form import review
 class Dashboard(MethodView):
     @login_required
     def get(self):
-
-        # Validate that the username from CAS is in the professor table
-        # If not then checks if the username is in the student table
-        # If neither than redirects to homescreen
         get_review = review()
         if validate_professor() is False:
             user_id = validate()
@@ -42,9 +38,9 @@ class Dashboard(MethodView):
                 year = current_date.year
                 if month in range(9, 11):
                     term = "Fall"
-                elif month in range(3, 6):
+                elif month in range(3, 5):
                     term = "Spring"
-                elif month in range(6, 9):
+                elif month in range(6, 8):
                     term = "Summer"
                 else:
                     term = "Winter"
@@ -58,8 +54,16 @@ class Dashboard(MethodView):
         session = gbmodel.capstone_session()
         student = gbmodel.students()
         team = gbmodel.teams()
-        session_id = request.form['session_id']
-        session_id = int(session_id[0])
+        get_review = review()
+        try:
+            session_id = request.form['session_id']
+            session_id = int(session_id[0])
+        except KeyError:
+            session_id = None
+        if session_id is None:
+            user_id = request.form.get('user_id')
+            get_review.post(user_id)
+            return render_template('submitted.html')
         # If ADD STUDENT form was submitted (addStudent)
         if 'student_name' in request.form:
             team_name = request.form.get('team_name')
