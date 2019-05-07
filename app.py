@@ -9,6 +9,8 @@ from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
+from viewStudent import ViewStudent
+from viewReview import ViewReview
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -57,6 +59,14 @@ app.add_url_rule('/removeTeam/',
 app.add_url_rule('/setDate/',
                  view_func=SetDate.as_view('setDate'),
                  methods=['GET', 'POST'])
+
+app.add_url_rule('/viewStudent/',
+                view_func=ViewStudent.as_view('viewStudent'),
+                methods=['POST'])
+
+app.add_url_rule('/viewReview/',
+                view_func=ViewReview.as_view('viewReview'),
+                methods=['POST'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
