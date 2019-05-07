@@ -1,5 +1,6 @@
 from flask import request, make_response, render_template
 from flask.views import MethodView
+from flask_cas import login_required
 
 import gbmodel
 
@@ -9,6 +10,7 @@ class MissingStudentException(Exception):
 
 
 class TeamReportListView(MethodView):
+    @login_required
     def get(self, team_id):
         """
         Renders a list of reports for a specific team.
@@ -33,6 +35,7 @@ class TeamReportListView(MethodView):
 
 
 class GeneratedProfessorReportView(MethodView):
+    @login_required
     def get(self):
         """
         Generates a report for a specific student for viewing by a professor.
@@ -56,6 +59,7 @@ class GeneratedProfessorReportView(MethodView):
 
 
 class GeneratedAnonymousReportView(MethodView):
+    @login_required
     def get(self):
         """
         Generates anonymized reports for printing and handing out to students.
