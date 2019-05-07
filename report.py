@@ -101,6 +101,9 @@ def _make_printable_reports(session_id, team_id, is_final):
     is_final -- if True, makes a final report. If False, generates a midterm report.
     """
     students = gbmodel.students.query.filter_by(tid=team_id, session_id=session_id)
+    if students.count() <= 0:
+        raise MissingStudentException("No students for this team_id")
+
     report = ""
     # Concatenate anonymized reports for all students on the team
     for s in students:
