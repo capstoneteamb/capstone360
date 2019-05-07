@@ -1,4 +1,4 @@
-from flask import request, make_response, render_template, redirect, url_for, flash
+from flask import request, make_response, render_template
 from flask.views import MethodView
 
 import gbmodel
@@ -49,7 +49,7 @@ class GeneratedProfessorReportView(MethodView):
         try:
             pdf = _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=True)
             response = make_response(pdf)
-        except MissingStudentException as e:
+        except MissingStudentException:
             response = make_response(render_template('404.html'), 404)
 
         return response
@@ -72,7 +72,7 @@ class GeneratedAnonymousReportView(MethodView):
         try:
             pdf = _make_printable_reports(session_id, team_id, is_final)
             response = make_response(pdf)
-        except MissingStudentException as e:
+        except MissingStudentException:
             response = make_response(render_template('404.html'), 404)
 
         return response
