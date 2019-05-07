@@ -90,9 +90,11 @@ class teams(db.Model):
         return lists, sessions
 
     def get_team_name_from_id(self, team_id):
-        params = {"team_id": team_id}
-        result = engine.execute("select name from teams where id = :team_id", params)
-        return result.fetchone()
+        team_name_obj = teams.query.filter_by(id=team_id).first()
+        if team_name_obj is not None:
+            return team_name_obj.name
+        else:
+            return None
 
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']

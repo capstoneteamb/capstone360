@@ -60,11 +60,9 @@ class ViewStudent(MethodView):
             # out reviews for those team members
             if student is not None:
                 # Get team name
-                team_name_tuple = teams.get_team_name_from_id(student.tid)
-                if team_name_tuple is None:
+                team_name = teams.get_team_name_from_id(student.tid)
+                if team_name is None:
                     return self.handle_error("Team name not found in database (when we searched via team_id)")
-                else:
-                    team_name = team_name_tuple[0]
 
                 # Record it, along with some other information about the student
                 student_details = {"name": student.name, "id": student.id, "team_name": team_name}
