@@ -61,12 +61,12 @@ app.add_url_rule('/setDate/',
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/viewStudent/',
-                view_func=ViewStudent.as_view('viewStudent'),
-                methods=['POST'])
+                 view_func=ViewStudent.as_view('viewStudent'),
+                 methods=['POST'])
 
 app.add_url_rule('/viewReview/',
-                view_func=ViewReview.as_view('viewReview'),
-                methods=['POST'])
+                 view_func=ViewReview.as_view('viewReview'),
+                 methods=['POST'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)

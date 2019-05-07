@@ -54,7 +54,7 @@ class ViewStudent(MethodView):
             # Get the student and session id from the post request, and try to find the student in the db
             student_id = request.form.getlist('student_id')[0]
             session_id = request.form.getlist('session_id')[0]
-            student = students.query.filter_by(id=student_id, session_id=session_id).first() # verify student not found == null
+            student = students.query.filter_by(id=student_id, session_id=session_id).first()
 
             # If the student is found, find all of the student's team members and see if the student filled
             # out reviews for those team members
@@ -90,7 +90,8 @@ class ViewStudent(MethodView):
                 # page
                 return render_template('viewStudent.html', student=student_details, review_data=reviews)
             else:
-                return self.handle_error("Student was not found in the database (when we searched via student ID)")
+                return self.handle_error(("Student was not found in the database "
+                                          "(when we searched via student ID)"))
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
         except Exception as error:
