@@ -105,3 +105,6 @@ venv.bak/
 
 #vscode settings
 .vscode
+
+#cipher key
+key.txt

@@ -6,11 +6,14 @@ from app import db, engine, db_session
 from sqlalchemy import exc, func
 from cryptography.fernet import Fernet
 
-sys.path.append(os.getcwd())
-
-key = 'FbR9YKJHJGqXzGSrqY9Fjlz_6_IQFd3fNM823uD24_o='
+print(os.getcwd())
+key_file = open("../key.txt")
+key = key_file.readline()
+#key = 'FbR9YKJHJGqXzGSrqY9Fjlz_6_IQFd3fNM823uD24_o='
 key = bytes(key.encode("UTF8"))
 cipher = Fernet(key)
+
+sys.path.append(os.getcwd())
 
 
 class teams(db.Model):
@@ -133,7 +136,6 @@ class students(db.Model):
         for r in e_result: # Decrypt and decode bit string
             r = cipher.decrypt(r)
             r = r.decode('UTF8')
-            print(r)
             result.append(r)
         return result
 

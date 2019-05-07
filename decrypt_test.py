@@ -1,7 +1,11 @@
-from capstone360.gbmodel import gbmodel
+import os
+import gbmodel
 from cryptography.fernet import Fernet
 
-cipher = Fernet(b'FbR9YKJHJGqXzGSrqY9Fjlz_6_IQFd3fNM823uD24_o=')
+key_file = open('key.txt')
+key = key_file.readline()
+key = bytes(key.encode("UTF8"))
+cipher = Fernet(key)
 
 students = gbmodel.students()
 '''
