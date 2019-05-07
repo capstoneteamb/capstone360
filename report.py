@@ -1,7 +1,11 @@
-from flask import request, make_response, render_template
+from flask import request, make_response, render_template, redirect, url_for, flash
 from flask.views import MethodView
 
 import gbmodel
+
+
+class MissingStudentException(Exception):
+    pass
 
 
 class TeamReportListView(MethodView):
@@ -10,9 +14,16 @@ class TeamReportListView(MethodView):
         Renders a list of reports for a specific team.
         """
         # Make list of students on this team
+        # This data gets passed straight to the template, which can handle having zero rows in the db result.
         students = gbmodel.students.query.filter_by(tid=team_id, session_id=0)
+
         sessions = {'first', 'second'}
+
         teams = [(row.id, row.name) for row in gbmodel.teams.query.filter_by(session_id=0)]
+        # 404 if there's no such team
+        if len(teams) <= 0:
+            return make_response(render_template('404.html'), 404)
+
         return render_template('reportList.html',
                                students=students,
                                sessions=sessions,
@@ -35,8 +46,12 @@ class GeneratedProfessorReportView(MethodView):
         else:
             is_final = True
 
-        pdf = _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=True)
-        response = make_response(pdf)
+        try:
+            pdf = _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=True)
+            response = make_response(pdf)
+        except MissingStudentException as e:
+            response = make_response(render_template('404.html'), 404)
+
         return response
 
 
@@ -54,12 +69,19 @@ class GeneratedAnonymousReportView(MethodView):
         else:
             is_final = True
 
-        pdf = _make_printable_reports(session_id, team_id, is_final)
-        response = make_response(pdf)
+        try:
+            pdf = _make_printable_reports(session_id, team_id, is_final)
+            response = make_response(pdf)
+        except MissingStudentException as e:
+            response = make_response(render_template('404.html'), 404)
+
         return response
 
 
 def _make_printable_reports(session_id, team_id, is_final):
+    """
+    Compiles all reports for a team/session into one for printing.
+    """
     students = gbmodel.students.query.filter_by(tid=team_id, session_id=session_id)
     report = ""
     # Concatenate anonymized reports for all students on the team
@@ -75,6 +97,10 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     # Get all the info we need to compile the report
     reports = gbmodel.reports().get_reports_for_student(student_id, session_id, is_final)
     student = gbmodel.students.query.filter_by(id=student_id, session_id=session_id).first()
+
+    if student is None:
+        raise MissingStudentException("Trying to generate a report for a student that doesn't exist.")
+
     name = student.name
     team_id = student.tid
     team_name = gbmodel.teams.query.filter_by(id=team_id, session_id=session_id).first().name
