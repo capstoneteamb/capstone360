@@ -6,7 +6,6 @@ from app import db, engine, db_session
 from sqlalchemy import exc, func
 from cryptography.fernet import Fernet
 
-print(os.getcwd())
 key_file = open("../key.txt")
 key = key_file.readline()
 key = bytes(key.encode("UTF8"))

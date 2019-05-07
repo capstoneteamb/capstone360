@@ -1,4 +1,3 @@
-import os
 import gbmodel
 from cryptography.fernet import Fernet
 
@@ -22,4 +21,3 @@ print(students.get_students(0, 0))
 students.insert_student("Dame Dolla", 1990, 0, "Team 0")
 print("Team 0:")
 print(students.get_students(0, 0))
-
