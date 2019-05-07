@@ -9,7 +9,6 @@ from cryptography.fernet import Fernet
 print(os.getcwd())
 key_file = open("../key.txt")
 key = key_file.readline()
-#key = 'FbR9YKJHJGqXzGSrqY9Fjlz_6_IQFd3fNM823uD24_o='
 key = bytes(key.encode("UTF8"))
 cipher = Fernet(key)
 
