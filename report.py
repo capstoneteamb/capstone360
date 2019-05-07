@@ -6,6 +6,9 @@ import gbmodel
 
 
 class MissingStudentException(Exception):
+    """
+    We raise this exception if we find no students for a given team or session, to be more explicit than eg. a KeyError.
+    """
     pass
 
 
@@ -13,7 +16,11 @@ class TeamReportListView(MethodView):
     @login_required
     def get(self, team_id):
         """
-        Renders a list of reports for a specific team.
+        Renders a list of available reports for a specific team.
+        PR #47 supersedes this but for now I'll leave the route in so we can test with it.
+
+        Keyword arguments:
+        team_id -- tid of the team to generate reports for
         """
         # Make list of students on this team
         # This data gets passed straight to the template, which can handle having zero rows in the db result.
@@ -38,7 +45,8 @@ class GeneratedProfessorReportView(MethodView):
     @login_required
     def get(self):
         """
-        Generates a report for a specific student for viewing by a professor.
+        Generates a report for a specific student, for viewing by a professor.
+        Specifically, generates a single report, for a single session and term (midterm or final), for a single student, with comments deanonymized.
         """
         student_id = request.args.get('student_id')
         session_id = request.args.get('session_id')
@@ -62,7 +70,7 @@ class GeneratedAnonymousReportView(MethodView):
     @login_required
     def get(self):
         """
-        Generates anonymized reports for printing and handing out to students.
+        Generates all anonymized reports for printing and handing out to students.
         """
         team_id = request.args.get('team_id')
         session_id = request.args.get('session_id')
@@ -85,6 +93,12 @@ class GeneratedAnonymousReportView(MethodView):
 def _make_printable_reports(session_id, team_id, is_final):
     """
     Compiles all reports for a team/session into one for printing.
+    This means we generate a bunch of anonymized reports, then concatenate them, since page breaks are handled in the HTML template.
+
+    Keyword arguments:
+    session_id -- session to generate reports for
+    team_id -- tid of the team to generate reports for
+    is_final -- if True, makes a final report. If False, generates a midterm report.
     """
     students = gbmodel.students.query.filter_by(tid=team_id, session_id=session_id)
     report = ""
@@ -96,7 +110,14 @@ def _make_printable_reports(session_id, team_id, is_final):
 
 def _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=False):
     """
-    Renders a pdf for a student, defaulting to midterm review.
+    Renders a report for a student, defaulting to the results of their midterm review.
+    Unless is_professor_report is set to True, the report will be anonymized.
+
+    Keyword arguments:
+    student_id -- id of the student to generate a report for
+    session_id -- session to generate reports for
+    is_final -- if True, makes a final report. If False, generates a midterm report.
+    is_professor_report -- if True, makes a deanonymized report. If False, generates an anonymous report.
     """
     # Get all the info we need to compile the report
     reports = gbmodel.reports().get_reports_for_student(student_id, session_id, is_final)
