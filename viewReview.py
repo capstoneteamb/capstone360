@@ -36,7 +36,7 @@ class ViewReview(MethodView):
     # OUTPUT: an error page rendering of the viewReview template
     def handle_error(self, error):
         # We may consider adding logging-
-        print("View Review: " + error)
+        print(error)
         return render_template('viewReview.html', error="Something went wrong")
 
     @login_required
@@ -79,10 +79,12 @@ class ViewReview(MethodView):
                 return self.handle_error("The reviewer and reviewee don't appear to be on the same team")
 
             # Get the the name of the team the reviewer and reviewee are on
-            team_name = teams.get_team_name_from_id(reviewer.tid)[0]
-            if team_name is None:
+            team_name_tuple = teams.get_team_name_from_id(reviewer.tid)
+            if team_name_tuple is None:
                 return self.handle_error(("We couldn't find the name of the reviewer and reviewee's team in"
                                           " the database"))
+            else:
+                team_name = team_name_tuple[0]
 
             # Finally, get the review and parse it (if we find it in the database)
             report = reports.query.filter_by(reviewer=reviewer_id,

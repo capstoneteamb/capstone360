@@ -29,7 +29,7 @@ class ViewStudent(MethodView):
     # OUTPUT: an error page rendering of the viewStudent template (I think)
     def handle_error(self, error):
         # We may consider adding logging
-        print("View Student: " + error)
+        print(error)
         return render_template('viewStudent.html', error="Something went wrong")
 
     # A function that determines how the viewStudent class handles POST requests
@@ -59,19 +59,19 @@ class ViewStudent(MethodView):
             # If the student is found, find all of the student's team members and see if the student filled
             # out reviews for those team members
             if student is not None:
-                # Get team name, if we find it
-                team_name = teams.get_team_name_from_id(student.tid)[0]
+                # Get team name
+                team_name_tuple = teams.get_team_name_from_id(student.tid)
                 if team_name is None:
-                    return self.handle_error("View Student: team name for given team id not found")
+                    return self.handle_error("Team name not found in database (when we searched via team_id)")
+                else:
+                    team_name = team_name_tuple[0]
 
-                # Record some information about the student
+                # Record it, along with some other information about the student
                 student_details = {"name": student.name, "id": student.id, "team_name": team_name}
-
-                # This will hold midterm and final review information
-                reviews = []
 
                 # See if the student completed a midterm and final review for their team members and
                 # record it
+                reviews = []
                 team_members = students.query.filter_by(tid=student.tid, session_id=session_id).all()
                 for team_member in team_members:
                     midterm_review_completed = self.check_review_done(reports,
@@ -92,8 +92,8 @@ class ViewStudent(MethodView):
                 # page
                 return render_template('viewStudent.html', student=student_details, review_data=reviews)
             else:
-                return self.handle_error("We couldn't find the student with the given id in the database")
+                return self.handle_error("Student was not found in the database (when we searched via student ID)")
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
         except Exception as error:
-            self.handle_error(error)
+            return self.handle_error(error)
