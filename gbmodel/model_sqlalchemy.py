@@ -11,6 +11,15 @@ key = key_file.readline()
 key = bytes(key.encode("UTF8"))
 cipher = Fernet(key)
 
+def encrypt(p_text):
+    c_text = cipher.encrypt(bytes(p_text, encoding='UTF8')) # Encrypt name
+    return c_text
+
+def decrypt(c_text):
+    p_text = cipher.decrypt(c_text)
+    p_text = p_text.decode('UTF8')
+    return p_text
+
 sys.path.append(os.getcwd())
 
 
@@ -119,7 +128,7 @@ class students(db.Model):
     def insert_student(self, name, id, session_id, t_name):
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
-        name = cipher.encrypt(bytes(name, encoding='UTF8')) # Encrypt name
+        name = encrypt(name)
         new_student = students(id=id, tid=tid, session_id=session_id, name=name, is_lead=0, midterm_done=0, final_done=0)
         db.session.add(new_student)
         db.session.commit()
@@ -131,9 +140,8 @@ class students(db.Model):
     def get_students(self, tid, session_id):
         e_result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         result = []
-        for r in e_result: # Decrypt and decode bit string
-            r = cipher.decrypt(r)
-            r = r.decode('UTF8')
+        for r in e_result: # Decrypt string
+            r = decrypt(r)
             result.append(r)
         return result
 
