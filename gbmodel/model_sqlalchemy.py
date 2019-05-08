@@ -5,7 +5,7 @@ import datetime
 from app import db, engine, db_session
 from sqlalchemy import exc, func
 from cryptography.fernet import Fernet
-
+'''
 key_file = open("../key.txt")
 key = key_file.readline()
 key = bytes(key.encode("UTF8"))
@@ -19,7 +19,7 @@ def decrypt(c_text):
     p_text = cipher.decrypt(c_text)
     p_text = p_text.decode('UTF8')
     return p_text
-
+'''
 sys.path.append(os.getcwd())
 
 
