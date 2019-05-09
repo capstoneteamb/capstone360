@@ -147,6 +147,7 @@ def generate_tables(cursor):
                     'midterm_done BOOLEAN NOT NULL, '
                     'final_done BOOLEAN NOT NULL, '
                     'active VARCHAR(128) NULL, '
+                    'email_address VARCHAR(128) NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
     # Create Reports table
@@ -246,7 +247,7 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                 is_team_lead = True
 
             # Create a students table entry
-            cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?,?)',
+            cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?,?,?)',
                            (str(student_id),
                             team_id,
                             session_id,
@@ -254,7 +255,8 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             is_team_lead,
                             False,
                             False,
-                            'midterm'))
+                            'midterm',
+                            student['email_address']))
 
 
 def run():
