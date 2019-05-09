@@ -9,6 +9,7 @@
 		<form action="{{ url_for('dashboard', session_id=session_id) }}" method=POST>
 			<p class="heading">Student Name: <input type=text required='required' name=student_name></p>
 			<p class="heading">Student ID: <input type=text required='required' name=student_id></p>
+			<p class="heading">Student Email Address: <input type=text name=student_email></p>
 			<p class="heading" style="display: inline-block;">Team Name: {{team_name}}</p> 
 			<input type="hidden" value={{team_name}} name=team_name>
 			<input type="hidden" value={{session_id}} name=session_id>

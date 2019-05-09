@@ -55,7 +55,7 @@ class Dashboard(MethodView):
                 error = "Student id " + str(request.form['student_id']) + " already exists"
                 team_name = team_name.replace(" ", "_")
                 return render_template('addStudent.html', team_name=team_name, session_id=session_id, error=error)
-            student.insert_student(request.form['student_name'], request.form['student_id'], session_id, team_name)
+            student.insert_student(request.form['student_name'], request.form['student_email'], request.form['student_id'], session_id, team_name)
             lists, sessions = team.dashboard(session_id)
             return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If REMOVE STUDENT was submitted (in dashboard)
