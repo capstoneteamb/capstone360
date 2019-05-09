@@ -147,7 +147,7 @@ def generate_tables(cursor):
                     'midterm_done BOOLEAN NOT NULL, '
                     'final_done BOOLEAN NOT NULL, '
                     'active VARCHAR(128) NULL, '
-                    'email_address VARCHAR(128) NULL, '
+                    'email_address VARCHAR(128) NOT NULL, '
                     'PRIMARY KEY (id, session_id) );'))
 
     # Create Reports table
