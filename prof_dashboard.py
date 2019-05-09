@@ -59,6 +59,7 @@ class Dashboard(MethodView):
                                        session_id=session_id,
                                        error=error)
             student.insert_student(request.form['student_name'],
+                                   request.form['student_email'],
                                    request.form['student_id'],
                                    session_id,
                                    team_name)

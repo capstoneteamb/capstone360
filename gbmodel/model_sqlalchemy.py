@@ -114,16 +114,17 @@ class students(db.Model):
         return True
 
     # Add new student
-    # Input: student name, student id, team name and id of the selected session
+    # Input: student name, student email address, student id, team name and id of the selected session
     # Output: return False if student id already exists in the current session
     #         add student to the database and return True otherwise
-    def insert_student(self, name, id, session_id, t_name):
+    def insert_student(self, name, email_address, id, session_id, t_name):
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
         new_student = students(id=id,
                                tid=tid,
                                session_id=session_id,
                                name=name,
+                               email_address=email_address,
                                is_lead=0,
                                midterm_done=0,
                                final_done=0)
