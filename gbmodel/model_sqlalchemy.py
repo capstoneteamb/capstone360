@@ -119,8 +119,14 @@ class students(db.Model):
     def insert_student(self, name, email_address, id, session_id, t_name):
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
-        new_student = students(id=id, tid=tid, session_id=session_id, name=name, email_address=email_address,
-                               is_lead=0, midterm_done=0, final_done=0)
+        new_student = students(id=id,
+                               tid=tid,
+                               session_id=session_id,
+                               name=name,
+                               email_address=email_address,
+                               is_lead=0,
+                               midterm_done=0,
+                               final_done=0)
         db.session.add(new_student)
         db.session.commit()
         return True
