@@ -1,1 +1,1 @@
-import gbmodel
+import gbmodel  # noqa
