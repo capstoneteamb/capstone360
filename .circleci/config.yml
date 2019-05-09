@@ -27,7 +27,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip3 install -U flake8
-      - run: flake8
+      - run: flake8 --max-line-length=110
 
 workflows:
   version: 2
