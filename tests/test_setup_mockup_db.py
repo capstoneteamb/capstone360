@@ -9,6 +9,22 @@
 from capstone360.setup_mockup_db import names, generate_student_data, generate_tables, fill_tables_with_data
 import sqlite3
 import os
+from cryptography.fernet import Fernet
+key_file = open("../key.txt")
+key = key_file.readline()
+key = bytes(key.encode("UTF8"))
+cipher = Fernet(key)
+
+
+def encrypt(p_text):
+    c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))  # Encrypt name
+    return c_text
+
+
+def decrypt(c_text):
+    p_text = cipher.decrypt(c_text)
+    p_text = p_text.decode('UTF8')
+    return p_text
 
 # Global Variables
 mockup_db_path = "temp_database.db"
@@ -20,7 +36,7 @@ def test_generate_student_data():
 
     for student in student_data:
         # Check Name
-        assert (student["name"] in names)
+        assert (decrypt(student["name"]) in names)
 
         # Check that email address is first_name.last_name.pdx.edu
         student_name = student["name"].split(" ")
