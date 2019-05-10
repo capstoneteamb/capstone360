@@ -10,14 +10,18 @@ key = key_file.readline()
 key = bytes(key.encode("UTF8"))
 cipher = Fernet(key)
 
+
 def encrypt(p_text):
-    c_text = cipher.encrypt(bytes(p_text, encoding='UTF8')) # Encrypt name
+    c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))  # Encrypt name
     return c_text
+
 
 def decrypt(c_text):
     p_text = cipher.decrypt(c_text)
     p_text = p_text.decode('UTF8')
     return p_text
+
+
 sys.path.append(os.getcwd())
 
 
