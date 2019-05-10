@@ -54,8 +54,15 @@ class Dashboard(MethodView):
             while not student.check_dup_student(request.form['student_id'], session_id):
                 error = "Student id " + str(request.form['student_id']) + " already exists"
                 team_name = team_name.replace(" ", "_")
-                return render_template('addStudent.html', team_name=team_name, session_id=session_id, error=error)
-            student.insert_student(request.form['student_name'], request.form['student_id'], session_id, team_name)
+                return render_template('addStudent.html',
+                                       team_name=team_name,
+                                       session_id=session_id,
+                                       error=error)
+            student.insert_student(request.form['student_name'],
+                                   request.form['student_email'],
+                                   request.form['student_id'],
+                                   session_id,
+                                   team_name)
             lists, sessions = team.dashboard(session_id)
             return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If REMOVE STUDENT was submitted (in dashboard)
@@ -89,7 +96,10 @@ class Dashboard(MethodView):
             midterm_end = request.form.get('midterm_end')
             final_start = request.form.get('final_start')
             final_end = request.form.get('final_end')
-            params = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
+            params = {'midterm_start': midterm_start,
+                      'midterm_end': midterm_end,
+                      'final_start': final_start,
+                      'final_end': final_end}
             while session.date_error(params) is not None:
                 error_msg = session.date_error(params)
                 return render_template('setDate.html', error=error_msg, session_id=session_id)

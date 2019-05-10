@@ -2,7 +2,7 @@
 import os
 import sys
 import datetime
-from app import db, engine, db_session
+from app import db, engine, db_session  # noqa
 from sqlalchemy import exc, func
 from cryptography.fernet import Fernet
 '''
@@ -111,6 +111,7 @@ class teams(db.Model):
         else:
             return None
 
+
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
 
@@ -128,14 +129,21 @@ class students(db.Model):
         return True
 
     # Add new student
-    # Input: student name, student id, team name and id of the selected session
+    # Input: student name, student email address, student id, team name and id of the selected session
     # Output: return False if student id already exists in the current session
     #         add student to the database and return True otherwise
-    def insert_student(self, name, id, session_id, t_name):
+    def insert_student(self, name, email_address, id, session_id, t_name):
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
         name = encrypt(name)
-        new_student = students(id=id, tid=tid, session_id=session_id, name=name, is_lead=0, midterm_done=0, final_done=0)
+        new_student = students(id=id,
+                               tid=tid,
+                               session_id=session_id,
+                               name=name,
+                               email_address=email_address,
+                               is_lead=0,
+                               midterm_done=0,
+                               final_done=0)
         db.session.add(new_student)
         db.session.commit()
         return True
@@ -160,13 +168,14 @@ class students(db.Model):
             return False
         removed_student = removed_students()
         params = {'name': t_name, 'session_id': session_id}
-        result = engine.execute("select id from teams where name = :name AND session_id = :session_id", params)
+        result = engine.execute("select id from teams where name = :name AND session_id = :session_id",
+                                params)
         id = result.fetchone()
         tid = id[0]
 
         for i in sts:
             params = {'name': i, 'tid': tid, 'session_id': session_id}
-            result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where name = :name AND tid= :tid AND session_id = :session_id", params)
+            result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where name = :name AND tid= :tid AND session_id = :session_id", params)  # noqa
             s = result.fetchone()
             removed_student.add_student(s)
             data = {'id': s[0], 'session_id': session_id}
@@ -228,7 +237,8 @@ class capstone_session(db.Model):
     #         return added session id. Otherwise, return the id of the session
     def get_session_id(self, term, year):
         try:
-            id = capstone_session.query.filter(capstone_session.start_term == term, capstone_session.start_year == year).first()
+            id = capstone_session.query.filter(capstone_session.start_term == term,
+                                               capstone_session.start_year == year).first()
         except exc.SQLAlchemyError:
             id = None
         if id is None:
@@ -296,9 +306,16 @@ class capstone_session(db.Model):
     # Input: start and end date for midterm review and final reviews
     # Output: update the dates in the database
     def insert_dates(self, midterm_start, midterm_end, final_start, final_end, session_id):
-        review_dates = {'midterm_start': midterm_start, 'midterm_end': midterm_end, 'final_start': final_start, 'final_end': final_end}
+        review_dates = {'midterm_start': midterm_start,
+                        'midterm_end': midterm_end,
+                        'final_start': final_start,
+                        'final_end': final_end}
         dates = self.split_dates(review_dates)
-        params = {'midterm_start': dates['midterm_start'], 'midterm_end': dates['midterm_end'], 'final_start': dates['final_start'], 'final_end': dates['final_end'], 'session_id': session_id}
+        params = {'midterm_start': dates['midterm_start'],
+                  'midterm_end': dates['midterm_end'],
+                  'final_start': dates['final_start'],
+                  'final_end': dates['final_end'],
+                  'session_id': session_id}
         for i in params:
             if params[i]:
                 params[i] = params[i]
@@ -348,6 +365,7 @@ class reports(db.Model):
                                  " AND report_for = :reviewee AND is_final = :is_final"), params)
         print(params)
         return result.fetchone()
+
 
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']

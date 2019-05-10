@@ -187,6 +187,11 @@ def test_generate_tables():
            and columns[7][3] == 0
            and columns[7][4] is None
            and columns[7][5] == 0)
+    assert(columns[8][1] == "email_address"
+           and columns[8][2] == "VARCHAR(128)"
+           and columns[8][3] == 1
+           and columns[8][4] is None
+           and columns[8][5] == 0)
 
     # Check that the teams table was created, and that it is empty
     cursor.execute("SELECT * FROM teams;")
