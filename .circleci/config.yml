@@ -6,6 +6,7 @@ jobs:
     steps:
       - run: sudo apt-get install build-essential debhelper devscripts equivs dh-virtualenv
       - run: sudo apt-get install libpython3.5
+      - run: dpkg -l | grep python3
       - checkout
       - run: dpkg-buildpackage -us -uc
   test:
