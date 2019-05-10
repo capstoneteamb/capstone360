@@ -1,6 +1,6 @@
 -- -- SQLite
--- INSERT INTO students (id, tid, session_id, name, is_lead, midterm_done, final_done, active)
--- VALUES (382,1,0,'anguye2',0,0,0,'midterm');
+-- INSERT INTO students (id, tid, session_id, name, is_lead, midterm_done, final_done, active, email_address)
+-- VALUES ('anguye2',1,0,'an nguyen',0,0,0,'midterm', 'anguye2@pdx.edu');
 select * from capstone_session;
 
 select * from teams;
