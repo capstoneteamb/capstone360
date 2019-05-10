@@ -39,7 +39,7 @@ def test_generate_student_data():
         assert (decrypt(student["name"]) in names)
 
         # Check that email address is first_name.last_name.pdx.edu
-        student_name = student["name"].split(" ")
+        student_name = student["name"].encode('UTF8').split(" ")
         assert (len(student_name) == 2)
         assert (student["email_address"]
                 == (student_name[0]
