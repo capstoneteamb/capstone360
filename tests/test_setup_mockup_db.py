@@ -466,7 +466,7 @@ def test_fill_tables_with_data():
     for student in students:
         # Verify that the name of the student is the names database
         # student[3] = name of the student
-        assert (student[3] in names)
+        assert (decrypt(student[3]) in names)
 
         # Verify that the id is unique for each student entry
         # student[0] = (student) id of the current student
