@@ -7,6 +7,7 @@ import dashboard  # noqa
 from prof_dashboard import ProfDashboard
 from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
+from csvAddTeam     import AddTeamCSV
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
 from student_dashboard import StudentDashboard
@@ -62,6 +63,10 @@ app.add_url_rule('/addStudent/',
 
 app.add_url_rule('/addTeam/',
                  view_func=AddTeam.as_view('addTeam'),
+                 methods=['GET', 'POST'])
+
+app.add_url_rule('/addTeamCSV/',
+                 view_func=AddTeamCSV.as_view('addTeamCSV'),
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/removeTeam/',
