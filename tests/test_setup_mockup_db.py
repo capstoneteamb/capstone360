@@ -41,7 +41,7 @@ def test_generate_student_data():
         # Check that email address is first_name.last_name.pdx.edu
         student_name = decrypt(student["name"]).split(" ")
         assert (len(student_name) == 2)
-        assert (student["email_address"]
+        assert (decrypt(student["email_address"])
                 == (student_name[0]
                 + "."
                 + student_name[1]
