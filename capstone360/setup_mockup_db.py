@@ -113,7 +113,7 @@ def generate_student_data():
 
         # encrypt the students name and email.
         # String need to be converted to byte arrays
-        name = cipher.encrypt(bytes(name,encoding='UTF8'))
+        name = cipher.encrypt(bytes(name, encoding='UTF8'))
         email_address = cipher.encrypt(bytes(email_address, encoding='UTF8'))
 
         # Add Data To List

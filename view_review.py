@@ -90,8 +90,8 @@ class ViewReview(MethodView):
             if report is not None:
                 # Get some general report details
                 review_details = {"time": report.time,
-                                  "reviewer": decrypt(reviewer.name),
-                                  "reviewee": decrypt(reviewee.name),
+                                  "reviewer": reviewer.name,
+                                  "reviewee": reviewee.name,
                                   "team_name": team_name,
                                   "is_final": (is_final == 1)}
 

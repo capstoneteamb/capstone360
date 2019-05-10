@@ -26,6 +26,7 @@ def decrypt(c_text):
     p_text = p_text.decode('UTF8')
     return p_text
 
+
 # Global Variables
 mockup_db_path = "temp_database.db"
 

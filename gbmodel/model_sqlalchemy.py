@@ -156,7 +156,7 @@ class students(db.Model):
     def get_students(self, tid, session_id):
         e_result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         result = []
-        for r in e_result: # Decrypt string
+        for r in e_result:  # Decrypt string
             r = decrypt(r)
             result.append(r)
         return result
