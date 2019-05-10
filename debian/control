@@ -2,7 +2,7 @@ Source: capstone360
 Section: python
 Priority: extra
 Maintainer: Adam Barber <embarber@pdx.edu>
-Build-Depends: debhelper (>= 9), python, dh-virtualenv(>= 0.8)
+Build-Depends: debhelper (>= 9), python3, dh-virtualenv(>= 0.8), python3-setuptools, python3-pip, python3-dev
 Standards-Version: 3.9.5
 
 Package: capstone360
