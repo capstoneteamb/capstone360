@@ -82,7 +82,7 @@ class teams(db.Model):
         lists = [[] for _ in range(len(tids))]
         flag=0  
         for i in range(len(tids)):
-            # Query to get the student points and the ID of the reviewee
+            # Query to get the min & max student points and the ID of the reviewee
             member_points = db.session.query(func.max(reports.points).label("max_points"), func.min(reports.points).label("min_points"), reports.reviewee).filter_by(tid=tids[i],session_id=session_id).filter(reports.reviewee==students.id).group_by(students.id)
             # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
