@@ -83,14 +83,14 @@ class teams(db.Model):
         flag=0  
         for i in range(len(tids)):
             # Query to get the student points and the ID of the reviewee
-            member_points = db.session.query(reports.points, reports.reviewee).filter_by(tid=tids[i],session_id=session_id).filter(reports.reviewee==students.id)
+            member_points = db.session.query(func.max(reports.points).label("max_points"), func.min(reports.points).label("min_points"), reports.reviewee).filter_by(tid=tids[i],session_id=session_id).filter(reports.reviewee==students.id).group_by(students.id)
             # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
                 for p in member_points:
-                    if (team_member.id == p.reviewee):  # If the student's ID matches the view ID
-                        temp.append({"name": team_member.name, "id": team_member.id, "points": p.points})
+                    if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
+                        temp.append({"name": team_member.name, "id": team_member.id, "min_points": p.min_points, "max_points": p.max_points})
                         flag=1
                 if flag==0:
                     temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A"})
