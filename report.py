@@ -7,7 +7,8 @@ import gbmodel
 
 class MissingStudentException(Exception):
     """
-    We raise this exception if we find no students for a given team or session, to be more explicit than eg. a KeyError.
+    We raise this exception if we find no students for a given team or session, to be more explicit than eg.
+    a KeyError.
     """
     pass
 
@@ -46,7 +47,8 @@ class GeneratedProfessorReportView(MethodView):
     def get(self):
         """
         Generates a report for a specific student, for viewing by a professor.
-        Specifically, generates a single report, for a single session and term (midterm or final), for a single student, with comments deanonymized.
+        Specifically, generates a single report, for a single session and term (midterm or final), for a
+        single student, with comments deanonymized.
         """
         student_id = request.args.get('student_id')
         session_id = request.args.get('session_id')
@@ -93,7 +95,8 @@ class GeneratedAnonymousReportView(MethodView):
 def _make_printable_reports(session_id, team_id, is_final):
     """
     Compiles all reports for a team/session into one for printing.
-    This means we generate a bunch of anonymized reports, then concatenate them, since page breaks are handled in the HTML template.
+    This means we generate a bunch of anonymized reports, then concatenate them, since page breaks are
+    handled in the HTML template.
 
     Keyword arguments:
     session_id -- session to generate reports for
