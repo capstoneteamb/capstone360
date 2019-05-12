@@ -101,7 +101,7 @@ class teams(db.Model):
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                temp.append({"name": team_member.name, "id": team_member.id})
+                temp.append({"name": decrypt(team_member.name), "id": team_member.id})
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
