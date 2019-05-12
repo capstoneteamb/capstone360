@@ -80,11 +80,26 @@ class teams(db.Model):
         tids = [row.id for row in self.get_team_session_id(session_id)]
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
+        flag = 0
         for i in range(len(tids)):
+            # Query to get the min & max student points and the ID of the reviewee
+            member_points = db.session.query(
+                func.max(reports.points).label("max_points"), func.min(reports.points)
+                                        .label("min_points"), reports.reviewee).filter_by(
+                                                tid=tids[i], session_id=session_id).filter(
+                                                reports.reviewee == students.id).group_by(students.id)
+            # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                temp.append({"name": team_member.name, "id": team_member.id})
+                for p in member_points:
+                    if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
+                        temp.append({"name": team_member.name, "id": team_member.id,
+                                     "min_points": p.min_points, "max_points": p.max_points})
+                        flag = 1
+                if flag == 0:
+                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A"})
+                flag = 0
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
