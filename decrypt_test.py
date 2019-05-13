@@ -18,7 +18,11 @@ for each in c_names:
 print("Team 0:")
 print(students.get_students(0, 0))
 
+'''
 #  Insert a student to the database, then decrypt and print the team with the new student
 students.insert_student("Dame Dolla", "Letter0@blazers.com", 1990, 0, "Team 0")
 print("Team 0:")
 print(students.get_students(0, 0))
+'''
+print(cipher.encrypt(bytes("cclev2", encoding='UTF8')))
+print(students.validate("cclev2"))

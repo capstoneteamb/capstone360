@@ -202,18 +202,24 @@ class students(db.Model):
 
     # validate cas username with student id in the database
     def validate(self, id):
-        params = {'id': id}
         try:
-            result = engine.execute('select session_id from students where name = :id', params)
-            result = result.fetchone()
+            result = engine.execute('select * from students')
+            result = result.fetchall()
         except exc.SQLAlchemyError:
             result = None
+        for each in result:
+            print(decrypt(each.name))
+            if (decrypt(each.name)) == id:
+                return each.session_id
+        return -1
+
+'''
         if result is None:
             return -1
         else:
             result = result[0]
         return result
-
+'''
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
