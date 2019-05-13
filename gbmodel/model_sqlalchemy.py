@@ -340,7 +340,7 @@ class reports(db.Model):
         else:
             report = reports.query.filter(report.reviewee == student_id,
                                           report.tid == term_id).first()
-        return reports
+        return report
 
     def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
         results = reports.query.filter(reports.reporting == reviewing_student_id,
