@@ -57,18 +57,18 @@ class teams(db.Model):
         removed_student = removed_students()
         result = teams.query.filter(teams.name == name, teams.session_id == session_id).first()
         tid = result.id
-        params = {'tid': tid, 'session_id': session_id}
         list_students = student.get_students(tid, session_id)
         if list_students is not None:
             for i in list_students:
-                params = {'name': i, 'session_id': session_id}
-                result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where \
-                    name = :name AND session_id = :session_id", params)
-                s = result.fetchone()
-                removed_student.add_student(s)
-        params = {'tid': tid, 'session_id': session_id}
-        engine.execute("delete from students where tid = :tid AND session_id = :session_id", params)
-        engine.execute("delete from teams where id = :tid AND session_id = :session_id", params)
+                result = students.query.filter(students.name == i, students.session_id == session_id).first()
+                removed_student.add_student(result)
+        student_list = students.query.filter(students.tid == tid, students.session_id == session_id).all()
+        for i in student_list:
+            db.session.delete(i)
+            db.session.commit()
+        team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
+        db.session.delete(team)
+        db.session.commit()
         return True
 
     # Return a lists of sessions from the database
@@ -80,11 +80,28 @@ class teams(db.Model):
         tids = [row.id for row in self.get_team_session_id(session_id)]
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
+        flag = 0
         for i in range(len(tids)):
+            # Query to get the min & max student points and the ID of the reviewee
+            member_points = db.session.query(
+                func.max(reports.points).label("max_points"), func.min(reports.points)
+                                        .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                                                tid=tids[i], session_id=session_id).filter(
+                                                reports.reviewee == students.id).filter(
+                                                    reports.reviewee != reports.reviewer).group_by(
+                                                        students.id)
+            # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                temp.append({"name": team_member.name, "id": team_member.id})
+                for p in member_points:
+                    if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
+                        temp.append({"name": team_member.name, "id": team_member.id,
+                                     "min_points": p.min_points, "max_points": p.max_points})
+                        flag = 1
+                if flag == 0:
+                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A"})
+                flag = 0
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
@@ -161,34 +178,29 @@ class students(db.Model):
         if t_name is None or sts is None:
             return False
         removed_student = removed_students()
-        params = {'name': t_name, 'session_id': session_id}
-        result = engine.execute("select id from teams where name = :name AND session_id = :session_id",
-                                params)
-        id = result.fetchone()
-        tid = id[0]
-
+        team = teams.query.filter(teams.name == t_name,
+                                  teams.session_id == session_id).first()
         for i in sts:
-            params = {'name': i, 'tid': tid, 'session_id': session_id}
-            result = engine.execute("select id, tid, session_id, name, is_lead, midterm_done, final_done from students where name = :name AND tid= :tid AND session_id = :session_id", params)  # noqa
-            s = result.fetchone()
-            removed_student.add_student(s)
-            data = {'id': s[0], 'session_id': session_id}
-            engine.execute('delete from students where id = :id and session_id = :session_id', data)
+            student = students.query.filter(students.name == i,
+                                            students.tid == team.id,
+                                            students.session_id == session_id).first()
+            removed_student.add_student(student)
+            st = students.query.filter(students.id == student.id,
+                                       students.session_id == session_id).first()
+            db.session.delete(st)
+            db.session.commit()
         return True
 
     # validate cas username with student id in the database
     def validate(self, id):
-        params = {'id': id}
         try:
-            result = engine.execute('select session_id from students where name = :id', params)
-            result = result.fetchone()
+            result = students.query.filter_by(id=id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is None:
-            return -1
+            return False
         else:
-            result = result[0]
-        return result
+            return result.session_id
 
 
 class capstone_session(db.Model):
@@ -198,12 +210,14 @@ class capstone_session(db.Model):
     # if the table is empty, returns 1
     # Otherwise, return the max id+1
     def get_max(self):
-        max_id = engine.execute('select max(id) from capstone_session ')
-        max_id = max_id.fetchone()
-        if max_id[0] is None:
+        try:
+            max_id = db.session.query(func.max(capstone_session.id)).scalar()
+        except exc.SQLAlchemyError:
+            max_id = None
+        if max_id is None:
             return 1
         else:
-            return max_id[0] + 1
+            return max_id + 1
 
     # Add a current session (only if it wasn't in the database)
     # Input: starting term and year of the session
@@ -220,7 +234,11 @@ class capstone_session(db.Model):
         else:
             e_year = year
         id = self.get_max()
-        new_sess = capstone_session(id=id, start_term=term, start_year=year, end_term=e_term, end_year=e_year)
+        new_sess = capstone_session(id=id,
+                                    start_term=term,
+                                    start_year=year,
+                                    end_term=e_term,
+                                    end_year=e_year)
         db.session.add(new_sess)
         db.session.commit()
         return id
@@ -332,33 +350,27 @@ class reports(db.Model):
         Gets all available reports for a student, optionally filtering to only midterms or finals.
         """
         if is_final is not None:
-            query_string = "select * from reports where reviewee=:id and tid=:term_id and is_final=:is_final"
+            report = reports.query.filter(reports.reviewee == student_id,
+                                          reports.tid == term_id,
+                                          reports.is_final == is_final).first()
         else:
-            query_string = "select * from reports where reviewee=:id and tid=:term_id"
-
-        params = {'id': student_id, 'term_id': term_id, 'is_final': is_final}
-        reports = engine.execute(query_string, params)
-
-        return reports
+            report = reports.query.filter(report.reviewee == student_id,
+                                          report.tid == term_id).first()
+        return report
 
     def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
-        params = {"reviewer": reviewing_student_id,
-                  "reviewee": reviewee_student_id,
-                  "tid": team_id,
-                  "is_final": is_final}
-        results = engine.execute(("select time from reports where "
-                                  "reporting = :reviewer "
-                                  "AND report_for = :reviewee "
-                                  "AND tid = :tid AND "
-                                  "is_final = :is_final ;"), params)
-        return results.fetchone() is not None
+        results = reports.query.filter(reports.reporting == reviewing_student_id,
+                                       reports.report_for == reviewee_student_id,
+                                       reports.tid == team_id,
+                                       reports.is_final == is_final).first()
+        return results.time is not None
 
     def get_report(self, reviewer_id, reviewee_id, tid, is_final):
-        params = {"reviewer": reviewer_id, "reviewee": reviewee_id, "tid": tid, "is_final": is_final}
-        result = engine.execute(("select * from reports where reporting = :reviewer AND tid = :tid"
-                                 " AND report_for = :reviewee AND is_final = :is_final"), params)
-        print(params)
-        return result.fetchone()
+        result = reports.query.filter(reports.reporting == reviewer_id,
+                                      reports.tid == tid,
+                                      reports.is_final == is_final,
+                                      reports.report_for == reviewee_id).first()
+        return result
 
 
 class removed_students(db.Model):
@@ -371,12 +383,15 @@ class removed_students(db.Model):
     def add_student(self, s):
         if s is None:
             return False
-        s = list(s)
         current_date = datetime.datetime.now()
-        date = current_date.strftime("%Y-%m-%d")
-        s.append(date)
-        engine.execute("insert into removed_students (id, tid, session_id, \
-            name, is_lead, midterm_done, final_done, removed_date) \
-                VALUES (:id, :tid, :session_id, :name, :is_lead, :midterm_done,\
-                     :final_done, :removed_date)", s)
+        removed_student = removed_students(id=s.id,
+                                           tid=s.tid,
+                                           session_id=s.session_id,
+                                           name=s.name,
+                                           is_lead=s.is_lead,
+                                           midterm_done=s.midterm_done,
+                                           final_done=s.final_done,
+                                           removed_date=current_date)
+        db.session.add(removed_student)
+        db.session.commit()
         return True
