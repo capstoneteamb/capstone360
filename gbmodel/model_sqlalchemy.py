@@ -88,7 +88,8 @@ class teams(db.Model):
                                         .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
                                                 tid=tids[i], session_id=session_id).filter(
                                                 reports.reviewee == students.id).filter(
-                                                    reports.reviewee != reports.reviewer).group_by(students.id)
+                                                    reports.reviewee != reports.reviewer).group_by(
+                                                        students.id)
             # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
