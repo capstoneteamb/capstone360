@@ -54,7 +54,7 @@ class review(MethodView):
     # input: only self
     # output: the user's ID value
     def get_id(self):
-        sdt_id = "0"
+        sdt_id = "38"
         return sdt_id
 
     # If an unrecoverable error occurs and there is a need to abort,
@@ -133,17 +133,18 @@ class review(MethodView):
 
         return tid
 
-    # This method queries the database to get the user's report state. It will
+    # This method queries the model to get the user's report state. It will
     # test for any database errors.
     # input: only self
     # output: String -- The user's "active" attribute or 'Error' to indicate
     # something went wrong (could be user error, thus no need to abort)
     def get_state(self):
-        # query db for student's state
         try:
             student = gbmodel.students().get_student(self.get_id())
-            # get state
-            state = student.active
+            # get capstone id
+            cap_id = student.session_id
+            # get the state based on the capstone id and the current time
+            state = gbmodel.capstone_session().check_review_state(cap_id, datetime.now())
         except SQLAlchemyError:
             print('Student Look Up Error - Get State')
             return 'Error'

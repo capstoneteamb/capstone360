@@ -347,6 +347,42 @@ class capstone_session(db.Model):
         db.session.commit()
         return True
 
+    # Given a capstone session id to check and a date,
+    # this method determines the currently available review if any
+    # Inputs: a capstone session id and a date which should be a python date time object
+    # Outputs: 'final' if date is after the final start date for the session
+    # 'midterm' if the date is between the midterm and final start dates.
+    # 'error' otherwise
+    def check_review_state(self, session_id, date):
+        try:
+            # get the session
+            session = capstone_session.query.filter(capstone_session.id == session_id).first()
+
+            # check if final exists:
+            if session.final_start is not None:
+                if date > session.final_start:
+
+                    # if after final period, return final
+                    if date > session.final_start:
+                        return 'final'
+                    elif session.midterm_start is not None:
+                        # otherwise if midterm exists, check if after midterm and return if so
+                        if date > session.midterm_start:
+                            return 'midterm'
+                    else:
+                        return 'Error'
+
+            elif session.midterm_start is not None:
+                # if only midterm exists, check midterm
+                if date > session.midterm_start:
+                    return 'midterm'
+
+            else:
+                # no dates set, so error
+                return 'Error'
+        except exc.SQLAlchemyError:
+            return 'Error'
+
 
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
@@ -378,7 +414,7 @@ class reports(db.Model):
                                       reports.reviewee == reviewee_id).first()
         return result
 
-    # Insert a report into the database -- This does NOT commit the add!
+    # Stages a report to be inserted into the database -- This does NOT commit the add!
     # Inputs: Arguments for each individual field of the report
     # Outputs: true if adding was successful, false if not
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
