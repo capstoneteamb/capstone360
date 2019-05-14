@@ -112,11 +112,11 @@ class teams(db.Model):
                 temp.append({"name": decrypt(team_member.name), "id": team_member.id})
                 for p in member_points:
                     if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
-                        temp.append({"name": team_member.name, "id": team_member.id,
+                        temp.append({"name": decrypt(team_member.name), "id": team_member.id,
                                      "min_points": p.min_points, "max_points": p.max_points})
                         flag = 1
                 if flag == 0:
-                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A"})
+                    temp.append({"name": decrypt(team_member.name), "id": team_member.id, "points": "N/A"})
                 flag = 0
             lists[i] = temp
         sessions = session.get_sessions()
@@ -206,7 +206,6 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             result = None
         for each in result:
-            print(decrypt(each.name))
             if (decrypt(each.name)) == id:
                 return each.session_id
         return -1
