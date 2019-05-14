@@ -460,7 +460,7 @@ class reports(db.Model):
                 except exc.SQLAlchemyError:
                     return False
                 return False
-      
+     
             # update appropriate student 'done' attribute
             student = students.query.filter_by(id=id).first()
             if state == 'midterm':

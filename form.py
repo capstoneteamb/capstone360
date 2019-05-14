@@ -127,7 +127,7 @@ class review(MethodView):
             # get tid
             tid = student.tid
         except SQLAlchemyError:
-            self.display_error('student look up error - tid')       
+            self.display_error('student look up error - tid')
         if tid is None:
             self.display_error('No user tid found in database')
 
@@ -182,7 +182,7 @@ class review(MethodView):
             return False
 
         if done == 0:
-            #no errors, so return true
+            # no errors, so return true
             return True
         else:
             return False
