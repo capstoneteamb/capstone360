@@ -338,10 +338,10 @@ class reports(db.Model):
         if is_final is not None:
             report = reports.query.filter(reports.reviewee == student_id,
                                           reports.tid == term_id,
-                                          reports.is_final == is_final).first()
+                                          reports.is_final == is_final)
         else:
             report = reports.query.filter(report.reviewee == student_id,
-                                          report.tid == term_id).first()
+                                          report.tid == term_id)
         return report
 
     def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
