@@ -111,7 +111,6 @@ class teams(db.Model):
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                temp.append({"name": decrypt(team_member.name), "id": team_member.id})
                 for p in member_points:
                     if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
                         temp.append({"name": decrypt(team_member.name), "id": team_member.id,
@@ -155,7 +154,10 @@ class students(db.Model):
     def insert_student(self, name, email_address, id, session_id, t_name):
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
+        #  Encrypt all data on the student that is sensitive.
+        id = encrypt(id)
         name = encrypt(name)
+        email_address = encrypt(email_address)
         new_student = students(id=id,
                                tid=tid,
                                session_id=session_id,
