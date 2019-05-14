@@ -156,6 +156,16 @@ class students(db.Model):
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         return result
 
+    # Get all members of a team
+    # Input: team id as tid
+    # Output: Student objects representing the students on that team
+    def get_team_members(self, tid):
+        try:
+            mems = students.query.filter_by(tid=tid).distinct()
+        except exc.SQLAlchemyError:
+            return None
+        return mems
+
     # Remove a list of selected students
     # Input: list of students, team name and session id
     # Output: return False of the list of student is empty
@@ -367,6 +377,68 @@ class reports(db.Model):
                                       reports.is_final == is_final,
                                       reports.report_for == reviewee_id).first()
         return result
+
+    # Insert a report into the database -- This does NOT commit the add!
+    # Inputs: Arguments for each individual field of the report
+    # Outputs: true if adding was successful, false if not
+    def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
+                      ethic, com, coop, init, focus, cont, lead, org, dlg,
+                      points, strn, wkn, traits, learned, proud, is_final):
+        try:
+            new_report = reports(session_id=sess_id,
+                                 time=time,
+                                 reviewer=reviewer,
+                                 tid=tid,
+                                 reviewee=reviewee,
+                                 tech_mastery=tech,
+                                 work_ethic=ethic,
+                                 communication=com,
+                                 cooperation=coop,
+                                 initiative=init,
+                                 team_focus=focus,
+                                 contribution=cont,
+                                 leadership=lead,
+                                 organization=org,
+                                 delegation=dlg,
+                                 points=points,
+                                 strengths=strn,
+                                 weaknesses=wkn,
+                                 traits_to_work_on=traits,
+                                 what_you_learned=learned,
+                                 proud_of_accomplishment=proud,
+                                 is_final=is_final)
+            db.session.add(new_report)
+            return True
+        except exc.SQLAlchemyError:
+            return False
+
+    # Method to commit changes to the DB through the model while updating the user's state
+    # input: None
+    # output: True if successful, false otherwise
+    def commit_reports(self, id, state, success):
+        # if adding reports was not successful, rollback changes to session
+        try:
+            if success is False:
+                try:
+                    db.session.rollback()
+                except exc.SQLAlchemyError:
+                    return False
+                return False
+      
+            # update appropriate student 'done' attribute
+            student = students.query.filter_by(id=id).first()
+            if state == 'midterm':
+                student.midterm_done = 1
+            elif state == 'final':
+                student.final_done = 1
+            else:
+                return False
+
+            db.session.commit()
+            return True
+        except exc.SQLAlchemyError:
+            db.session.rollback()
+            return False
 
 
 class removed_students(db.Model):

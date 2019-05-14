@@ -127,8 +127,7 @@ class review(MethodView):
             # get tid
             tid = student.tid
         except SQLAlchemyError:
-            self.display_error('student look up error - tid')
-        
+            self.display_error('student look up error - tid')       
         if tid is None:
             self.display_error('No user tid found in database')
 
@@ -208,13 +207,20 @@ class review(MethodView):
 
         # get user's team members
         try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+            mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    mems=None,
                                    state=None,
                                    input_error=None,
                                    fatal_error='There was an error while retrieving user team members.')
+
+        if mems is None:
+            return render_template('reivew.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='There are no team members to review')
 
         # get user's state of open/closed reports
         state = self.get_state()
@@ -252,9 +258,19 @@ class review(MethodView):
         # get user's team id
         tid = self.get_tid()
 
+        # get users state
+        state = self.get_state()
+        if state == 'Error':
+            return render_template('review.html',
+                                   name=self.get_self_name(),
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='You have no open reviews.')
+
         # get user's team members
         try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+            mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    name=self.get_self_name(),
@@ -307,6 +323,7 @@ class review(MethodView):
 
         # get form inputs and submit to the database
         if points_pass is True:
+            pass_insert = True  # will test if all insertions are successful
             for i in id_list:
                 # Get each radio input and verify that it's an integer
                 tech = request.form[('tech_mast_' + str(i))]
@@ -377,57 +394,24 @@ class review(MethodView):
                     # for midterm set final to false
                     is_final = 1
 
-                # generate the python object to use for database submission
-                report = gbmodel.reports()
-                report.session_id = cid
-                report.time = datetime.now()
-                report.reviewer = self.get_id()
-                report.tid = tid
-                report.reviewee = i
-                report.tech_mastery = tech
-                report.work_ethic = ethic
-                report.communication = com
-                report.cooperation = coop
-                report.initiative = init
-                report.team_focus = focus
-                report.contribution = cont
-                report.leadership = lead
-                report.organization = org
-                report.delegation = dlg
-                report.points = points
-                report.strengths = strn
-                report.weaknesses = wkn
-                report.traits_to_work_on = traits
-                report.what_you_learned = learned
-                report.proud_of_accomplishment = proud
-                report.is_final = is_final
+                # add report, but do not commit yet
+                test_sub = gbmodel.reports().insert_report(cid, datetime.now(), self.get_id(),
+                                                           tid, i, tech, ethic, com, coop, init,
+                                                           focus, cont, lead, org, dlg, points,
+                                                           strn, wkn, traits, learned, proud, is_final)
 
-                gbmodel.db_session.add(report)
+                # remember if this report submission failed
+                if test_sub is False:
+                    pass_insert = False
 
-            # attempt to submit to the database
-            try:
-                sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=self.get_id()).first()
+            # commit reports and update the user's state. roll back changes if insertion failed
+            test_commit = gbmodel.reports().commit_reports(self.get_id(), state, pass_insert)
 
-                if sdt is None:
-                    self.display_error('user not found in database when trying to submit report')
-
-                state = sdt.active
-
-                # check state
-                if state == 'midterm':
-                    # check if already submitted
-                    sdt.midterm_done = 1
-                elif state == 'final':
-                    # check if already submitted
-                    sdt.final_done = 1
-                else:
-                    self.display_error('submitting reports not open')
-
-                gbmodel.db_session.commit()
-            except SQLAlchemyError:
-                self.display_error('submission error')
-
-            return render_template('submitted.html')
+            if test_commit is True:
+                # success
+                return render_template('submitted.html')
+            else:
+                self.display_error('Submission Errror')
 
         return render_template('review.html',
                                name=self.get_self_name(),
