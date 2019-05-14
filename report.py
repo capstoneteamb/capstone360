@@ -178,7 +178,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
 
     # TODO Mark all the self reported scores
     for r in reports:
-        if r.reporting == student_id:
+        if r.reviewer == student_id:
             pass
 
     # Render the HTML version of the template
