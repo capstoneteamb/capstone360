@@ -345,17 +345,17 @@ class reports(db.Model):
         return report
 
     def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
-        results = reports.query.filter(reports.reporting == reviewing_student_id,
-                                       reports.report_for == reviewee_student_id,
+        results = reports.query.filter(reports.reviewer == reviewing_student_id,
+                                       reports.reviewee == reviewee_student_id,
                                        reports.tid == team_id,
                                        reports.is_final == is_final).first()
         return results.time is not None
 
     def get_report(self, reviewer_id, reviewee_id, tid, is_final):
-        result = reports.query.filter(reports.reporting == reviewer_id,
+        result = reports.query.filter(reports.reviewer == reviewer_id,
                                       reports.tid == tid,
                                       reports.is_final == is_final,
-                                      reports.report_for == reviewee_id).first()
+                                      reports.reviewee == reviewee_id).first()
         return result
 
 
