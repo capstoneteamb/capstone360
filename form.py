@@ -87,13 +87,13 @@ class review(MethodView):
         # query database to get capstone session id
         cap = 0
         try:
-            students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
+            student = gbmodel.students().get_student(self.get_id())
+            cap = student.capstone
         except SQLAlchemyError:
             self.display_error('student look up error - capstone')
 
         # get capstone session id
-        cap = sdt.session_id
+        
         if cap is None:
             self.display_error('No user capstone id found in database')
 

@@ -188,6 +188,16 @@ class students(db.Model):
         else:
             return result.session_id
 
+    # Get the single student matching the id passed in
+    # input: student id of the student to retrieve
+    # output: the student's capstone session id value
+    def get_student(self, s_id):
+        try:
+            student = students.query.filter_by(id=s_id).first()
+        except exc.SQLAlchemyError:
+            return None
+        return student
+
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
