@@ -389,7 +389,7 @@ def test_generate_tables():
            and columns[21][3] == 1
            and columns[21][4] is None
            and columns[21][5] == 4)
-    assert(columns[22][1] == "late"
+    assert(columns[22][1] == "is_late"
            and columns[22][2] == "BOOLEAN"
            and columns[22][3] == 0
            and columns[22][4] is None
