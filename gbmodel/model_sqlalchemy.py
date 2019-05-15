@@ -208,6 +208,19 @@ class students(db.Model):
             return None
         return student
 
+    # Check if the student passed in by id is the team lead
+    # Input: student id of the student to check
+    # Output: True if the student is a team lead, False otherwise
+    def check_team_lead(self, s_id):
+        try:
+            student = students.query.filter_by(id=s_id.first())
+            if student.is_lead == 1:
+                return True
+            else:
+                return False
+        except exc.SQLAlchemyError:
+            return False
+
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
@@ -421,6 +434,7 @@ class reports(db.Model):
                       ethic, com, coop, init, focus, cont, lead, org, dlg,
                       points, strn, wkn, traits, learned, proud, is_final):
         try:
+            # Build Report object from method input
             new_report = reports(session_id=sess_id,
                                  time=time,
                                  reviewer=reviewer,
@@ -443,9 +457,11 @@ class reports(db.Model):
                                  what_you_learned=learned,
                                  proud_of_accomplishment=proud,
                                  is_final=is_final)
+            # add the report and return true for success
             db.session.add(new_report)
             return True
         except exc.SQLAlchemyError:
+            # if error, return false
             return False
 
     # Method to commit changes to the DB through the model while updating the user's state

@@ -355,11 +355,11 @@ class review(MethodView):
 
                 # check if current student is leader
                 try:
-                    sdt = gbmodel.students().query.filter_by(id=i).first()
+                    is_lead = gbmodel.students().check_team_lead(i)
                 except SQLAlchemyError:
                     self.display_error('student look up error')
 
-                if(sdt.is_lead == 1):
+                if is_lead is True:
                     # get leader values
                     lead = request.form[('lead_' + str(i))]
                     lead = self.convert_to_int(lead)
