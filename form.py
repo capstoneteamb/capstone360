@@ -7,7 +7,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask.views import MethodView
 from datetime import datetime
 import gbmodel
-
+from catCas import validate_student
+from flask_cas import login_required
 # The review class handles get and post requests for review.html, and it
 # includes helper functions for cleanliness
 
@@ -50,13 +51,7 @@ class review(MethodView):
                    'wkn',
                    'traits']
 
-    # This will be changed to account for CAS log in
-    # input: only self
-    # output: the user's ID value
-    def get_id(self):
-        sdt_id = "0"
-        return sdt_id
-
+    @login_required
     # If an unrecoverable error occurs and there is a need to abort,
     # report an internal server error and print the error to the console.
     # As the code indicates, this should be reserved for internal errors. User
@@ -83,11 +78,11 @@ class review(MethodView):
     #  testing if the user exists in the database.
     # input: only self
     # output: An integer representing the user's capstone session id
-    def get_cap(self):
+    def get_cap(self, user_id):
         # query database to get capstone session id
         cap = 0
         try:
-            student = gbmodel.students().get_student(self.get_id())
+            student = gbmodel.students().get_student(user_id)
             # get capstone session id
             cap = student.session_id
         except SQLAlchemyError:
@@ -101,10 +96,10 @@ class review(MethodView):
     # This method returns the current user's name to display on the web page
     # input: only self
     # output: A string representing the user's name
-    def get_self_name(self):
+    def get_self_name(self, user_id):
         # query database to get student
         try:
-            student = gbmodel.students().get_student(self.get_id())
+            student = gbmodel.students().get_student(user_id)
             # get name
             name = student.name
         except SQLAlchemyError:
@@ -119,11 +114,11 @@ class review(MethodView):
     # the user exists in the database.
     # input: only self
     # output: the user's tid as an integer
-    def get_tid(self):
+    def get_tid(self, user_id):
         # get the user's team id
         tid = 0
         try:
-            student = gbmodel.students().get_student(self.get_id())
+            student = gbmodel.students().get_student(user_id)
             # get tid
             tid = student.tid
         except SQLAlchemyError:
@@ -140,7 +135,7 @@ class review(MethodView):
     # something went wrong (could be user error, thus no need to abort)
     def get_state(self):
         try:
-            student = gbmodel.students().get_student(self.get_id())
+            student = gbmodel.students().get_student(user_id)
             # get capstone id
             cap_id = student.session_id
             # get the state based on the capstone id and the current time
@@ -154,19 +149,19 @@ class review(MethodView):
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
-    # Input: only self
+    # Input: self and user_id
     # Output: A boolean indication for
     # if the user was successfully confirmed (true) or not (false)
-    def confirm_user(self):
+    def confirm_user(self, user_id):
         # check if the current user is found in the database
         # need to implement with log in
 
         # check the user's active reports
-        state = self.get_state()
+        state = self.get_state(user_id)
         if state == 'Error':
             return False
 
-        student = gbmodel.students().get_student(self.get_id())
+        student = gbmodel.students().get_student(user_id)
         if student is None:
             return False
 
@@ -195,16 +190,27 @@ class review(MethodView):
     # any fatal errors to report as a result of user action.
     def get(self):
         # check if user exists
-        test_user = self.confirm_user()
+        # user_id = request.args.get('user_name')
+        if validate_student() is False:
+            return render_template('review.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='You have no open reviews.')
+        else:
+            user_id = validate_student().id
+        test_user = self.confirm_user(user_id)
         if test_user is False:
             return render_template('review.html',
                                    mems=None,
                                    state=None,
                                    input_error=None,
                                    fatal_error='You have no open reviews.')
+        # get user name
+        user_name = self.get_self_name(user_id)
 
         # get user's team id
-        tid = self.get_tid()
+        tid = self.get_tid(user_id)
 
         # get user's team members
         try:
@@ -224,7 +230,7 @@ class review(MethodView):
                                    fatal_error='There are no team members to review')
 
         # get user's state of open/closed reports
-        state = self.get_state()
+        state = self.get_state(user_id)
         if state == 'Error':
             return render_template('review.html',
                                    mems=None,
@@ -234,6 +240,8 @@ class review(MethodView):
 
         # If all successful, render the page with team members and the state
         return render_template('review.html',
+                               name=user_name,
+                               user_id=user_id,
                                mems=mems,
                                state=state,
                                human_fields=self.human_fields,
@@ -248,7 +256,8 @@ class review(MethodView):
         # the user was successful in submitting their reform
     def post(self):
         # check if user exists
-        test_user = self.confirm_user()
+        user_id = request.form.get('user_id')
+        test_user = self.confirm_user(user_id)
         if test_user is False:
             return render_template('review.html',
                                    mems=None,
@@ -257,7 +266,7 @@ class review(MethodView):
                                    fatal_error='You have no open reviews.')
 
         # get user's team id
-        tid = self.get_tid()
+        tid = self.get_tid(user_id)
 
         # get users state
         state = self.get_state()
@@ -281,7 +290,7 @@ class review(MethodView):
                                    fatal_error='There was an error while retrieving user team members.')
 
         # get student's cid
-        cid = self.get_cap()
+        cid = self.get_cap(user_id)
 
         # generate a list of the DB ids for students on the team
         id_list = []
@@ -309,7 +318,7 @@ class review(MethodView):
                     # add up the total points
                     total = total + points
 
-                    if j == self.get_id():
+                    if j == user_id:
                         # make sure own score is 0
                         if points > 0 or points < 0:
                             flash('Points must be 0 for self')
@@ -376,27 +385,27 @@ class review(MethodView):
                 traits = request.form[('traits_' + str(i))]
 
                 learned = None
-                if i == self.get_id():
+                if i == user_id:
                     learned = request.form[('learned')]
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
-                if self.get_state() == 'final':
-                    if i == self.get_id():
+                if self.get_state(user_id) == 'final':
+                    if i == self.user_id:
                         proud = request.form[('proud')]
 
                 points = request.form[('points_' + str(i))]
                 points = self.convert_to_int(points)
 
-                if self.get_state() == 'midterm':
+                if self.get_state(user_id) == 'midterm':
                     # for midterm set final to false
                     is_final = 0
-                elif self.get_state() == 'final':
+                elif self.get_state(user_id) == 'final':
                     # for midterm set final to false
                     is_final = 1
 
                 # add report, but do not commit yet
-                test_sub = gbmodel.reports().insert_report(cid, datetime.now(), self.get_id(),
+                test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
                                                            tid, i, tech, ethic, com, coop, init,
                                                            focus, cont, lead, org, dlg, points,
                                                            strn, wkn, traits, learned, proud, is_final)
@@ -406,7 +415,7 @@ class review(MethodView):
                     pass_insert = False
 
             # commit reports and update the user's state. roll back changes if insertion failed
-            test_commit = gbmodel.reports().commit_reports(self.get_id(), state, pass_insert)
+            test_commit = gbmodel.reports().commit_reports(user_id, state, pass_insert)
 
             if test_commit is True:
                 # success
@@ -415,10 +424,10 @@ class review(MethodView):
                 self.display_error('Submission Errror')
 
         return render_template('review.html',
-                               name=self.get_self_name(),
+                               name=self.get_self_name(user_id),
                                mems=mems,
                                human_fields=self.human_fields,
                                code_fields=self.code_fields,
-                               state=self.get_state(),
+                               state=self.get_state(user_id),
                                input_error=True,
                                fatal_error=None)

@@ -2,10 +2,30 @@
 import os
 import sys
 import datetime
+<<<<<<< HEAD
 from app import db, engine, db_session  # noqa
+=======
+from app import db, engine, db_session
+>>>>>>> created student dashboard
 from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
+
+
+class professors(db.Model):
+    __table__ = db.Model.metadata.tables['professors']
+
+    # Get a list of professors
+    # Input: team id, session id
+    # Output: list of professors id
+    def get_professors(self, id):
+        try:
+            result = professors.query.filter(professors.id == id).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is None:
+            return False
+        return result
 
 
 class teams(db.Model):
@@ -196,7 +216,7 @@ class students(db.Model):
         if result is None:
             return False
         else:
-            return result.session_id
+            return result
 
     # Get the single student matching the id passed in
     # input: student id of the student to retrieve
