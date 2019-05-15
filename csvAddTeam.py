@@ -1,5 +1,6 @@
 from flask import render_template, request
 from flask.views import MethodView
+from sqlalchemy.exc import SQLAlchemyError
 import gbmodel
 import datetime
 import csv
@@ -37,9 +38,16 @@ class AddTeamCSV(MethodView):
 
             session_id = session.get_session_id(term, year)
             # Create team if it doesn't exist, then create the student.
-            if teams_table.check_dup_team(team_name, session_id) is True:
-                teams_table.insert_team(session_id, team_name)
-            students_table.insert_student(student_name,
-                                          "", student_id,
-                                          session_id, team_name)
+            try:
+                if teams_table.check_dup_team(team_name, session_id) is True:
+                    teams_table.insert_team(session_id, team_name)
+            except SQLAlchemyError:
+                self.display_error('team table error')
+            try:
+                students_table.insert_student(student_name,
+                                              "", student_id,
+                                              session_id, team_name)
+            except SQLAlchemyError:
+                self.display_error('Error inserting student into\
+                                   students table.')
         return render_template('csvAddTeam.html')
