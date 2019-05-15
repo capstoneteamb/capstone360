@@ -86,7 +86,7 @@ class review(MethodView):
             sdt = students.query.filter_by(id=user_id).first()
         except SQLAlchemyError:
             self.display_error('student look up error - capstone')
-
+        cap = sdt.session_id
         if cap is None:
             self.display_error('No user capstone id found in database')
 
@@ -102,7 +102,7 @@ class review(MethodView):
             sdt = students.query.filter_by(id=user_id).first()
         except SQLAlchemyError:
             self.display_error('student look up error - getting their name')
-
+        name = sdt.name
         if name is None:
             self.display_error('The user has no name')
 
@@ -114,16 +114,15 @@ class review(MethodView):
     # output: the user's tid as an integer
     def get_tid(self, user_id):
         # get the user's team id
-        tid = 0
         try:
             students = gbmodel.students()
             sdt = students.query.filter_by(id=user_id).first()
         except SQLAlchemyError:
             self.display_error('student look up error - tid')
-        if tid is None:
+        if sdt.tid is None:
             self.display_error('No user tid found in database')
 
-        return tid
+        return sdt.tid
 
     # This method queries the model to get the user's report state. It will
     # test for any database errors.
@@ -140,7 +139,7 @@ class review(MethodView):
             return 'Error'
 
         # return student state
-        return state
+        return sdt.active
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
@@ -169,10 +168,10 @@ class review(MethodView):
         done = 0
         if state == 'midterm':
             # check if already submitted
-            done = student.midterm_done
+            done = sdt.midterm_done
         elif state == 'final':
             # check if already submitted
-            done = student.final_done
+            done = sdt.final_done
         else:
             return False
 
