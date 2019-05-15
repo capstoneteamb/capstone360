@@ -3,6 +3,10 @@ import datetime
 from flask_cas import CAS
 
 # function to grab cas username and passes the value to gbmmodel to vaidate
+# check to see if student id is in the current session
+# INPUT: none
+# OUTPUT: return False if the id does not exist
+#         return student infomation otherwise
 
 
 def validate_student():
@@ -35,6 +39,11 @@ def validate_student():
     elif (1 + found_student.session_id) == session_id:
         return found_student
     return False
+
+# check to see if professor id is in the professor table
+# INPUT: none
+# OUTPUT: return False if the id does not exist
+#         return True otherwise
 
 
 def validate_professor():
