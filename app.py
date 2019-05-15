@@ -3,7 +3,6 @@ Flask entry
 """
 from flask import Flask
 from index import Index
-
 import dashboard  # noqa
 from prof_dashboard import ProfDashboard
 from prof_dashboard import AddTeam

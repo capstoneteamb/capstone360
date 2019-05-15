@@ -2,7 +2,7 @@
 import os
 import sys
 import datetime
-from app import db, engine, db_session
+from app import db, engine, db_session  # noqa
 from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
@@ -96,11 +96,28 @@ class teams(db.Model):
         tids = [row.id for row in self.get_team_session_id(session_id)]
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
+        flag = 0
         for i in range(len(tids)):
+            # Query to get the min & max student points and the ID of the reviewee
+            member_points = db.session.query(
+                func.max(reports.points).label("max_points"), func.min(reports.points)
+                                        .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                                                tid=tids[i], session_id=session_id).filter(
+                                                reports.reviewee == students.id).filter(
+                                                    reports.reviewee != reports.reviewer).group_by(
+                                                        students.id)
+            # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                temp.append({"name": team_member.name, "id": team_member.id})
+                for p in member_points:
+                    if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
+                        temp.append({"name": team_member.name, "id": team_member.id,
+                                     "min_points": p.min_points, "max_points": p.max_points})
+                        flag = 1
+                if flag == 0:
+                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A"})
+                flag = 0
             lists[i] = temp
         sessions = session.get_sessions()
         return lists, sessions
@@ -155,6 +172,16 @@ class students(db.Model):
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         return result
 
+    # Get all members of a team
+    # Input: team id as tid
+    # Output: Student objects representing the students on that team
+    def get_team_members(self, tid):
+        try:
+            mems = students.query.filter_by(tid=tid).distinct()
+        except exc.SQLAlchemyError:
+            return None
+        return mems
+
     # Remove a list of selected students
     # Input: list of students, team name and session id
     # Output: return False of the list of student is empty
@@ -186,6 +213,29 @@ class students(db.Model):
             return False
         else:
             return result
+
+    # Get the single student matching the id passed in
+    # input: student id of the student to retrieve
+    # output: the student's capstone session id value
+    def get_student(self, s_id):
+        try:
+            student = students.query.filter_by(id=s_id).first()
+        except exc.SQLAlchemyError:
+            return None
+        return student
+
+    # Check if the student passed in by id is the team lead
+    # Input: student id of the student to check
+    # Output: True if the student is a team lead, False otherwise
+    def check_team_lead(self, s_id):
+        try:
+            student = students.query.filter_by(id=s_id).first()
+            if student.is_lead == 1:
+                return True
+            else:
+                return False
+        except exc.SQLAlchemyError:
+            return False
 
 
 class capstone_session(db.Model):
@@ -326,6 +376,42 @@ class capstone_session(db.Model):
         db.session.commit()
         return True
 
+    # Given a capstone session id to check and a date,
+    # this method determines the currently available review if any
+    # Inputs: a capstone session id and a date which should be a python date time object
+    # Outputs: 'final' if date is after the final start date for the session
+    # 'midterm' if the date is between the midterm and final start dates.
+    # 'error' otherwise
+    def check_review_state(self, session_id, date):
+        try:
+            # get the session
+            session = capstone_session.query.filter(capstone_session.id == session_id).first()
+
+            # check if final exists:
+            if session.final_start is not None:
+                if date > session.final_start:
+
+                    # if after final period, return final
+                    if date > session.final_start:
+                        return 'final'
+                    elif session.midterm_start is not None:
+                        # otherwise if midterm exists, check if after midterm and return if so
+                        if date > session.midterm_start:
+                            return 'midterm'
+                    else:
+                        return 'Error'
+
+            elif session.midterm_start is not None:
+                # if only midterm exists, check midterm
+                if date > session.midterm_start:
+                    return 'midterm'
+
+            else:
+                # no dates set, so error
+                return 'Error'
+        except exc.SQLAlchemyError:
+            return 'Error'
+
 
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
@@ -337,25 +423,90 @@ class reports(db.Model):
         if is_final is not None:
             report = reports.query.filter(reports.reviewee == student_id,
                                           reports.tid == term_id,
-                                          reports.is_final == is_final).first()
+                                          reports.is_final == is_final)
         else:
             report = reports.query.filter(report.reviewee == student_id,
-                                          report.tid == term_id).first()
-        return reports
+                                          report.tid == term_id)
+        return report
 
     def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
-        results = reports.query.filter(reports.reporting == reviewing_student_id,
-                                       reports.report_for == reviewee_student_id,
+        results = reports.query.filter(reports.reviewer == reviewing_student_id,
+                                       reports.reviewee == reviewee_student_id,
                                        reports.tid == team_id,
                                        reports.is_final == is_final).first()
         return results.time is not None
 
     def get_report(self, reviewer_id, reviewee_id, tid, is_final):
-        result = reports.query.filter(reports.reporting == reviewer_id,
+        result = reports.query.filter(reports.reviewer == reviewer_id,
                                       reports.tid == tid,
                                       reports.is_final == is_final,
-                                      reports.report_for == reviewee_id).first()
+                                      reports.reviewee == reviewee_id).first()
         return result
+
+    # Stages a report to be inserted into the database -- This does NOT commit the add!
+    # Inputs: Arguments for each individual field of the report
+    # Outputs: true if adding was successful, false if not
+    def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
+                      ethic, com, coop, init, focus, cont, lead, org, dlg,
+                      points, strn, wkn, traits, learned, proud, is_final):
+        try:
+            # Build Report object from method input
+            new_report = reports(session_id=sess_id,
+                                 time=time,
+                                 reviewer=reviewer,
+                                 tid=tid,
+                                 reviewee=reviewee,
+                                 tech_mastery=tech,
+                                 work_ethic=ethic,
+                                 communication=com,
+                                 cooperation=coop,
+                                 initiative=init,
+                                 team_focus=focus,
+                                 contribution=cont,
+                                 leadership=lead,
+                                 organization=org,
+                                 delegation=dlg,
+                                 points=points,
+                                 strengths=strn,
+                                 weaknesses=wkn,
+                                 traits_to_work_on=traits,
+                                 what_you_learned=learned,
+                                 proud_of_accomplishment=proud,
+                                 is_final=is_final)
+            # add the report and return true for success
+            db.session.add(new_report)
+            return True
+        except exc.SQLAlchemyError:
+            # if error, return false
+            return False
+
+    # Method to commit changes to the DB through the model while updating the user's state
+    # input: None
+    # output: True if successful, false otherwise
+    def commit_reports(self, id, state, success):
+        # if adding reports was not successful, rollback changes to session
+        try:
+            if success is False:
+                try:
+                    db.session.rollback()
+                except exc.SQLAlchemyError:
+                    return False
+                return False
+
+            # update appropriate student 'done' attribute
+            student = students.query.filter_by(id=id).first()
+            if state == 'midterm':
+                student.midterm_done = 1
+            elif state == 'final':
+                student.final_done = 1
+            else:
+                return False
+
+            db.session.commit()
+            return True
+        except exc.SQLAlchemyError:
+            db.session.rollback()
+            return False
 
 
 class removed_students(db.Model):
