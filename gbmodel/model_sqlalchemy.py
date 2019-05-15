@@ -213,7 +213,7 @@ class students(db.Model):
     # Output: True if the student is a team lead, False otherwise
     def check_team_lead(self, s_id):
         try:
-            student = students.query.filter_by(id=s_id.first())
+            student = students.query.filter_by(id=s_id).first()
             if student.is_lead == 1:
                 return True
             else:
