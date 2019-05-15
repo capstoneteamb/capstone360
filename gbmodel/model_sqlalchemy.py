@@ -170,20 +170,6 @@ class students(db.Model):
         db.session.commit()
         return True
 
-    def insert_student_no_email(self, name, id, session_id, t_name):
-        result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
-        tid = result.id
-        new_student = students(id=id,
-                               tid=tid,
-                               session_id=session_id,
-                               name=name,
-                               is_lead=0,
-                               midterm_done=0,
-                               final_done=0)
-        db.session.add(new_student)
-        db.session.commit()
-        return True
-
     # Get a list of students from a team in current session
     # Input: team id, session id
     # Output: list of student names
