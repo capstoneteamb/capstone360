@@ -89,7 +89,6 @@ class review(MethodView):
             self.display_error('student look up error - capstone')
 
         # get capstone session id
-        cap = sdt.session_id
         if cap is None:
             self.display_error('No user capstone id found in database')
 
@@ -108,7 +107,6 @@ class review(MethodView):
             self.display_error('student look up error - getting their name')
 
         # get name
-        name = sdt.name
         if name is None:
             self.display_error('The user has no name')
 
@@ -129,7 +127,6 @@ class review(MethodView):
             self.display_error('student look up error - tid')
 
         # get tid
-        tid = sdt.tid
         if tid is None:
             self.display_error('No user tid found in database')
 
@@ -140,7 +137,7 @@ class review(MethodView):
     # input: only self
     # output: String -- The user's "active" attribute or 'Error' to indicate
     # something went wrong (could be user error, thus no need to abort)
-    def get_state(self):
+    def get_state(self, user_id):
         try:
             student = gbmodel.students().get_student(user_id)
             # get capstone id
@@ -151,13 +148,8 @@ class review(MethodView):
             print('Student Look Up Error - Get State')
             return 'Error'
 
-        # Check if there isn't a student
-        if sdt is None:
-            print('Student Was None in Get State')
-            return 'Error'
-
         # return student state
-        return sdt.active
+        return state
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
@@ -181,10 +173,10 @@ class review(MethodView):
         done = 0
         if state == 'midterm':
             # check if already submitted
-            done = sdt.midterm_done
+            done = student.midterm_done
         elif state == 'final':
             # check if already submitted
-            done = sdt.final_done
+            done = student.final_done
         else:
             return False
 
@@ -394,70 +386,22 @@ class review(MethodView):
                     # for midterm set final to false
                     is_final = 1
 
-<<<<<<< HEAD
                 # add report, but do not commit yet
                 test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
                                                            tid, i, tech, ethic, com, coop, init,
                                                            focus, cont, lead, org, dlg, points,
                                                            strn, wkn, traits, learned, proud, is_final)
-=======
-                # generate the python object to use for database submission
-                report = gbmodel.reports()
-                report.session_id = cid
-                report.time = datetime.now()
-                report.reviewer = user_id
-                report.tid = tid
-                report.reviewee = i
-                report.tech_mastery = tech
-                report.work_ethic = ethic
-                report.communication = com
-                report.cooperation = coop
-                report.initiative = init
-                report.team_focus = focus
-                report.contribution = cont
-                report.leadership = lead
-                report.organization = org
-                report.delegation = dlg
-                report.points = points
-                report.strengths = strn
-                report.weaknesses = wkn
-                report.traits_to_work_on = traits
-                report.what_you_learned = learned
-                report.proud_of_accomplishment = proud
-                report.is_final = is_final
+                # remember if this report submission failed
+                if test_sub is False:
+                    pass_insert = False
 
-                gbmodel.db_session.add(report)
-
-            # attempt to submit to the database
-            try:
-                sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=user_id).first()
-
-                if sdt is None:
-                    self.display_error('user not found in database when trying to submit report')
-
-                state = sdt.active
->>>>>>> fixed report submission bug
-
-                # check state
-                if state == 'midterm':
-                    # check if already submitted
-                    sdt.midterm_done = 1
-                elif state == 'final':
-                    # check if already submitted
-                    sdt.final_done = 1
-                else:
-                    self.display_error('submitting reports not open')
-
-<<<<<<< HEAD
             # commit reports and update the user's state. roll back changes if insertion failed
-            test_commit = gbmodel.reports().commit_reports(user_id, state, pass_insert)
-=======
-                gbmodel.db_session.commit()
-            except SQLAlchemyError:
-                self.display_error('submission error')
->>>>>>> fixed report submission bug
-
-            return render_template('submitted.html')
+            test_commit = gbmodel.reports().commit_reports(user_id, self.get_state(user_id), pass_insert)
+            if test_commit is True:
+                # success
+                return render_template('submitted.html')
+            else:
+                self.display_error('Submission Errror')
 
         return render_template('review.html',
                                name=self.get_self_name(user_id),
