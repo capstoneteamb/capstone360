@@ -180,11 +180,11 @@ class review(MethodView):
         else:
             return False
 
-        if done == 1:
-            return False
+        if done == 0:
+            return True
 
         # no errors, so return true
-        return True
+        return False
 
     # This method handles get requests to review.html.
     # Input: only self
@@ -214,13 +214,19 @@ class review(MethodView):
 
         # get user's team members
         try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+            mems = gbmodel.student().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    mems=None,
                                    state=None,
                                    input_error=None,
                                    fatal_error='There was an error while retrieving user team members.')
+        if mems is None:
+            return render_template('reivew.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='There are no team members to review')
 
         # get user's state of open/closed reports
         state = self.get_state(user_id)
@@ -260,10 +266,18 @@ class review(MethodView):
 
         # get user's team id
         tid = self.get_tid(user_id)
-
+        # get users state
+        state = self.get_state(user_id)
+        if state == 'Error':
+            return render_template('review.html',
+                                   name=self.get_self_name(user_id),
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='You have no open reviews.')
         # get user's team members
         try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+            mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    name=self.get_self_name(),
@@ -316,6 +330,7 @@ class review(MethodView):
 
         # get form inputs and submit to the database
         if points_pass is True:
+            pass_insert = True  # will test if all insertions are successful
             for i in id_list:
                 # Get each radio input and verify that it's an integer
                 tech = request.form[('tech_mast_' + str(i))]
@@ -346,11 +361,11 @@ class review(MethodView):
 
                 # check if current student is leader
                 try:
-                    sdt = gbmodel.students().query.filter_by(id=i).first()
+                    is_lead = gbmodel.students().check_team_lead(i)
                 except SQLAlchemyError:
                     self.display_error('student look up error')
 
-                if(sdt.is_lead == 1):
+                if is_lead is True:
                     # get leader values
                     lead = request.form[('lead_' + str(i))]
                     lead = self.convert_to_int(lead)
