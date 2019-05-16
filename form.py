@@ -214,7 +214,7 @@ class review(MethodView):
 
         # get user's team members
         try:
-            mems = gbmodel.student().get_team_members(tid)
+            mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    mems=None,
