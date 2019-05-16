@@ -148,13 +148,8 @@ class review(MethodView):
             print('Student Look Up Error - Get State')
             return 'Error'
 
-        # Check if there isn't a student
-        if sdt is None:
-            print('Student Was None in Get State')
-            return 'Error'
-
         # return student state
-        return sdt.active
+        return state
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
@@ -178,10 +173,10 @@ class review(MethodView):
         done = 0
         if state == 'midterm':
             # check if already submitted
-            done = sdt.midterm_done
+            done = student.midterm_done
         elif state == 'final':
             # check if already submitted
-            done = sdt.final_done
+            done = student.final_done
         else:
             return False
 
