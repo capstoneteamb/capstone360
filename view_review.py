@@ -93,6 +93,7 @@ class ViewReview(MethodView):
                                   "reviewer": reviewer.name,
                                   "reviewee": reviewee.name,
                                   "team_name": team_name,
+                                  "is_late": report.is_late,
                                   "is_final": (is_final == 1)}
 
                 # Get the main part of the review

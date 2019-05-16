@@ -174,6 +174,7 @@ def generate_tables(cursor):
                     'what_you_learned VARCHAR(4096) NULL, '
                     'proud_of_accomplishment VARCHAR(4096) NULL, '
                     'is_final BOOLEAN NOT NULL, '
+                    'is_late BOOLEAN NULL, '
                     'PRIMARY KEY (reviewer, tid, reviewee, is_final));'))
 
     # Create removed students table
