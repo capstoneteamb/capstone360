@@ -1,7 +1,7 @@
 import os
 import sys
 import datetime
-from app import db, engine # noqa
+from app import db
 from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
