@@ -373,21 +373,19 @@ class capstone_session(db.Model):
 
             # check if final exists:
             if session.final_start is not None:
-                if date > session.final_start:
-
-                    # if after final period, return final
-                    if date > session.final_start:
-                        return 'final'
-                    elif session.midterm_start is not None:
-                        # otherwise if midterm exists, check if after midterm and return if so
-                        if date > session.midterm_start:
-                            return 'midterm'
-                    else:
-                        return 'Error'
+                # if after final period, return final
+                if date >= session.final_start:
+                    return 'final'
+                elif session.midterm_start is not None:
+                    # otherwise if midterm exists, check if after midterm and return if so
+                    if date >= session.midterm_start:
+                        return 'midterm'
+                else:
+                    return 'Error'
 
             elif session.midterm_start is not None:
                 # if only midterm exists, check midterm
-                if date > session.midterm_start:
+                if date >= session.midterm_start:
                     return 'midterm'
 
             else:
