@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="body">
+    <div class="row">
+        <div class="login-container">
+            <div class="login-hero">
+                <h3>{{msg}}</h3>
+                <a class="prof-login-btn" href="{{ url_for('cas.logout')}}"><div>Logout</div></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -162,6 +162,7 @@ class review(MethodView):
 
         # check the user's active reports
         state = self.get_state(user_id)
+        print(state)
         if state == 'Error':
             return False
 
@@ -199,7 +200,9 @@ class review(MethodView):
             return render_template('index.html')
         else:
             user_id = validate_student().id
+            print(user_id)
         test_user = self.confirm_user(user_id)
+
         if test_user is False:
             return render_template('review.html',
                                    mems=None,
@@ -388,7 +391,7 @@ class review(MethodView):
                 proud = None
                 # only get 'proud' if the student is filling out final review
                 if self.get_state(user_id) == 'final':
-                    if i == self.user_id:
+                    if i == user_id:
                         proud = request.form[('proud')]
 
                 points = request.form[('points_' + str(i))]

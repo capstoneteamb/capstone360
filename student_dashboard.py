@@ -15,7 +15,8 @@ class StudentDashboard(MethodView):
     # table, rendering the studentDashboard.html template
     def get(self):
         if validate_student() is False:
-            return render_template('index.html')
+            msg = "Student not found"
+            return render_template('errorMsg.html', msg=msg)
         else:
             student_name = validate_student().name
             user_name = validate_student().id

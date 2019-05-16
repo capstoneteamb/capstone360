@@ -10,7 +10,8 @@ class ProfDashboard(MethodView):
     @login_required
     def get(self):
         if validate_professor() is False:
-            return render_template('index.html')
+            msg = "Professor not found"
+            return render_template('errorMsg.html', msg=msg)
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
         # Get session_id from the prefvious selected session
