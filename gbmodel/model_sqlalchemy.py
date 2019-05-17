@@ -186,9 +186,20 @@ class students(db.Model):
     # Output: Student objects representing the students on that team
     def get_team_members(self, tid):
         try:
-            mems = students.query.filter_by(tid=tid).distinct()
+            e_mems = students.query.filter_by(tid=tid).distinct()
         except exc.SQLAlchemyError:
             return None
+        mems = []
+        for each in e_mems:
+            new_student = students(id=each.id,
+                               tid=each.tid,
+                               session_id=each.session_id,
+                               name=decrypt(each.name),
+                               email_address=decrypt(each.email_address),
+                               is_lead=each.is_lead,
+                               midterm_done=each.midterm_done,
+                               final_done=each.final_done) 
+            mems.append(new_student)
         return mems
 
     # Remove a list of selected students

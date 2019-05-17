@@ -259,9 +259,12 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
             if (student["id"] < num_teams):
                 is_team_lead = True
 
+
+            student_id = str(student_id)
+            student_id = cipher.encrypt(bytes(student_id, encoding='UTF8'))
             # Create a students table entry
             cursor.execute('INSERT INTO students VALUES(?,?,?,?,?,?,?,?,?)',
-                           (str(student_id),
+                           (student_id,
                             team_id,
                             session_id,
                             student["name"],
