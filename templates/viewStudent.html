@@ -44,7 +44,11 @@
                     {% endfor %}
                     <!-- https://stackoverflow.com/questions/6382023/changing-the-color-of-an-hr-element -->
                     <hr style="border: solid white 1px; background-color: white;">
-                    <h4><a href="#">Report</a></h4>
+                    {% if i == 0 %}
+                    <h4><a style="color: white" href="{{ url_for('professorReport', student_id=student['id'], session_id=session_id, is_final=False) }}">Report</a></h4>
+                    {% else %}
+                    <h4><a style="color: white" href="{{ url_for('professorReport', student_id=student['id'], session_id=session_id, is_final=True) }}">Report</a></h4>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
