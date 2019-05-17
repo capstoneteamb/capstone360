@@ -189,6 +189,21 @@ class students(db.Model):
         else:
             return result.session_id
 
+class professors(db.Model):
+    __table__ = db.Model.metadata.tables['professors']
+
+    # Checks if professor ID exists in the DB
+    # Input: professor ID given
+    # Output: True if it exists, False otherwise
+    def check_professor(self, prof_id):
+        try:
+            prof_id = prof_id.strip().lower()
+            result = professors().query.filter_by(id=prof_id).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is not None:
+            return True
+        return False
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
@@ -209,8 +224,7 @@ class capstone_session(db.Model):
     # Add a current session (only if it wasn't in the database)
     # Input: starting term and year of the session
     # Output: return id of the added session
-    def insert_session(self, term, year):
-        cas = CAS()
+    def insert_session(self, term, year, professor_id):
         term = term.strip().lower()
         year = year.strip().lower()
         e_term = None
@@ -227,7 +241,7 @@ class capstone_session(db.Model):
         id = self.get_max()
         term = term.capitalize()
         year = year.capitalize()
-        prof_id =  cas.username
+        prof_id = professor_id.lower()
         new_sess = capstone_session(id=id,
                                     start_term=term,
                                     start_year=year,
@@ -238,12 +252,34 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
+    # Checks if the name of the term is valid
+    # Input: start term of new session
+    # Output: return True if valid, False otherwise
+    def check_term_name(self, s_term):
+        s_term = s_term.strip().lower()
+        terms = ["fall", "winter", "spring", "summer"]
+        for i in range(len(terms)):
+            if terms[i] == s_term:
+                return True
+        return False 
+
+    # Checks if the year of the term is valid
+    # Input: start year of new session
+    # Output: return False if invalid, True otherwise
+    def check_term_year(self, s_year):
+        check_year = s_year.isdigit()
+        if not check_year:
+            return False
+        return True
+            
     # Check if the new session name already exists in the database
     # Input: start term & year of the new session 
     # Output: return False if the team already exists, True otherwise
     def check_dup_session(self, s_term, s_year):
         try:
-            result = capstone_session.query.filter_by(start_term=s_term, start_year=s_year).first()
+            s_term = s_term.strip().lower().capitalize()
+            s_year = s_year.strip().lower().capitalize()
+            result = capstone_session().query.filter_by(start_term=s_term, start_year=s_year).first()
         except exc.SQLAlchemyError:
             result = None
         if result is not None:
