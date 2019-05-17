@@ -46,7 +46,7 @@ class Dashboard(MethodView):
         student = gbmodel.students()
         team = gbmodel.teams()
         session_id = request.form['session_id']
-        session_id = int(session_id[0])
+        session_id = int(session_id)
         # If ADD STUDENT form was submitted (addStudent)
         if 'student_name' in request.form:
             team_name = request.form.get('team_name')
@@ -78,6 +78,18 @@ class Dashboard(MethodView):
             team_name = request.form.get('removed_team')
             team_name = team_name.replace("_", " ")
             team.remove_team(team_name, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+        # If ADD SESSION was submitted (addSession)
+        elif 'start_term' in request.form:
+            while not session.check_dup_session(request.form['start_term'], request.form['start_year']):
+                error = "Session already exists"
+                return render_template('addSession.html', error=error, session_id=session_id)
+            start_term = request.form.get('start_term')
+            start_year = request.form.get('start_year')
+            start_term = start_term.replace("_", " ")
+            start_year = start_year.replace("_", " ")
+            session_id = session.insert_session(start_term, start_year)
             lists, sessions = team.dashboard(session_id)
             return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If ADD TEAM was submitted (addTeam)
@@ -116,6 +128,13 @@ class AddStudent(MethodView):
         team_name = team_name.replace(" ", "_")
         session_id = request.args.get('session_id')
         return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
+
+class AddSession(MethodView):
+    @login_required
+    def get(self):
+        # Get seesion id from dashboard
+        session_id = request.args.get('session_id')
+        return render_template('addSession.html', error=None, session_id=session_id)
 
 
 class AddTeam(MethodView):

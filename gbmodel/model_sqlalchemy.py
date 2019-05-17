@@ -4,6 +4,7 @@ import sys
 import datetime
 from app import db, engine, db_session  # noqa
 from sqlalchemy import exc, func
+from flask_cas import CAS
 
 sys.path.append(os.getcwd())
 
@@ -209,25 +210,45 @@ class capstone_session(db.Model):
     # Input: starting term and year of the session
     # Output: return id of the added session
     def insert_session(self, term, year):
+        cas = CAS()
+        term = term.strip().lower()
+        year = year.strip().lower()
         e_term = None
         e_year = 0
-        terms = ["Fall", "Winter", "Spring", "Summer"]
+        terms = ["fall", "winter", "spring", "summer"]
         for i in range(len(terms)):
             if terms[i] == term:
                 e_term = terms[(i+1) % 4]
-        if term == 'Winter':
-            e_year = year+1
+                e_term = e_term.capitalize()
+        if term == 'fall':
+            e_year = int(year)+1
         else:
             e_year = year
         id = self.get_max()
+        term = term.capitalize()
+        year = year.capitalize()
+        prof_id =  cas.username
         new_sess = capstone_session(id=id,
                                     start_term=term,
                                     start_year=year,
                                     end_term=e_term,
-                                    end_year=e_year)
+                                    end_year=e_year,
+                                    professor_id=prof_id)
         db.session.add(new_sess)
         db.session.commit()
         return id
+
+    # Check if the new session name already exists in the database
+    # Input: start term & year of the new session 
+    # Output: return False if the team already exists, True otherwise
+    def check_dup_session(self, s_term, s_year):
+        try:
+            result = capstone_session.query.filter_by(start_term=s_term, start_year=s_year).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is not None:
+            return False
+        return True
 
     # Get id of a selected session
     # Input: term and year
