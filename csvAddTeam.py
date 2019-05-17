@@ -1,5 +1,6 @@
 from flask import render_template, request
 from flask.views import MethodView
+from flask_cas import login_required
 from sqlalchemy.exc import SQLAlchemyError
 import gbmodel
 import datetime
@@ -8,6 +9,7 @@ import io
 
 
 class AddTeamCSV(MethodView):
+    @login_required
     def get(self):
         return render_template('csvAddTeam.html')
 
