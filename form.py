@@ -87,13 +87,12 @@ class review(MethodView):
         # query database to get capstone session id
         cap = 0
         try:
-            students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
+            student = gbmodel.students().get_student(self.get_id())
+            # get capstone session id
+            cap = student.session_id
         except SQLAlchemyError:
             self.display_error('student look up error - capstone')
 
-        # get capstone session id
-        cap = sdt.session_id
         if cap is None:
             self.display_error('No user capstone id found in database')
 
@@ -105,13 +104,12 @@ class review(MethodView):
     def get_self_name(self):
         # query database to get student
         try:
-            students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
+            student = gbmodel.students().get_student(self.get_id())
+            # get name
+            name = student.name
         except SQLAlchemyError:
             self.display_error('student look up error - getting their name')
 
-        # get name
-        name = sdt.name
         if name is None:
             self.display_error('The user has no name')
 
@@ -125,39 +123,34 @@ class review(MethodView):
         # get the user's team id
         tid = 0
         try:
-            students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
+            student = gbmodel.students().get_student(self.get_id())
+            # get tid
+            tid = student.tid
         except SQLAlchemyError:
             self.display_error('student look up error - tid')
-
-        # get tid
-        tid = sdt.tid
         if tid is None:
             self.display_error('No user tid found in database')
 
         return tid
 
-    # This method queries the database to get the user's report state. It will
+    # This method queries the model to get the user's report state. It will
     # test for any database errors.
     # input: only self
     # output: String -- The user's "active" attribute or 'Error' to indicate
     # something went wrong (could be user error, thus no need to abort)
     def get_state(self):
-        # query db for student's state
         try:
-            students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
+            student = gbmodel.students().get_student(self.get_id())
+            # get capstone id
+            cap_id = student.session_id
+            # get the state based on the capstone id and the current time
+            state = gbmodel.capstone_session().check_review_state(cap_id, datetime.now())
         except SQLAlchemyError:
             print('Student Look Up Error - Get State')
             return 'Error'
 
-        # Check if there isn't a student
-        if sdt is None:
-            print('Student Was None in Get State')
-            return 'Error'
-
         # return student state
-        return sdt.active
+        return state
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
@@ -173,31 +166,26 @@ class review(MethodView):
         if state == 'Error':
             return False
 
-        try:
-            students = gbmodel.students()
-            sdt = students.query.filter_by(id=self.get_id()).first()
-        except SQLAlchemyError:
-            self.display_error('student look up error when confirming user')
-
-        if sdt is None:
+        student = gbmodel.students().get_student(self.get_id())
+        if student is None:
             return False
 
         # depending on the user's active state, check if the user is done
         done = 0
         if state == 'midterm':
             # check if already submitted
-            done = sdt.midterm_done
+            done = student.midterm_done
         elif state == 'final':
             # check if already submitted
-            done = sdt.final_done
+            done = student.final_done
         else:
             return False
 
-        if done == 1:
+        if done == 0:
+            # no errors, so return true
+            return True
+        else:
             return False
-
-        # no errors, so return true
-        return True
 
     # This method handles get requests to review.html.
     # Input: only self
@@ -220,13 +208,20 @@ class review(MethodView):
 
         # get user's team members
         try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+            mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    mems=None,
                                    state=None,
                                    input_error=None,
                                    fatal_error='There was an error while retrieving user team members.')
+
+        if mems is None:
+            return render_template('reivew.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='There are no team members to review')
 
         # get user's state of open/closed reports
         state = self.get_state()
@@ -264,9 +259,19 @@ class review(MethodView):
         # get user's team id
         tid = self.get_tid()
 
+        # get users state
+        state = self.get_state()
+        if state == 'Error':
+            return render_template('review.html',
+                                   name=self.get_self_name(),
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='You have no open reviews.')
+
         # get user's team members
         try:
-            mems = gbmodel.db_session.query(gbmodel.students).filter_by(tid=tid).distinct()
+            mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
                                    name=self.get_self_name(),
@@ -319,6 +324,7 @@ class review(MethodView):
 
         # get form inputs and submit to the database
         if points_pass is True:
+            pass_insert = True  # will test if all insertions are successful
             for i in id_list:
                 # Get each radio input and verify that it's an integer
                 tech = request.form[('tech_mast_' + str(i))]
@@ -349,11 +355,11 @@ class review(MethodView):
 
                 # check if current student is leader
                 try:
-                    sdt = gbmodel.students().query.filter_by(id=i).first()
+                    is_lead = gbmodel.students().check_team_lead(i)
                 except SQLAlchemyError:
                     self.display_error('student look up error')
 
-                if(sdt.is_lead == 1):
+                if is_lead is True:
                     # get leader values
                     lead = request.form[('lead_' + str(i))]
                     lead = self.convert_to_int(lead)
@@ -389,57 +395,24 @@ class review(MethodView):
                     # for midterm set final to false
                     is_final = 1
 
-                # generate the python object to use for database submission
-                report = gbmodel.reports()
-                report.session_id = cid
-                report.time = datetime.now()
-                report.reviewer = self.get_id()
-                report.tid = tid
-                report.reviewee = i
-                report.tech_mastery = tech
-                report.work_ethic = ethic
-                report.communication = com
-                report.cooperation = coop
-                report.initiative = init
-                report.team_focus = focus
-                report.contribution = cont
-                report.leadership = lead
-                report.organization = org
-                report.delegation = dlg
-                report.points = points
-                report.strengths = strn
-                report.weaknesses = wkn
-                report.traits_to_work_on = traits
-                report.what_you_learned = learned
-                report.proud_of_accomplishment = proud
-                report.is_final = is_final
+                # add report, but do not commit yet
+                test_sub = gbmodel.reports().insert_report(cid, datetime.now(), self.get_id(),
+                                                           tid, i, tech, ethic, com, coop, init,
+                                                           focus, cont, lead, org, dlg, points,
+                                                           strn, wkn, traits, learned, proud, is_final)
 
-                gbmodel.db_session.add(report)
+                # remember if this report submission failed
+                if test_sub is False:
+                    pass_insert = False
 
-            # attempt to submit to the database
-            try:
-                sdt = gbmodel.db_session.query(gbmodel.students).filter_by(id=self.get_id()).first()
+            # commit reports and update the user's state. roll back changes if insertion failed
+            test_commit = gbmodel.reports().commit_reports(self.get_id(), state, pass_insert)
 
-                if sdt is None:
-                    self.display_error('user not found in database when trying to submit report')
-
-                state = sdt.active
-
-                # check state
-                if state == 'midterm':
-                    # check if already submitted
-                    sdt.midterm_done = 1
-                elif state == 'final':
-                    # check if already submitted
-                    sdt.final_done = 1
-                else:
-                    self.display_error('submitting reports not open')
-
-                gbmodel.db_session.commit()
-            except SQLAlchemyError:
-                self.display_error('submission error')
-
-            return render_template('submitted.html')
+            if test_commit is True:
+                # success
+                return render_template('submitted.html')
+            else:
+                self.display_error('Submission Errror')
 
         return render_template('review.html',
                                name=self.get_self_name(),

@@ -93,89 +93,48 @@ class ViewReview(MethodView):
                                   "reviewer": reviewer.name,
                                   "reviewee": reviewee.name,
                                   "team_name": team_name,
+                                  "is_late": report.is_late,
                                   "is_final": (is_final == 1)}
 
                 # Get the main part of the review
                 parsed_review = [
-                        {
-                            "question": ("[Technical Skill] Mastery of the skills involved in their role(s)"
-                                         " with the project. This may be programming, database design,"
-                                         " management, requirements elicitation, etc"),
-                            "answer": self.interperate_rating(report.tech_mastery)
-                        },
-                        {
-                            "question": ("[Work Ethic] Cheerfully performing their tasks without excessive"
-                                         " complaining, work avoidance, etc"),
-                            "answer": self.interperate_rating(report.work_ethic)
-                        },
-                        {
-                            "question": ("[Communication Skills] Ability to understand others' points and to"
-                                         " effectively get their points across"),
-                            "answer": self.interperate_rating(report.communication)
-                        },
-                        {
-                            "question": ("[Cooperation] Willing to be flexible, share knowledge & genuinely"
-                                         " interested in what they can do to make the project go smoothly"),
-                            "answer": self.interperate_rating(report.cooperation)
-                        },
-                        {
-                            "question": ("[Initiative] Seeing what needs to be done and doing it without"
-                                         " someone asking them to"),
-                            "answer": self.interperate_rating(report.initiative)
-                        },
-                        {
-                            "question": ("[Team Focus] Interested in the entire project and its progress,"
-                                         " not just exclusively thinking about their part"),
-                            "answer": self.interperate_rating(report.team_focus)
-                        },
-                        {
-                            "question": ("[Contribution] Assess this person's overall contribution to the"
-                                         " project"),
-                            "answer": self.interperate_rating(report.contribution)
-                        },
-                        {
-                            "question": "[Leadership]",
-                            "answer": self.interperate_rating(report.leadership)
-                        },
-                        {
-                            "question": "[Organization]",
-                            "answer": self.interperate_rating(report.organization)
-                        },
-                        {
-                            "question": "[Delegation]",
-                            "answer": self.interperate_rating(report.delegation)
-                        },
-                        {
-                            "question": ("Points for this teammate. (A number between 0 and 100. Give"
-                                         " yourself 0. Points across all reviews should add to 100)"),
-                            "answer": report.points
-                        },
-                        {
-                            "question": "Please comment on this person's strengths",
-                            "answer": report.strengths
-                        },
-                        {
-                            "question": "Please comment on this person's weaknesses",
-                            "answer": report.weaknesses
-                        },
-                        {
-                            "question": ("Suggest one trait you think this person should work on to become a"
-                                         " better team member"),
-                            "answer": report.traits_to_work_on
-                        }
-                ]
+                        {"category": "Technical Skill",
+                         "content": self.interperate_rating(report.tech_mastery)},
+                        {"category": "Work Ethic",
+                         "content": self.interperate_rating(report.work_ethic)},
+                        {"category": "Communication Skills",
+                         "content": self.interperate_rating(report.communication)},
+                        {"category": "Cooperation",
+                         "content": self.interperate_rating(report.cooperation)},
+                        {"category": "Initiative",
+                         "content": self.interperate_rating(report.initiative)},
+                        {"category": "Team Focus",
+                         "content": self.interperate_rating(report.team_focus)},
+                        {"category": "Contribution",
+                         "content": self.interperate_rating(report.contribution)},
+                        {"category": "Leadership",
+                         "content": self.interperate_rating(report.leadership)},
+                        {"category": "Organization",
+                         "content": self.interperate_rating(report.organization)},
+                        {"category": "Delegation",
+                         "content": self.interperate_rating(report.delegation)},
+                        {"category": "Points",
+                         "content": report.points},
+                        {"category": "Strengths",
+                         "content": report.strengths},
+                        {"category": "Weaknesses",
+                         "content": report.weaknesses},
+                        {"category": "Trait work on to become a better team member",
+                         "content": report.traits_to_work_on}]
 
-                # Final reviews will have some extra details
-                if report.is_final:
-                    parsed_review.append({"question": "What did you learn from this experience",
-                                          "answer": reports.what_you_learned})
+                # Final self reviews will have some extra details
+                if reviewer_id == reviewee_id:
+                    parsed_review.append({"category": "What the student learned from the experience",
+                                          "content": report.what_you_learned})
 
-                    # Self reviews will ask if the team members are proud of their team's product and their
-                    # role in it
-                    if reviewer_id == reviewee_id:
-                        parsed_review.append({"question": ("Are you proud of your team's product and your"
-                                                           " role in it? Please explain"),
-                                              "answer": reports.proud_of_accomplishment})
+                    if report.is_final:
+                        parsed_review.append({"category": "If the student is proud of their accomplishment",
+                                              "content": report.proud_of_accomplishment})
 
                 # Send the data off to the client
                 return render_template("viewReview.html", details=review_details, review_data=parsed_review)
