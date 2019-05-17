@@ -110,6 +110,10 @@ input {
     margin-top: 100px;
 }
 
+.student-card:nth-child(-n+2){
+    margin-top: 250px !important;
+}
+
 .student-page-card{
     background-color: #5D5E61;
     color: #fff;
