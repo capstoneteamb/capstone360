@@ -25,16 +25,24 @@
                <p><b>Reviewer:</b> {{details['reviewer']}}</p> 
                <p><b>Reviewee:</b> {{details['reviewee']}}</p> 
                <p><b>Time Submitted:</b> {{details['time']}}</p>
+               <p>
+                   <b>Submitted Late:</b>
+                   {% if details['is_late'] %}
+                   Yes
+                   {% else %}
+                   No
+                   {% endif %}
+               <p>
                <hr>
            </div>
         </div>
         {% for review_question in review_data %}
         <div class="row">
             <div class="col-4">
-                <p><b>{{review_question['question']}}:</b></p>
+                <p><b>{{review_question['category']}}:</b></p>
             </div>
             <div class="col">
-                <p>{{review_question['answer']}}</p>
+                <p>{{review_question['content']}}</p>
             </div>
         </div>
         <hr>
