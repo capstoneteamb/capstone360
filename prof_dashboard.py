@@ -141,6 +141,7 @@ class AddStudent(MethodView):
         session_id = request.args.get('session_id')
         return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
 
+
 class AddSession(MethodView):
     @login_required
     def get(self):

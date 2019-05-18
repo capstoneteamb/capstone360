@@ -221,6 +221,7 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
+
 class professors(db.Model):
     __table__ = db.Model.metadata.tables['professors']
 
@@ -237,9 +238,9 @@ class professors(db.Model):
             return True
         return False
 
+
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
-
 
     # Calculate the next id for a newly added session
     # if the table is empty, returns 1
@@ -253,7 +254,6 @@ class capstone_session(db.Model):
             return 1
         else:
             return max_id + 1
-
 
     # Add a current session (only if it wasn't in the database)
     # Input: starting term and year of the session
@@ -295,7 +295,7 @@ class capstone_session(db.Model):
         for i in range(len(terms)):
             if terms[i] == s_term:
                 return True
-        return False 
+        return False
 
     # Checks if the year of the term is valid
     # Input: start year of new session
@@ -307,7 +307,7 @@ class capstone_session(db.Model):
         return True
 
     # Check if the new session name already exists in the database
-    # Input: start term & year of the new session 
+    # Input: start term & year of the new session
     # Output: return False if the team already exists, True otherwise
     def check_dup_session(self, s_term, s_year):
         try:
