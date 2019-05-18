@@ -241,7 +241,12 @@ class students(db.Model):
     # Input: student's new email and name and current user id
     # Output: apply new name and email to students in student table
     def edit_student(self, id, new_name, new_email):
-        stds = students.query.filter(students.id == id).all()
+        try:
+            stds = students.query.filter(students.id == id).all()
+        except exc.SQLAlchemyError:
+            stds = None
+        if stds is None:
+            return False
         for i in stds:
             if new_name != '':
                 i.name = new_name
