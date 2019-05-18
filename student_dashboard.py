@@ -18,7 +18,8 @@ class StudentDashboard(MethodView):
     # Output: return True if it matches the format, False otherwise
     def valid_email(self, email):
         if len(email) > 7:
-            if re.match('^[_a-z0-9-]+(|.[_a-z0-9-]+)*@[a-z0-9-]+(|.[a-z0-9-]+)*(|.[a-z]{2,4})$', email) is not None:
+            if re.match('^[_a-z0-9-]+(|.[_a-z0-9-]+)*@[a-z0-9-]+'
+                        '(|.[a-z0-9-]+)*(|.[a-z]{2,4})$', email) is not None:
                 return True
         return False
 
@@ -60,7 +61,6 @@ class StudentDashboard(MethodView):
         return render_template('studentDashboard.html',
                                name=student_name,
                                user_name=user_name)
- 
 # Edit Student class handles get requests from
 # student Dashboard when Edit is clicked on
 
