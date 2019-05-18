@@ -76,7 +76,7 @@ class review(MethodView):
 
     # This method returns the current user's capstone session id value while
     #  testing if the user exists in the database.
-    # input: only self
+    # input: self and user_id
     # output: An integer representing the user's capstone session id
     def get_cap(self, user_id):
         # query database to get capstone session id
@@ -200,7 +200,6 @@ class review(MethodView):
             return render_template('index.html')
         else:
             user_id = validate_student().id
-            print(user_id)
         test_user = self.confirm_user(user_id)
 
         if test_user is False:
@@ -391,7 +390,7 @@ class review(MethodView):
                 proud = None
                 # only get 'proud' if the student is filling out final review
                 if self.get_state(user_id) == 'final':
-                    if i == self.user_id:
+                    if i == user_id:
                         proud = request.form[('proud')]
 
                 points = request.form[('points_' + str(i))]
