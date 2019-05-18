@@ -4,7 +4,6 @@ import sys
 import datetime
 from app import db, engine, db_session  # noqa
 from sqlalchemy import exc, func
-from flask_cas import CAS
 
 sys.path.append(os.getcwd())
 
@@ -241,6 +240,7 @@ class professors(db.Model):
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
+
     # Calculate the next id for a newly added session
     # if the table is empty, returns 1
     # Otherwise, return the max id+1
@@ -253,6 +253,7 @@ class capstone_session(db.Model):
             return 1
         else:
             return max_id + 1
+
 
     # Add a current session (only if it wasn't in the database)
     # Input: starting term and year of the session
@@ -304,7 +305,7 @@ class capstone_session(db.Model):
         if not check_year:
             return False
         return True
-            
+
     # Check if the new session name already exists in the database
     # Input: start term & year of the new session 
     # Output: return False if the team already exists, True otherwise
