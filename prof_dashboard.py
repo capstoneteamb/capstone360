@@ -113,7 +113,8 @@ class ProfDashboard(MethodView):
             professor_id = professor_id.replace("_", " ")
             session_id = session.insert_session(start_term, start_year, professor_id)
             lists, sessions = team.dashboard(session_id)
-            return render_template('profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+            return render_template(
+                'profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If ADD TEAM was submitted (addTeam)
         elif 'team_name' in request.form:
             if not team.check_dup_team(request.form['team_name'], session_id):
