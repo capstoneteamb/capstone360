@@ -11,7 +11,6 @@ import re
 
 
 class StudentDashboard(MethodView):
-    @login_required
     # Verify if the new email is in a correct syntax
     # by checking if it has '@' and '.'
     # Input: self and new email
@@ -27,6 +26,7 @@ class StudentDashboard(MethodView):
     # Input: only self
     # Output: return to index.html if the student id is not in the student
     # table, rendering the studentDashboard.html template
+    @login_required
     def get(self):
         if validate_student() is False:
             msg = "Student not found"
