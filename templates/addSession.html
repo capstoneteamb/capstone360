@@ -7,7 +7,7 @@
 		{% if error %}
 			<p><strong>Error:</strong> {{ error }}
 		{% endif %}
-		<form action="{{ url_for('dashboard', session_id=session_id) }}" method=POST>
+		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 			<p class="heading">Start Term: <input type=text required='required' name=start_term></p>
 			<p class="heading">Start Year: <input type=text required='required' name=start_year></p>
 			<p class="heading">Assign to professor ID: <input type=text required='required' name=professor_id></p>
@@ -21,7 +21,7 @@
 				cursor: pointer;"></p>	
 		</form>
 		
-		<a href="{{ url_for('dashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
 		
 	</div>
 	</div>

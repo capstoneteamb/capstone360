@@ -8,6 +8,35 @@ from sqlalchemy import exc, func
 sys.path.append(os.getcwd())
 
 
+class professors(db.Model):
+    __table__ = db.Model.metadata.tables['professors']
+
+    # Get a list of professors
+    # Input: team id, session id
+    # Output: list of professors id
+    def get_professors(self, id):
+        try:
+            result = professors.query.filter(professors.id == id).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is None:
+            return False
+        return result
+
+    # Checks if professor ID exists in the DB
+    # Input: professor ID given
+    # Output: True if it exists, False otherwise
+    def check_professor(self, prof_id):
+        try:
+            prof_id = prof_id.strip().lower()
+            result = professors().query.filter_by(id=prof_id).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is not None:
+            return True
+        return False
+
+
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
 
@@ -196,7 +225,7 @@ class students(db.Model):
         if result is None:
             return False
         else:
-            return result.session_id
+            return result
 
     # Get the single student matching the id passed in
     # input: student id of the student to retrieve
@@ -220,23 +249,6 @@ class students(db.Model):
                 return False
         except exc.SQLAlchemyError:
             return False
-
-
-class professors(db.Model):
-    __table__ = db.Model.metadata.tables['professors']
-
-    # Checks if professor ID exists in the DB
-    # Input: professor ID given
-    # Output: True if it exists, False otherwise
-    def check_professor(self, prof_id):
-        try:
-            prof_id = prof_id.strip().lower()
-            result = professors().query.filter_by(id=prof_id).first()
-        except exc.SQLAlchemyError:
-            result = None
-        if result is not None:
-            return True
-        return False
 
 
 class capstone_session(db.Model):
