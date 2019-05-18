@@ -2,15 +2,16 @@ from flask import request, render_template
 from flask.views import MethodView
 import gbmodel
 import datetime
-from catCas import validate
+from catCas import validate_professor
 from flask_cas import login_required
 
 
-class Dashboard(MethodView):
+class ProfDashboard(MethodView):
     @login_required
     def get(self):
-        if validate() is False:
-            return render_template('index.html')
+        if validate_professor() is False:
+            msg = "Professor not found"
+            return render_template('errorMsg.html', msg=msg)
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
         # Get session_id from the prefvious selected session
@@ -39,7 +40,7 @@ class Dashboard(MethodView):
         # Lists - a list of teams and students of a selected session to display on the dashboard
         # Sessions - a list of sessions to display in drop downs
         lists, sessions = team.dashboard(session_id)
-        return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+        return render_template('profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
 
     def post(self):
         session = gbmodel.capstone_session()
@@ -51,7 +52,7 @@ class Dashboard(MethodView):
         if 'student_name' in request.form:
             team_name = request.form.get('team_name')
             team_name = team_name.replace("_", " ")
-            while not student.check_dup_student(request.form['student_id'], session_id):
+            if not student.check_dup_student(request.form['student_id'], session_id):
                 error = "Student id " + str(request.form['student_id']) + " already exists"
                 team_name = team_name.replace(" ", "_")
                 return render_template('addStudent.html',
@@ -64,7 +65,10 @@ class Dashboard(MethodView):
                                    session_id,
                                    team_name)
             lists, sessions = team.dashboard(session_id)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
         # If REMOVE STUDENT was submitted (in dashboard)
         elif 'team' in request.form:
             students = request.form.getlist('removed_student')
@@ -72,24 +76,33 @@ class Dashboard(MethodView):
             team_name = team_name.replace("_", " ")
             student.remove_student(students, team_name, session_id)
             lists, sessions = team.dashboard(session_id)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
         # If REMOVE TEAM was submitted (removed_team)
         elif 'removed_team' in request.form:
             team_name = request.form.get('removed_team')
             team_name = team_name.replace("_", " ")
             team.remove_team(team_name, session_id)
             lists, sessions = team.dashboard(session_id)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
         # If ADD TEAM was submitted (addTeam)
         elif 'team_name' in request.form:
-            while not team.check_dup_team(request.form['team_name'], session_id):
+            if not team.check_dup_team(request.form['team_name'], session_id):
                 error = "Team name already exists"
                 return render_template('addTeam.html', error=error, session_id=session_id)
             team_name = request.form.get('team_name')
             team_name = team_name.replace("_", " ")
             team.insert_team(session_id, team_name)
             lists, sessions = team.dashboard(session_id)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
         # If SET DATE for reviews was submitted (setDate)
         elif 'midterm_start' in request.form:
             midterm_start = request.form.get('midterm_start')
@@ -100,12 +113,15 @@ class Dashboard(MethodView):
                       'midterm_end': midterm_end,
                       'final_start': final_start,
                       'final_end': final_end}
-            while session.date_error(params) is not None:
+            if session.date_error(params) is not None:
                 error_msg = session.date_error(params)
                 return render_template('setDate.html', error=error_msg, session_id=session_id)
             session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
             lists, sessions = team.dashboard(session_id)
-            return render_template('dashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
 
 
 class AddStudent(MethodView):

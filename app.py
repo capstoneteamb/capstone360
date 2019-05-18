@@ -3,13 +3,13 @@ Flask entry
 """
 from flask import Flask
 from index import Index
-
 import dashboard  # noqa
-from prof_dashboard import Dashboard
+from prof_dashboard import ProfDashboard
 from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
+from student_dashboard import StudentDashboard
 from report import TeamReportListView, GeneratedProfessorReportView, GeneratedAnonymousReportView
 from view_student import ViewStudent
 from view_review import ViewReview
@@ -32,18 +32,23 @@ db_session = scoped_session(sessionmaker(bind=engine))
 cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
-app.config['CAS_AFTER_LOGIN'] = 'dashboard'
+app.config['CAS_AFTER_LOGIN'] = 'profDashboard'
+app.config['CAS_AFTER_LOGIN'] = 'studentDashboard'
 app.config['CAS_AFTER_LOGOUT'] = 'logout'
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
 
+app.add_url_rule('/studentDashboard/',
+                 view_func=StudentDashboard.as_view('studentDashboard'),
+                 methods=['GET', 'POST'])
+
 app.add_url_rule('/review/',
                  view_func=review.as_view('review'),
                  methods=['GET', 'POST'])
 
-app.add_url_rule('/dashboard/',
-                 view_func=Dashboard.as_view('dashboard'),
+app.add_url_rule('/profDashboard/',
+                 view_func=ProfDashboard.as_view('profDashboard'),
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/addStudent/',
