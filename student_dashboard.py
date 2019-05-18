@@ -68,7 +68,7 @@ class StudentDashboard(MethodView):
 class EditStudent(MethodView):
     # This method handles get request from studentDashboard.html
     # Input: only self
-    # Output: return to editStudent.html 
+    # Output: return to editStudent.html
     @login_required
     def get(self):
         user_name = validate_student().id
