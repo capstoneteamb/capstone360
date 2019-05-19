@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+	<h3>Add Students</h3>
+	<div class="add-container">
+	    <div class="input-card date-card" style="width: 700px">
+            {% if error %}
+                <p><strong>Error:</strong> {{ error }}
+            {% endif %}
+            <form action="{{ url_for('studentDashboard')}}" method=POST>
+                <p class="heading">New Name:</p>
+                    <input type=text name=student_new_name>
+                <p class="heading">New Email Address:</p> 
+                    <input type=text name=student_new_email>
+
+                <input type="hidden" value={{user_name}} name=user_name>		
+                <p><input class="my-btn" type=submit value='Submit' style="
+                        background-color: #b7c229;
+                        color: white;"></p>	
+            </form>
+		<a href="{{ url_for('studentDashboard') }}"><button class="my-cancel-btn" style="margin-top: -55px;">Cancel</button></a>
+	    </div>
+	</div>
+
+{% endblock %}

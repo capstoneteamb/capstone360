@@ -47,7 +47,7 @@ class ProfDashboard(MethodView):
         student = gbmodel.students()
         team = gbmodel.teams()
         session_id = request.form['session_id']
-        session_id = int(session_id[0])
+        session_id = int(session_id)
         # If ADD STUDENT form was submitted (addStudent)
         if 'student_name' in request.form:
             team_name = request.form.get('team_name')
