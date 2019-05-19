@@ -250,6 +250,24 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
+    # Allows students to edit their name and email address
+    # Input: student's new email and name and current user id
+    # Output: apply new name and email to students in student table
+    def edit_student(self, id, new_name, new_email):
+        try:
+            stds = students.query.filter(students.id == id).all()
+        except exc.SQLAlchemyError:
+            stds = None
+        if stds is None:
+            return False
+        for i in stds:
+            if new_name != '':
+                i.name = new_name
+            if new_email != '':
+                i.email_address = new_email
+            db.session.commit()
+        return True
+
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']

@@ -40,13 +40,11 @@
 			</p>
 			{% endfor %}
 		
-			<p><input class="my-btn" type=submit value='Remove Student' style="
+			<p><input class="my-cancel-btn" type=submit value='Remove Student' style="
 						background-color: #BCBCBC;
 						color: white;
-						border: none;
-						border-radius:5px;
-						padding: 10px 20px;
-						cursor: pointer;"></p>
+						width: 130px;
+						margin-top: -3px;"></p>
 		
 		</form>
 	 	<a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"
