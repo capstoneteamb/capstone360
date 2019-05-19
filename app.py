@@ -3,15 +3,16 @@ Flask entry
 """
 from flask import Flask
 from index import Index
-
 import dashboard  # noqa
-from prof_dashboard import Dashboard
+from prof_dashboard import ProfDashboard
 from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from csvAddTeam     import AddTeamCSV
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
-from report import TeamReportListView, GeneratedProfessorReportView, GeneratedAnonymousReportView
+from student_dashboard import StudentDashboard
+from student_dashboard import EditStudent
+from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
 from view_student import ViewStudent
 from view_review import ViewReview
 from flask_sqlalchemy import SQLAlchemy
@@ -33,18 +34,27 @@ db_session = scoped_session(sessionmaker(bind=engine))
 cas = CAS()
 cas.init_app(app)
 app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
-app.config['CAS_AFTER_LOGIN'] = 'dashboard'
+app.config['CAS_AFTER_LOGIN'] = 'profDashboard'
+app.config['CAS_AFTER_LOGIN'] = 'studentDashboard'
 app.config['CAS_AFTER_LOGOUT'] = 'logout'
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
 
+app.add_url_rule('/studentDashboard/',
+                 view_func=StudentDashboard.as_view('studentDashboard'),
+                 methods=['GET', 'POST'])
+
+app.add_url_rule('/editStudent',
+                 view_func=EditStudent.as_view('editStudent'),
+                 methods=['GET'])
+
 app.add_url_rule('/review/',
                  view_func=review.as_view('review'),
                  methods=['GET', 'POST'])
 
-app.add_url_rule('/dashboard/',
-                 view_func=Dashboard.as_view('dashboard'),
+app.add_url_rule('/profDashboard/',
+                 view_func=ProfDashboard.as_view('profDashboard'),
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/addStudent/',
@@ -66,10 +76,6 @@ app.add_url_rule('/removeTeam/',
 app.add_url_rule('/setDate/',
                  view_func=SetDate.as_view('setDate'),
                  methods=['GET', 'POST'])
-
-app.add_url_rule('/reportList/<team_id>',
-                 view_func=TeamReportListView.as_view('reportList'),
-                 methods=['GET'])
 
 app.add_url_rule('/professorReport/',
                  view_func=GeneratedProfessorReportView.as_view('professorReport'),

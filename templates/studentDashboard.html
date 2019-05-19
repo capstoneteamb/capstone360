@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="body">
+    <div class="row">
+        <div class="login-container">
+            <div class="login-hero">
+                <h3>Welcome {{name}}</h3>
+                <a href="/editStudent"><div class="prof-login-btn" style="width: 150px; text-align: center">Edit</div></a>
+                <a href="/review"><div class="student-login-btn" style="width: 150px; text-align: center">Review </div></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

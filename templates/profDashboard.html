@@ -1,7 +1,7 @@
 {% extends "menu.html" %}
 {% block content %} 
 
-<div class="container dashboard-container">
+<div class="container prof_dashboard-container">
 	<!-- <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Date?</button></a> -->
 	{% for data in lists %}
 	<div class="student-card display-card">
@@ -24,7 +24,7 @@
 	</div>
 	
 	<div class="student-card remove-card">
-		<form action="{{ url_for('dashboard', session_id=session_id) }}" method=POST>
+		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 			<h4>{{data[0]}}</h4>
 			{% for student in data[1:] %}
 			<p class=entry>
@@ -40,13 +40,11 @@
 			</p>
 			{% endfor %}
 		
-			<p><input class="my-btn" type=submit value='Remove Student' style="
+			<p><input class="my-cancel-btn" type=submit value='Remove Student' style="
 						background-color: #BCBCBC;
 						color: white;
-						border: none;
-						border-radius:5px;
-						padding: 10px 20px;
-						cursor: pointer;"></p>
+						width: 130px;
+						margin-top: -3px;"></p>
 		
 		</form>
 	 	<a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"

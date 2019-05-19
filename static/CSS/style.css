@@ -24,9 +24,6 @@ h3 {
     padding: 10px 50px;
 }
 
-.container{
-}
-
 .nav-container{
     color: #cecece;
     position: fixed;
@@ -96,6 +93,7 @@ input {
     padding-left: 10px;
     font-weight: bold;
 }
+
 .student-card{
     background-color: #5D5E61;
     color: #fff;
@@ -108,6 +106,10 @@ input {
     position: relative;
     margin: 50px auto;
     margin-top: 100px;
+}
+
+.student-card:nth-child(-n+2){
+    margin-top: 250px !important;
 }
 
 .student-page-card{
@@ -150,12 +152,27 @@ input {
     color: grey;
     border: none;
     border-radius:5px;
-    padding: 10px 20px;
+    /* padding: 10px 20px;
     margin-top: 25px;
+    margin-right: 200px; */
     font-size: 12px;
     cursor: pointer;
+    float: left;
+    padding: 10px 20px;
+    width: 130px;
+    margin-top: 25px;
 }
-
+.my-cancel-btn{
+    background-color: #E0EE2A;
+    color: grey;
+    border: none;
+    border-radius:5px;
+    font-size: 12px;
+    cursor: pointer;
+    float: right;
+    padding: 10px 20px;
+    width: 100px;
+}
 .card-btn{
     position: absolute;
     bottom: 20px;
@@ -209,18 +226,26 @@ input {
     transform: translateX(-50%);
 }
 
-.login-btn{
+.student-login-btn{
     color: white;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     background-color: #b7c229;
-    padding: 5px 100px;
+    padding: 5px 30px;
     border-radius: 5px;
-    margin-top: 50px;
-    bottom: 30%;
+    bottom: 20%;
 }
-
+.prof-login-btn{
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #b7c229;
+    padding: 5px 22px;
+    border-radius: 5px;
+    bottom: 40%;
+}
 .user-icon{
     width: 24px;
     opacity: 0.4;
