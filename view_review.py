@@ -78,9 +78,9 @@ class ViewReview(MethodView):
                 return self.handle_error("Reviewer and reviewee don't appear to be on the same team")
 
             # Get the the name of the team the reviewer and reviewee are on
-            team_name = teams.get_team_name_from_id(reviewer.tid)
-            if team_name is None:
-                return self.handle_error("Name of reviewer and reviewee's team not found in database")
+            team = teams.get_team_from_id(reviewer.tid)
+            if team is None:
+                return self.handle_error("Reviewer and reviewee's team not found in database")
 
             # Finally, get the review and parse it (if we find it in the database)
             report = reports.query.filter_by(reviewer=reviewer_id,
@@ -92,7 +92,7 @@ class ViewReview(MethodView):
                 review_details = {"time": report.time,
                                   "reviewer": reviewer.name,
                                   "reviewee": reviewee.name,
-                                  "team_name": team_name,
+                                  "team_name": team.name,
                                   "is_late": report.is_late,
                                   "is_final": (is_final == 1)}
 

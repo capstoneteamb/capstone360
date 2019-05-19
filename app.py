@@ -11,7 +11,7 @@ from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
 from student_dashboard import StudentDashboard
 from student_dashboard import EditStudent
-from report import TeamReportListView, GeneratedProfessorReportView, GeneratedAnonymousReportView
+from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
 from view_student import ViewStudent
 from view_review import ViewReview
 from flask_sqlalchemy import SQLAlchemy
@@ -71,10 +71,6 @@ app.add_url_rule('/removeTeam/',
 app.add_url_rule('/setDate/',
                  view_func=SetDate.as_view('setDate'),
                  methods=['GET', 'POST'])
-
-app.add_url_rule('/reportList/<team_id>',
-                 view_func=TeamReportListView.as_view('reportList'),
-                 methods=['GET'])
 
 app.add_url_rule('/professorReport/',
                  view_func=GeneratedProfessorReportView.as_view('professorReport'),
