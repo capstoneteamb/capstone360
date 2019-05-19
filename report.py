@@ -80,7 +80,7 @@ def _make_printable_reports(session_id, is_final):
     is_final -- if True, makes a final report. If False, generates a midterm report.
     """
     students = gbmodel.students().get_students_in_session(session_id)
-    if len(students) <= 0:
+    if students is None or len(students) <= 0:
         raise MissingStudentException("No students for this session.")
 
     report = ""

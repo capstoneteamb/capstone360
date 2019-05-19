@@ -128,7 +128,10 @@ class teams(db.Model):
         Input: team_id
         Output: a team object, if found. None otherwise
         """
-        result = teams.query.filter(teams.id == team_id).first()
+        try:
+            result = teams.query.filter(teams.id == team_id).first()
+        except exc.SQLAlchemyError:
+            return None
         return result
 
 
@@ -192,7 +195,11 @@ class students(db.Model):
         """
         # https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
         # https://docs.sqlalchemy.org/en/13/orm/query.html
-        results = students.query.filter(students.session_id == session_id).order_by(students.tid.asc()).all()
+        try:
+            results = students.query.filter(
+                          students.session_id == session_id).order_by(students.tid.asc()).all()
+        except exc.SQLAlchemyError:
+            return None
         return results
 
     def get_student_in_session(self, sid, session_id):
@@ -201,7 +208,10 @@ class students(db.Model):
         Input: student id, session id
         Output: the student that we found, or none if nothing was found
         """
-        result = students.query.filter(students.id == sid, students.session_id == session_id).first()
+        try:
+            result = students.query.filter(students.id == sid, students.session_id == session_id).first()
+        except exc.SQLAlchemyError:
+            return None
         return result
 
     # Remove a list of selected students
@@ -456,16 +466,24 @@ class reports(db.Model):
 
     def get_reports_for_student(self, student_id, session_id, is_final=None):
         """
-        Gets all available reports for a student, optionally filtering to only midterms or finals.
+        Gets all available reports for a student, optionally filtering to only midterms or finals
+        Input: student id, session_id and is_final (is_final indicates if we are filtering for final reviews
+               or not. is_final = true indicates we are looking for final reviews. is_final = false indicates
+               we are looking for midterm reviews. is_final = None indicates we want both.
+        Output: the available reports for the student
         """
-        if is_final is not None:
-            report = reports.query.filter(reports.reviewee == student_id,
-                                          reports.session_id == session_id,
-                                          reports.is_final == is_final).all()
-        else:
-            report = reports.query.filter(report.reviewee == student_id,
-                                          report.session_id == session_id).all()
-        return report
+        try:
+            reviews = {}
+            if is_final is not None:
+                reviews = reports.query.filter(reports.reviewee == student_id,
+                                               reports.session_id == session_id,
+                                               reports.is_final == is_final).all()
+            else:
+                reviews = reports.query.filter(reports.reviewee == student_id,
+                                               reports.session_id == session_id).all()
+            return reviews
+        except exc.SQLAlchemyError:
+            return None
 
     def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
         results = reports.query.filter(reports.reviewer == reviewing_student_id,
