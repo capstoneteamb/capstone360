@@ -431,8 +431,7 @@ class capstone_session(db.Model):
     # This method is for determining is a review is late. It receives the type of review to check
     # and compares the date sent into the method with the review's end period
     # Inputs: session_id -- the value of the id for the capstone session to check
-    # date: the date that the review is submitted
-    # type: 'midterm' or 'final' should be received
+    # date: the date that the review is submitted, type: "midterm" or "final" should be received
     # Outputs: True -- the review is within the open period (the review is NOT late)
     # or False -- the review IS late or an error was experienced
     def check_not_late(Self, session_id, date, type):
@@ -471,6 +470,9 @@ class capstone_session(db.Model):
             else:
                 # error
                 return False
+        except exc.SQLAlchemyError:
+            return False
+
 
 class reports(db.Model):
     __table__ = db.Model.metadata.tables['reports']
