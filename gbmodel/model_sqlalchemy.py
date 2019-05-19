@@ -509,7 +509,7 @@ class reports(db.Model):
     # Outputs: true if adding was successful, false if not
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
                       ethic, com, coop, init, focus, cont, lead, org, dlg,
-                      points, strn, wkn, traits, learned, proud, is_final):
+                      points, strn, wkn, traits, learned, proud, is_final, late):
         try:
             # Build Report object from method input
             new_report = reports(session_id=sess_id,
@@ -533,7 +533,8 @@ class reports(db.Model):
                                  traits_to_work_on=traits,
                                  what_you_learned=learned,
                                  proud_of_accomplishment=proud,
-                                 is_final=is_final)
+                                 is_final=is_final,
+                                 is_late=late)
             # add the report and return true for success
             db.session.add(new_report)
             return True

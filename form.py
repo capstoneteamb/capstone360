@@ -158,16 +158,14 @@ class review(MethodView):
     # if the user was successfully confirmed (true) or not (false)
     def confirm_user(self, user_id):
         # check if the current user is found in the database
-        # need to implement with log in
+        student = gbmodel.students().get_student(user_id)
+        if student is None:
+            return False
 
         # check the user's active reports
         state = self.get_state(user_id)
         print(state)
         if state == 'Error':
-            return False
-
-        student = gbmodel.students().get_student(user_id)
-        if student is None:
             return False
 
         # depending on the user's active state, check if the user is done
@@ -400,6 +398,16 @@ class review(MethodView):
                 points = request.form[('points_' + str(i))]
                 points = self.convert_to_int(points)
 
+                # default to not late
+                late = 0
+
+                try:
+                    is_not_late = gbmodel.capstone_session().check_not_late(cid, datetime.now(), self.get_state(user_id))
+                    if is_not_late is False:
+                        late = 1
+                except SQLAlchemyError:
+                    self.display_error('student look up error - capstone')
+
                 if self.get_state(user_id) == 'midterm':
                     # for midterm set final to false
                     is_final = 0
@@ -411,7 +419,8 @@ class review(MethodView):
                 test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
                                                            tid, i, tech, ethic, com, coop, init,
                                                            focus, cont, lead, org, dlg, points,
-                                                           strn, wkn, traits, learned, proud, is_final)
+                                                           strn, wkn, traits, learned, proud,
+                                                           is_final, late)
                 # remember if this report submission failed
                 if test_sub is False:
                     pass_insert = False
