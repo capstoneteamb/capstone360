@@ -313,6 +313,10 @@ class review(MethodView):
                     flash('points must be an integer')
                     points_pass = False
 
+                if points < 0:
+                    flash('Points must be 0 or greater')
+                    points_pass = False
+
                 if points_pass is True:
                     # add up the total points
                     total = total + points
