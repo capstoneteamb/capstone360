@@ -616,7 +616,7 @@ class reports(db.Model):
     # Method to commit changes to the DB through the model while updating the user's state
     # input: None
     # output: True if successful, false otherwise
-    def commit_reports(self, id, sess_id, state, success):
+    def commit_reports(self, id, state, sess_id, success):
         # if adding reports was not successful, rollback changes to session
         try:
             if success is False:
