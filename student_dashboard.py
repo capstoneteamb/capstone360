@@ -22,6 +22,10 @@ class StudentDashboard(MethodView):
                 return True
         return False
 
+
+    def get_terms(self, id):
+        
+
     # This method handles get requests to studentDashboard.html
     # Input: only self
     # Output: return to index.html if the student id is not in the student
