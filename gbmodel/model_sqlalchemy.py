@@ -202,6 +202,30 @@ class students(db.Model):
             return None
         return results
 
+    # Returns all capstone sessions that a user belongs to
+    # Input: student_id: The database id of the student to retrieve capstone session ids for
+    # output: an array of objects representing the rows for each capstone the student belongs to
+    def get_user_sessions(self, student_id):
+        try:
+            results = []  # to store objects
+
+            # get all matching records
+            student_records = students.query.filter_by(id=student_id).all()
+            print(student_records)
+            if student_records is not None:
+
+                # for each record, add the capstone the id points to
+                for rec in student_records:
+                    cap = capstone_session().get_sess_by_id(rec.session_id)
+                    if cap is not None:
+                        print(cap)
+                        results.append(cap)
+
+            return results
+
+        except exc.SQLAlchemyError:
+            return None
+
     def get_student_in_session(self, sid, session_id):
         """
         Get a student from the students table
@@ -327,6 +351,13 @@ class capstone_session(db.Model):
         db.session.add(new_sess)
         db.session.commit()
         return id
+
+    def get_sess_by_id(self, id):
+        try:
+            cap = capstone_session.query.filter_by(id=id).first()
+            return cap
+        except exc.SQLAlchemyError:
+            return None
 
     # Get id of a selected session
     # Input: term and year

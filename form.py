@@ -191,7 +191,7 @@ class review(MethodView):
     # team members to displate, the student's open reports state,
     # if there are any user input errors to report, and if there are
     # any fatal errors to report as a result of user action.
-    def get(self):
+    def get(self, cap):
         # check if user exists
         # user_id = request.args.get('user_name')
         if validate_student() is False:
@@ -253,7 +253,7 @@ class review(MethodView):
     # Output: rendering the review.html template with errors reported
     #  to the user or rendering the success page to indicate
         # the user was successful in submitting their reform
-    def post(self):
+    def post(self, cap):
         # check if user exists
         user_id = request.form.get('user_id')
         test_user = self.confirm_user(user_id)

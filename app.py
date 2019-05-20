@@ -48,7 +48,7 @@ app.add_url_rule('/editStudent',
                  view_func=EditStudent.as_view('editStudent'),
                  methods=['GET'])
 
-app.add_url_rule('/review/',
+app.add_url_rule('/review/<cap>',
                  view_func=review.as_view('review'),
                  methods=['GET', 'POST'])
 
