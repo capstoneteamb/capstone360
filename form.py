@@ -159,7 +159,24 @@ class review(MethodView):
             return True
 
         # no errors, so return true
-        return False
+        return True
+
+    def get_data(self, id, cap):
+        tid = self.get_tid(id, cap)
+        state = self.get_state(id, cap)
+        if state == 'final':
+            is_final = 1
+        else:
+            is_final = 0
+
+        itemize = []
+        dat = {}
+        for report in gbmodel.reports().get_team_reports(tid, is_final):
+            dat["tech_mast_" + report.reviewee] = report.tech_mastery
+
+        itemize.append(dat)
+
+        return itemize
 
     # This method handles get requests to review.html.
     # Input: only self
@@ -213,12 +230,15 @@ class review(MethodView):
                                    input_error=None,
                                    fatal_error='There was an error while retrieving user information.')
 
+        data = self.get_data(user_id, cap)
+        print(data)
         # If all successful, render the page with team members and the state
         return render_template('review.html',
                                name=user_name,
                                user_id=user_id,
                                mems=mems,
                                state=state,
+                               data=data,
                                human_fields=self.human_fields,
                                code_fields=self.code_fields,
                                input_error=None,

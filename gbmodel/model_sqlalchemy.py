@@ -575,6 +575,14 @@ class reports(db.Model):
                                       reports.reviewee == reviewee_id).first()
         return result
 
+    def get_team_reports(self, tid, is_final):
+        try:
+            result = reports.query.filter(reports.tid == tid,
+                                          reports.is_final == is_final).distinct()
+            return result
+        except exc.SQLAlchemyError:
+            return None
+
     # Stages a report to be inserted into the database -- This does NOT commit the add!
     # Inputs: Arguments for each individual field of the report
     # Outputs: true if adding was successful, false if not

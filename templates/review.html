@@ -52,7 +52,16 @@
                                     <div class="custom-control custom-radio">
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
                                             name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
-                                            value="{{5-j}}" required>
+                                            value="{{5-j}}"
+                                            {% for k in data %}
+                                                {% set test = code_fields[i]~'_'~mem['id'] %}
+                                                {% if k[test] is defined %}
+                                                    {%if k[test] == 5-j %}
+                                                        checked
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            required>
                                         <label class="custom-control-label"
                                             for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
                                     </div>
