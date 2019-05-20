@@ -402,7 +402,7 @@ class review(MethodView):
                     pass_insert = False
 
             # commit reports and update the user's state. roll back changes if insertion failed
-            test_commit = gbmodel.reports().commit_reports(user_id, self.get_state(user_id), pass_insert)
+            test_commit = gbmodel.reports().commit_reports(user_id, self.get_state(user_id, cap), cap, pass_insert)
             if test_commit is True:
                 # success
                 return render_template('submitted.html')
