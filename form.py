@@ -172,6 +172,7 @@ class review(MethodView):
         itemize = []
         dat = {}
         for report in gbmodel.reports().get_team_reports(tid, is_final):
+            dat["reviewee"] = report.reviewee
             dat["tech_mast_" + report.reviewee] = report.tech_mastery
             dat["work_ethic_" + report.reviewee] = report.work_ethic
             dat["comm_" + report.reviewee] = report.communication

@@ -85,7 +85,16 @@
                                     <div class="custom-control custom-radio">
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
                                             name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
-                                            value="{{5-j}}" required>
+                                            value="{{5-j}}" 
+                                            {% for k in data %}
+                                                {% set test = code_fields[i]~'_'~mem['id'] %}
+                                                {% if k[test] is defined %}
+                                                    {%if k[test] == 5-j %}
+                                                        checked
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            required>
                                         <label class="custom-control-label"
                                             for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
                                     </div>
@@ -98,13 +107,25 @@
                     {% elif i < 12 %}
                     <td>
                         <input type="text" placeholder="0" class="form-control" name="{{code_fields[i]}}_{{mem['id']}}"
-                            id="{{code_fields[i]}}_{{mem['id']}}" required>
+                            id="{{code_fields[i]}}_{{mem['id']}}" 
+                            {% for k in data %}
+                                {% set test = code_fields[i]~'_'~mem['id'] %}
+                                {% if k[test] is defined %}
+                                    value="{{k[test]}}"
+                                {% endif %}
+                            {% endfor %}
+                            required>
                     </td>
                     {% else %}
                     <td>
+                        {% set test = code_fields[i]~'_'~mem['id'] %}
                         <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
                             name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
-                            required></textarea>
+                            required>
+                        {% for k in data %}
+                        {% if k[test] is defined %}{{k[test]}}{% endif %}
+                        {% endfor %}
+                        </textarea>
                     </td>
                     {% endif %}
                     {% endfor %}

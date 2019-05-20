@@ -36,6 +36,8 @@ app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
 app.config['CAS_AFTER_LOGIN'] = 'profDashboard'
 app.config['CAS_AFTER_LOGIN'] = 'studentDashboard'
 app.config['CAS_AFTER_LOGOUT'] = 'logout'
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
