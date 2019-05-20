@@ -187,8 +187,10 @@ class review(MethodView):
             dat["str_" + report.reviewee] = report.strengths
             dat["wkn_" + report.reviewee] = report.weaknesses
             dat["traits_" + report.reviewee] = report.traits_to_work_on
-            dat["learned"] = report.what_you_learned
-            dat["proud"] = report.proud_of_accomplishment
+            if report.what_you_learned is not None:
+                dat["learned"] = report.what_you_learned
+            if report.proud_of_accomplishment is not None:
+                dat["proud"] = report.proud_of_accomplishment
         itemize.append(dat)
 
         return itemize
