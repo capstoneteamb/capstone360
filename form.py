@@ -120,13 +120,41 @@ class review(MethodView):
     def get_state(self, user_id, cap):
         try:
             # get the state based on the capstone id and the current time
+            print('getting state from db')
             state = gbmodel.capstone_session().check_review_state(cap, datetime.now())
+            print('got state')
         except SQLAlchemyError:
             print('Student Look Up Error - Get State')
             return 'Error'
 
         # return student state
         return state
+
+    def get_done(self, user_id, cap):
+        try:
+            student = gbmodel.students().get_student_in_session(user_id, cap)
+            if student is None:
+                return None
+
+            # check the user's active reports
+            state = self.get_state(user_id, cap)
+            if state == 'Error':
+                return None
+
+            # depending on the user's active state, check if the user is done
+            done = 0
+            if state == 'midterm':
+                # check if already submitted
+                done = student.midterm_done
+            elif state == 'final':
+                # check if already submitted
+                done = student.final_done
+            else:
+                return None
+
+            return done
+        except SQLAlchemyError:
+            return None
 
     # This method checks to ensure that the user trying to access
     #  the review exists and has an open review.
@@ -164,6 +192,7 @@ class review(MethodView):
     def get_data(self, id, cap):
         tid = self.get_tid(id, cap)
         state = self.get_state(id, cap)
+        is_final = 0
         if state == 'final':
             is_final = 1
         else:
@@ -202,6 +231,7 @@ class review(MethodView):
     # if there are any user input errors to report, and if there are
     # any fatal errors to report as a result of user action.
     def get(self, cap):
+        print('cap:' + cap)
         # check if user exists
         # user_id = request.args.get('user_name')
         if validate_student() is False:
@@ -248,7 +278,7 @@ class review(MethodView):
                                    fatal_error='There was an error while retrieving user information.')
 
         data = self.get_data(user_id, cap)
-        print(data)
+        done = self.get_done(user_id, cap)
         # If all successful, render the page with team members and the state
         return render_template('review.html',
                                name=user_name,
@@ -256,6 +286,7 @@ class review(MethodView):
                                mems=mems,
                                state=state,
                                data=data,
+                               is_done=done,
                                human_fields=self.human_fields,
                                code_fields=self.code_fields,
                                input_error=None,
@@ -267,6 +298,7 @@ class review(MethodView):
     #  to the user or rendering the success page to indicate
         # the user was successful in submitting their reform
     def post(self, cap):
+        print('cap:' + cap)
         # check if user exists
         user_id = request.form.get('user_id')
         test_user = self.confirm_user(user_id, cap)
@@ -345,11 +377,14 @@ class review(MethodView):
             flash('Points total must be 100')
             points_pass = False
 
+        done = self.get_done(user_id, cap)
+        print('got to done')
         # get form inputs and submit to the database
         if points_pass is True:
             pass_insert = True  # will test if all insertions are successful
             for i in id_list:
                 # Get each radio input and verify that it's an integer
+                print('getting fields')
                 tech = request.form[('tech_mast_' + str(i))]
                 tech = self.convert_to_int(tech)
 
@@ -377,6 +412,7 @@ class review(MethodView):
                 dlg = None
 
                 # check if current student is leader
+                print('checking lead')
                 try:
                     is_lead = gbmodel.students().check_team_lead(i)
                 except SQLAlchemyError:
@@ -404,23 +440,27 @@ class review(MethodView):
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
+                print('getting state' + user_id + cap)
                 if self.get_state(user_id, cap) == 'final':
+                    print('checking id with state')
                     if i == user_id:
                         proud = request.form[('proud')]
 
+                print('got state')
                 points = request.form[('points_' + str(i))]
                 points = self.convert_to_int(points)
 
                 # default to not late
                 late = 0
-
+                is_final = 0
+                print('checking late')
                 try:
                     is_not_late = gbmodel.capstone_session().check_not_late(cid, datetime.now(), self.get_state(user_id, cap))
                     if is_not_late is False:
                         late = 1
                 except SQLAlchemyError:
                     self.display_error('student look up error - capstone')
-
+                print('cechking state')
                 if self.get_state(user_id, cap) == 'midterm':
                     # for midterm set final to false
                     is_final = 0
@@ -428,18 +468,52 @@ class review(MethodView):
                     # for midterm set final to false
                     is_final = 1
 
-                # add report, but do not commit yet
-                test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
-                                                           tid, i, tech, ethic, com, coop, init,
-                                                           focus, cont, lead, org, dlg, points,
-                                                           strn, wkn, traits, learned, proud,
-                                                           is_final, late)
-                # remember if this report submission failed
-                if test_sub is False:
-                    pass_insert = False
-            
-            # commit reports and update the user's state. roll back changes if insertion failed
-            test_commit = gbmodel.reports().commit_reports(user_id, self.get_state(user_id, cap), cap, pass_insert)
+                if done == 1:
+                    # update existing record
+                    try:
+                        print('updating')
+                        report = gbmodel.reports().get_report(user_id, i, tid, is_final)
+                        print('tech' + str(report.tech_mastery))
+                        report.tech_mastery = tech
+                        report.work_ethic = ethic
+                        report.communication = com
+                        report.cooperation = coop
+                        report.initiative = init
+                        report.team_focus = focus
+                        report.contribution = cont
+                        report.leadership = lead
+                        report.organization = org
+                        report.delegation = dlg
+                        report.points = points
+                        report.strengths = strn
+                        report.weaknesses = wkn
+                        report.traits_to_work_on = traits
+                        report.what_you_learned = learned
+                        report.proud_of_accomplishment = proud
+                        print('all updated')
+
+                    except SQLAlchemyError:
+                        pass_insert = False
+                else:
+                    print('should not be here')
+                    # insert new record
+                    # add report, but do not commit yet
+                    test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
+                                                            tid, i, tech, ethic, com, coop, init,
+                                                            focus, cont, lead, org, dlg, points,
+                                                            strn, wkn, traits, learned, proud,
+                                                            is_final, late)
+                    # remember if this report submission failed
+                    if test_sub is False:
+                        pass_insert = False
+
+            if done == 1:
+                # commit updates
+                print('committing in form')
+                test_commit = gbmodel.reports().commit_updates(pass_insert)
+            else:
+                # commit reports and update the user's state. roll back changes if insertion failed
+                test_commit = gbmodel.reports().commit_reports(user_id, self.get_state(user_id, cap), cap, pass_insert)
             if test_commit is True:
                 # success
                 return render_template('submitted.html')
@@ -447,10 +521,10 @@ class review(MethodView):
                 self.display_error('Submission Errror')
 
         return render_template('review.html',
-                               name=self.get_self_name(user_id),
+                               name=self.get_self_name(user_id, cap),
                                mems=mems,
                                human_fields=self.human_fields,
                                code_fields=self.code_fields,
-                               state=self.get_state(user_id),
+                               state=self.get_state(user_id, cap),
                                input_error=True,
                                fatal_error=None)

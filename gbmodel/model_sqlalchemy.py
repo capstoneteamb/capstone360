@@ -466,8 +466,10 @@ class capstone_session(db.Model):
     def check_review_state(self, session_id, date):
         try:
             # get the session
+            print('querying with:')
+            print('session_id:' + session_id)
             session = capstone_session.query.filter(capstone_session.id == session_id).first()
-
+            print('getting state')
             # check if final exists:
             if session.final_start is not None:
                 # if after final period, return final
@@ -645,6 +647,19 @@ class reports(db.Model):
 
             db.session.commit()
             return True
+        except exc.SQLAlchemyError:
+            db.session.rollback()
+            return False
+
+    def commit_updates(self, success):
+        try:
+            if success is False:
+                db.session.rollback()
+                return False
+            else:
+                print('about to commit')
+                db.session.commit()
+                return True
         except exc.SQLAlchemyError:
             db.session.rollback()
             return False
