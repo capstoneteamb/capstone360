@@ -211,14 +211,12 @@ class students(db.Model):
 
             # get all matching records
             student_records = students.query.filter_by(id=student_id).all()
-            print(student_records)
             if student_records is not None:
 
                 # for each record, add the capstone the id points to
                 for rec in student_records:
                     cap = capstone_session().get_sess_by_id(rec.session_id)
                     if cap is not None:
-                        print(cap)
                         results.append(cap)
 
             return results
@@ -352,8 +350,12 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
+    # this method is for getting a specific capstone session object
+    # inputs: id of capstone session to retrieve
+    # outputs: capstone session object if found, none otherwise
     def get_sess_by_id(self, id):
         try:
+            # query for session and return if found
             cap = capstone_session.query.filter_by(id=id).first()
             return cap
         except exc.SQLAlchemyError:
@@ -466,10 +468,7 @@ class capstone_session(db.Model):
     def check_review_state(self, session_id, date):
         try:
             # get the session
-            print('querying with:')
-            print('session_id:' + session_id)
             session = capstone_session.query.filter(capstone_session.id == session_id).first()
-            print('getting state')
             # check if final exists:
             if session.final_start is not None:
                 # if after final period, return final
@@ -577,6 +576,9 @@ class reports(db.Model):
                                       reports.reviewee == reviewee_id).first()
         return result
 
+    # this method is for getting the reports of an entire team
+    # inputs: tid -- team id of reports to retrieve, is_final - if it's the second term
+    # outputs: result - all report objects for the team
     def get_team_reports(self, tid, is_final):
         try:
             result = reports.query.filter(reports.tid == tid,
@@ -651,13 +653,16 @@ class reports(db.Model):
             db.session.rollback()
             return False
 
+    # This method is for committing review updates
+    # input: success -- a boolean object indicating whether to proceed
+    #  with committing (true) or to roll back (false)
+    # output: False -- commit was not made, True - commit was made successfully
     def commit_updates(self, success):
         try:
             if success is False:
                 db.session.rollback()
                 return False
             else:
-                print('about to commit')
                 db.session.commit()
                 return True
         except exc.SQLAlchemyError:

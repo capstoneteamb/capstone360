@@ -34,7 +34,7 @@ class StudentDashboard(MethodView):
         else:
             student_name = validate_student().name
             user_name = validate_student().id
-            caps = gbmodel.students().get_user_sessions(user_name)
+            caps = gbmodel.students().get_user_sessions(user_name)  # get user's capstone sessions
             return render_template('studentDashboard.html',
                                    name=student_name,
                                    user_name=user_name,

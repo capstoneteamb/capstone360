@@ -10,9 +10,9 @@
                 <form>
                     <select id='options' name="selected_session">
                         {% for i in caps %}
-                        <option value="{{i['id']}}">{{i['start_term']}} {{i['start_year']}} - {{i['end_term']}} {{i['end_year']}}</option>
+                            <option value="{{i['id']}}" {% if i == caps|last %}selected{% endif %}>{{i['start_term']}} {{i['start_year']}} - {{i['end_term']}} {{i['end_year']}}</option>
                         {% endfor %}
-                        <option selected disabled hidden>Select Term</option>
+                        
                     </select>
                 </form>
             </div>
