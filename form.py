@@ -192,7 +192,7 @@ class review(MethodView):
 
     # This method collects information of a student's submitted reviews into an object for jinja2 templating
     # input: id of the student to retrieve review info for, the capstone session id to check
-    # output: an array of one dictionary object containing all report info in a 
+    # output: an array of one dictionary object containing all report info in a
     # style that matches review.html fields
     def get_data(self, id, cap):
         # get student info
@@ -454,10 +454,10 @@ class review(MethodView):
                 late = 0
                 is_final = 0
                 try:
-                    is_not_late = gbmodel.capstone_session().check_not_late(cid, 
+                    is_not_late = gbmodel.capstone_session().check_not_late(cid,
                                                                             datetime.now(),
-                                                                            self.get_state(user_id,
-                                                                            cap))
+                                                                            self.get_state(user_id, cap))
+                    
                     if is_not_late is False:
                         late = 1
                 except SQLAlchemyError:
