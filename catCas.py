@@ -23,6 +23,7 @@ def validate_student():
 # OUTPUT: return False if the id does not exist
 #         return True otherwise
 
+
 def validate_professor():
     cas = CAS()
     username = cas.username
