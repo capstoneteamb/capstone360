@@ -140,6 +140,8 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     # Compile all strengths and weaknesses into a list, tally up scores, etc.
     strengths = []
     weaknesses = []
+    traits_to_work_on = []
+
     points = 0
     for r in reports:
         for key, value in scores.items():
@@ -159,14 +161,17 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
 
             weaknesses.append("{}: {}".format(reporter.name, r.weaknesses))
             strengths.append("{}: {}".format(reporter.name, r.strengths))
+            traits_to_work_on.append("{}: {}".format(reporter.name, r.traits_to_work_on))
 
         elif r.reviewer == student_id:
             weaknesses.append("**{}".format(r.weaknesses))
             strengths.append("**{}".format(r.strengths))
+            traits_to_work_on.append("**{}".format(r.traits_to_work_on))
 
         else:
             weaknesses.append(r.weaknesses)
             strengths.append(r.strengths)
+            traits_to_work_on.append(r.traits_to_work_on)
 
         # Tally up points
         points += r.points
@@ -185,6 +190,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
                            scores=scores,
                            points=points,
                            strengths=strengths,
-                           weaknesses=weaknesses)
+                           weaknesses=weaknesses,
+                           traits_to_work_on=traits_to_work_on)
 
     return html
