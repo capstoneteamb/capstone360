@@ -192,7 +192,8 @@ class review(MethodView):
 
     # This method collects information of a student's submitted reviews into an object for jinja2 templating
     # input: id of the student to retrieve review info for, the capstone session id to check
-    # output: an array of one dictionary object containing all report info in a style that matches review.html fields
+    # output: an array of one dictionary object containing all report info in a 
+    # style that matches review.html fields
     def get_data(self, id, cap):
         # get student info
         tid = self.get_tid(id, cap)
@@ -453,7 +454,10 @@ class review(MethodView):
                 late = 0
                 is_final = 0
                 try:
-                    is_not_late = gbmodel.capstone_session().check_not_late(cid, datetime.now(), self.get_state(user_id, cap))
+                    is_not_late = gbmodel.capstone_session().check_not_late(cid, 
+                                                                            datetime.now(),
+                                                                            self.get_state(user_id,
+                                                                            cap))
                     if is_not_late is False:
                         late = 1
                 except SQLAlchemyError:
@@ -493,10 +497,10 @@ class review(MethodView):
                     # insert new record
                     # add report, but do not commit yet
                     test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
-                                                            tid, i, tech, ethic, com, coop, init,
-                                                            focus, cont, lead, org, dlg, points,
-                                                            strn, wkn, traits, learned, proud,
-                                                            is_final, late)
+                                                               tid, i, tech, ethic, com, coop, init,
+                                                               focus, cont, lead, org, dlg, points,
+                                                               strn, wkn, traits, learned, proud,
+                                                               is_final, late)
                     # remember if this report submission failed
                     if test_sub is False:
                         pass_insert = False
@@ -505,8 +509,12 @@ class review(MethodView):
                 # commit updates
                 test_commit = gbmodel.reports().commit_updates(pass_insert)
             else:
-                # commit reports and update the user's state. roll back changes if insertion failed
-                test_commit = gbmodel.reports().commit_reports(user_id, self.get_state(user_id, cap), cap, pass_insert)
+                # commit reports and update the user's state.
+                #  roll back changes if insertion failed
+                test_commit = gbmodel.reports().commit_reports(user_id,
+                                                               self.get_state(user_id, cap),
+                                                               cap,
+                                                               pass_insert)
             if test_commit is True:
                 # success
                 return render_template('submitted.html')
