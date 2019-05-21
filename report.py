@@ -160,6 +160,10 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             weaknesses.append("{}: {}".format(reporter.name, r.weaknesses))
             strengths.append("{}: {}".format(reporter.name, r.strengths))
 
+        elif r.reviewer == student_id:
+            weaknesses.append("**{}".format(r.weaknesses))
+            strengths.append("**{}".format(r.strengths))
+
         else:
             weaknesses.append(r.weaknesses)
             strengths.append(r.strengths)
