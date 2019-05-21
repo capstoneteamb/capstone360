@@ -60,12 +60,13 @@ class ViewStudent(MethodView):
             # out reviews for those team members
             if student is not None:
                 # Get team name
-                team_name = teams.get_team_name_from_id(student.tid)
-                if team_name is None:
-                    return self.handle_error("Team name not found in database (when we searched via team_id)")
+                team = teams.get_team_from_id(student.tid)
+                if team is None:
+                    return self.handle_error(("Students' team not found in database (when searching via team"
+                                              " id)"))
 
                 # Record it, along with some other information about the student
-                student_details = {"name": student.name, "id": student.id, "team_name": team_name}
+                student_details = {"name": student.name, "id": student.id, "team_name": team.name}
 
                 # See if the student completed a midterm and final review for their team members and
                 # record it
@@ -88,7 +89,10 @@ class ViewStudent(MethodView):
 
                 # Combine the recorded data with the viewStudent.html template and render the viewStudent
                 # page
-                return render_template('viewStudent.html', student=student_details, review_data=reviews)
+                return render_template('viewStudent.html',
+                                       student=student_details,
+                                       review_data=reviews,
+                                       session_id=session_id)
             else:
                 return self.handle_error(("Student was not found in the database "
                                           "(when we searched via student ID)"))
