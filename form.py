@@ -457,7 +457,7 @@ class review(MethodView):
                     is_not_late = gbmodel.capstone_session().check_not_late(cid,
                                                                             datetime.now(),
                                                                             self.get_state(user_id, cap))
-                    
+                 
                     if is_not_late is False:
                         late = 1
                 except SQLAlchemyError:
