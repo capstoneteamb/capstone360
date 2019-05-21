@@ -157,8 +157,9 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             if reporter is None:
                 raise MissingStudentException("The reporting student in a review doesn't exist.")
 
-            weaknesses.append(reporter.name + ": " + r.weaknesses)
-            strengths.append(reporter.name + ": " + r.strengths)
+            weaknesses.append("{}: {}".format(reporter.name, r.weaknesses))
+            strengths.append("{}: {}".format(reporter.name, r.strengths))
+
         else:
             weaknesses.append(r.weaknesses)
             strengths.append(r.strengths)
