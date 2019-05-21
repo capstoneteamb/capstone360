@@ -140,6 +140,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     # Compile all strengths and weaknesses into a list, tally up scores, etc.
     strengths = []
     weaknesses = []
+    points = 0
     for r in reports:
         for key, value in scores.items():
             this_score = getattr(r, key)
@@ -162,6 +163,9 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             weaknesses.append(r.weaknesses)
             strengths.append(r.strengths)
 
+        # Tally up points
+        points += r.points
+
     # TODO Mark all the self reported scores
     for r in reports:
         if r.reviewer == student_id:
@@ -172,6 +176,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
                            name=name,
                            team=team_name,
                            scores=scores,
+                           points=points,
                            strengths=strengths,
                            weaknesses=weaknesses)
 
