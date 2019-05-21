@@ -12,6 +12,7 @@
     <input type="file" name="teamcsv" accept=".csv" />
     <input type="submit" value="Create from File">
     </form>
+    <a href="{{url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn">Dashboard</button></a>
 </div>
 
 {% endblock %}
