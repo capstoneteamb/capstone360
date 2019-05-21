@@ -9,6 +9,7 @@ from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
+from assign_student import assignTeam
 from student_dashboard import StudentDashboard
 from student_dashboard import EditStudent
 from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
@@ -62,6 +63,10 @@ app.add_url_rule('/addStudent/',
 
 app.add_url_rule('/addTeam/',
                  view_func=AddTeam.as_view('addTeam'),
+                 methods=['GET', 'POST'])
+
+app.add_url_rule('/assignTeam/',
+                 view_func=assignTeam.as_view('assignTeam'),
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/removeTeam/',

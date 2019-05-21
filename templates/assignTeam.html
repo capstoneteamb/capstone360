@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container assign_team-container">
+
+  <div class="student-card display-card">
+	{% for student in lists %}
+    <p>{{student['name']}}</p>
+	{% endfor %}
+  </div>
+
+</div>
+		
+{% endblock %}

@@ -269,6 +269,18 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
+    # Get students from a session that do not have a team.
+    # Input: session id to grab students
+    # Output: Students who have no team.
+    def get_unassigned_students(self, s_id):
+        try:
+            unassigned_students = students.query.filter_by(session_id = s_id,
+                                                           tid = -1).all()
+        except exc.SQLAlchemyError:
+            unassigned_students = None
+            return unassigned_students
+        return unassigned_students
+
     # Allows students to edit their name and email address
     # Input: student's new email and name and current user id
     # Output: apply new name and email to students in student table
