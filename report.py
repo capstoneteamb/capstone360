@@ -166,10 +166,12 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
         # Tally up points
         points += r.points
 
-    # TODO Mark all the self reported scores
+    # Mark all the self reported scores
     for r in reports:
         if r.reviewer == student_id:
-            pass
+            for key, value in scores.items():
+                this_score = getattr(r, key)
+                scores[key][this_score-1] = "**{}".format(scores[key][this_score-1])
 
     # Render the HTML version of the template
     html = render_template('report.html',
