@@ -134,6 +134,14 @@ class teams(db.Model):
             return None
         return result
 
+    def get_team_from_name(self, team_name, ses_id):
+        try:
+            result = teams.query.filter(teams.name == team_name,
+                                        teams.session_id == ses_id)
+        except exc.SQLAlchemyError:
+            return None
+        return result.id
+
 
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
@@ -273,9 +281,10 @@ class students(db.Model):
     # Input: session id to grab students
     # Output: Students who have no team.
     def get_unassigned_students(self, s_id):
+        no_team_id = teams.get_team_from_name("", s_id)
         try:
             unassigned_students = students.query.filter_by(session_id = s_id,
-                                                           tid = -1).all()
+                                                           tid = no_team_id).all()
         except exc.SQLAlchemyError:
             unassigned_students = None
             return unassigned_students

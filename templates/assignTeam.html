@@ -4,9 +4,14 @@
 <div class="container assign_team-container">
 
   <div class="student-card display-card">
+  <form action="{{ url_for('profDashboard', session_id=session_id) }}" met    hod=POST>
 	{% for student in lists %}
-    <p>{{student['name']}}</p>
+    <p style="padding-top: 25px;">{{student['name']}}</p>
+      Place on Team:<br>
+      <input type="text" name="teamName" style="width: 400px;">
 	{% endfor %}
+  <p><input class="my-btn" type=submit value='Submit Changes'>
+  </form>
   </div>
 
 </div>

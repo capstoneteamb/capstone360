@@ -51,7 +51,7 @@ names = [
 ]
 
 # Mock professor data
-professors = [("gpld", "George Portland"), ("rdren", "Rick Darren")]
+professors = [("gpld", "George Portland"), ("rdren", "Rick Darren"), ("cclev2", "Christian Clevinger")]
 
 # A model review to base the midterm and final review off of
 example_review = {
