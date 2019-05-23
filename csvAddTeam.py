@@ -7,17 +7,27 @@ import datetime
 import csv
 import io
 
-
+# Create a webpage for professors to import students
+# via csv file.
 class AddTeamCSV(MethodView):
     @login_required
+    # Display webpage
+    # INPUT: Session id from the professor dashboard.
+    # OUTPUT: 
     def get(self):
-        return render_template('csvAddTeam.html')
+        session_id = request.args.get('session_id')
+        return render_template('csvAddTeam.html', session_id=session_id)
 
     def post(self):
-        session = gbmodel.capstone_session()
+        session_id = request.form['session_id']
+        session_id = int(session_id)
         teams_table = gbmodel.teams()  # Accessor to the teams table
         students_table = gbmodel.students()  # Accessor to the students table
         file = request.files['teamcsv']
+        # If 'Create from File' was selected with no file
+        # return back to import student page.
+        if(file.filename == ''):
+            return render_template('csvAddTeam.html', session_id=session_id)
         stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
         csv_reader = csv.reader(stream, delimiter=',')
         for row in csv_reader:
@@ -25,20 +35,6 @@ class AddTeamCSV(MethodView):
             student_id = row[1]
             team_name = row[2]
 
-            # Get date to determine session ID
-            current_date = datetime.datetime.now()
-            month = int(current_date.month)
-            year = current_date.year
-            if month in range(9, 11):
-                term = "Fall"
-            elif month in range(3, 5):
-                term = "Spring"
-            elif month in range(6, 8):
-                term = "Summer"
-            else:
-                term = "Winter"
-
-            session_id = session.get_session_id(term, year)
             # Create team if it doesn't exist, then create the student.
             try:
                 if teams_table.check_dup_team(team_name, session_id) is True:
@@ -52,4 +48,4 @@ class AddTeamCSV(MethodView):
             except SQLAlchemyError:
                 self.display_error('Error inserting student into\
                                    students table.')
-        return render_template('csvAddTeam.html')
+        return render_template('csvAddTeam.html', session_id=session_id)
