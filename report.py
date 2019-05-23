@@ -181,7 +181,8 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
         if r.reviewer == student_id:
             for key, value in scores.items():
                 this_score = getattr(r, key)
-                scores[key][this_score-1] = "**{}".format(scores[key][this_score-1])
+                if this_score is not None:
+                    scores[key][this_score-1] = "**{}".format(scores[key][this_score-1])
 
     # Render the HTML version of the template
     html = render_template('report.html',
