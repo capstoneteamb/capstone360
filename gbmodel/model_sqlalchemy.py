@@ -570,7 +570,7 @@ class capstone_session(db.Model):
             return capstone_session.query.filter(capstone_session.start_year == year,
                                                  or_(capstone_session.start_term == start_term_1,
                                                      capstone_session.start_term == start_term_2)).all()
-        except:
+        except exc.SQLAlchemyError:
             return None
 
     def check_dates(self, start, end):

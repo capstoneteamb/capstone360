@@ -1,16 +1,16 @@
 from flask import request, render_template
 from flask.views import MethodView
-from catCas import validate_student
 from flask_cas import login_required, CAS
 import gbmodel
 import logging
+
 
 class StudentRegister(MethodView):
     """
     Facilitates the rendering and processing of the register student page, which allows students to register
     for a currently ongoing capstone session
     """
-    
+
     def handle_error(self, console_error, user_error=None):
         """
         Handles errors (print the error message to the console and return an error page to the user
@@ -28,37 +28,27 @@ class StudentRegister(MethodView):
         logging.error("Student Register Failure: " + console_error)
         return render_template("studentRegister.html", message=user_error, is_error=True)
 
-
     @login_required
     def get(self):
         """
-        Determines how the Student Register class handles GET requests. It loads a page that the a student
-        can fill out and submit to register for a selected capstone_session
+        Determines how the Student Register class handles GET requests. It loads a page that a student can
+        fill out and submit to register for a selected capstone_session
         Input: self
         Output: a rendering of the view student page
         """
-        # Get the student id from the request and, if it's there, build the register page
-        student_id = CAS().username
-
         # Get the currently active sessions
-        capstone_session = gbmodel.capstone_session()
-        active_sessions = capstone_session.get_active_sessions()
+        parsed_sessions = []
+        active_sessions = gbmodel.capstone_session().get_active_sessions()
         if active_sessions is None:
             return self.handle_error("No active sessions to register for",
                                      "No active capstone sessions to register for")
-
-        parsed_sessions = [] # Maybe move somewhere else
         for session in active_sessions:
-            parsed_sessions.append({"id": session.id, "term": session.start_term + " " + str(session.start_year)})
+            parsed_sessions.append({"id": session.id,
+                                    "term": session.start_term + " " + str(session.start_year)})
 
         # Render the template
         return render_template('studentRegister.html', sessions=parsed_sessions)
 
-
-    # A function that determines how the viewStudent class handles POST requests
-    # INPUT: self
-    # OUTPUT: a rendering of the viewStudent.html file. The information included in the rendering depends on
-    #         the information we get from the POST request
     @login_required
     def post(self):
         """

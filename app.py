@@ -103,10 +103,6 @@ def register_routes(app):
                      view_func=ViewReview.as_view('viewReview'),
                      methods=['POST'])
 
-    app.add_url_rule('/register/',
-                 view_func=StudentRegister.as_view('registerStudent'),
-                 methods=['GET', 'POST'])
-
 if __name__ == '__main__':
     app = create_app()
     app.run(host='0.0.0.0', port=8000, debug=True)
