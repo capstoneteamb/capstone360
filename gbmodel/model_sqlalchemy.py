@@ -206,15 +206,20 @@ class students(db.Model):
             return False
         return True
 
-    def insert_student(self, name, email_address, id, session_id, t_name):
+    def insert_student(self, name, email_address, id, session_id, t_name=None):
         """
         Add new student
         Input: student name, student email address, student id, team name and id of the selected session
         Output: return False if student id already exists in the current session
                 add student to the database and return True otherwise
         """
-        result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
-        tid = result.id
+        # Get team id, if a team name was given
+        tid = None
+        if t_name is not None:
+            result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
+            tid = result.id
+
+        # Add student to table
         new_student = students(id=id,
                                tid=tid,
                                session_id=session_id,
@@ -535,12 +540,45 @@ class capstone_session(db.Model):
             lists.append(temp)
         return lists
 
+    def get_active_sessions(self):
+        """
+        Get a list of active capstone sessions
+        Input: self
+        Output: a list of currently active capstone sessions
+        """
+        # Get the terms the currently active sessions are expected to start on
+        # To me, I guessed that it would be the current term and the term before
+        currentDate = datetime.datetime.now()
+        month = int(currentDate.month)
+        year = currentDate.year
+        if month in range(9, 11):
+            start_term_1 = "Fall"
+            start_term_2 = "Winter"
+        elif month in range(3, 6):
+            start_term_1 = "Spring"
+            start_term_2 = "Fall"
+        elif month in range(6, 9):
+            start_term_1 = "Summer"
+            start_term_2 = "Spring"
+        else:
+            start_term_1 = "Spring"
+            start_term_2 = "Summer"
+
+        try:
+            # http://www.leeladharan.com/sqlalchemy-query-with-or-and-like-common-filters
+            # https://stackoverflow.com/questions/7942547/using-or-in-sqlalchemy
+            return capstone_session.query.filter(capstone_session.start_year == year,
+                                                 or_(capstone_session.start_term == start_term_1,
+                                                     capstone_session.start_term == start_term_2)).all()
+        except:
+            return None
+
     def check_dates(self, start, end):
         """
         Check if start and end dates are valid
         Input: start and end dates
         Output: Return 0 if valid, return 1 if start date is after the end date
-            Return 1 if either start or end date is empty
+                Return 1 if either start or end date is empty
         """
         params = {'start': start, 'end': end}
         if params['start'] and params['end']:

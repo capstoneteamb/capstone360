@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+	<div class="add-container">
+	    <div class="input-card date-card" style="width: 700px">
+            {% if message %}
+            <h3>{{message}}</h3>
+            {% if not is_error %}
+            <h3><a href="{{ url_for('studentDashboard') }}">Proceed to the Student Page</a></h3>
+            {% endif %}
+            {% else %}
+            <h3>Register for a Capstone Session</h3>
+            <hr>
+            <form action="{{url_for('registerStudent')}}" method="POST">
+                <p class="heading">Name:</p>
+                    <input type="text" required='required' name="name">
+                <p class="heading">Email Address:</p> 
+                    <input type="text" required='required' name="email_address">
+                <p class="heading">Session:</p>
+                    <select name="session_id" style="width: 50%;">
+                        {% for session in sessions %}
+                        <option value="{{session['id']}}">{{session['term']}}</option>
+                        {% endfor %}
+                    </select>
+                <input class="my-btn" type="submit" value='Submit' style="
+                     background-color: #b7c229;
+                     color: white; margin: auto; margin-top: 10px;">
+            </form>
+            {% endif %}
+	    </div>
+	</div>
+
+{% endblock %}
