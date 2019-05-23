@@ -73,26 +73,40 @@
             {% endfor %}
         </tr>
 </table>
-<h2>Total point score: {{ points }}</h2>
+<h3>Total point score: {{ points }}</h3>
 <p>
-STRENGTHS:
+<h3>STRENGTHS:</h3>
 <ul>
     {% for s in strengths %}<li>{{ s }}</li>{% endfor %}
 </ul>
 </p>
 
 <p>
-WEAKNESSES:
+<h3>WEAKNESSES:</h3>
 <ul>
     {% for w in weaknesses %}<li>{{ w }}</li>{% endfor %}
 </ul>
 </p>
 
 <p>
-TRAITS TO WORK ON:
+<h3>TRAITS TO WORK ON:</h3>
 <ul>
 {% for t in traits_to_work_on %}<li>{{ t }}</li>{% endfor %}
 </ul>
 </p>
+
+{% if what_you_learned %}
+<p>
+<h3>WHAT YOU LEARNED:</h3>
+{{ what_you_learned }}
+</p>
+{% endif %}
+
+{% if proud_of_accomplishment %}
+<p>
+<h3>PROUD OF YOUR ACCOMPLISHMENT?</h3>
+{{ proud_of_accomplishment }}
+</p>
+{% endif %}
 
 <div style="page-break-after:always;"></div>

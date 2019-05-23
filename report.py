@@ -142,6 +142,12 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     weaknesses = []
     traits_to_work_on = []
 
+    # These two fields are only on self reviews.
+    what_you_learned = None
+    proud_of_accomplishment = None
+
+    # Iterate through all reports, tallying scores.
+    # As we go we also collect a list of all the text box answers.
     points = 0
     for r in reports:
         for key, value in scores.items():
@@ -153,6 +159,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             # things left by one in the table.
             scores[key][this_score-1] = scores[key][this_score-1] + 1
 
+        # If this is for the professor, all the comments should have names attached.
         if is_professor_report:
             reporter = gbmodel.students().get_student_in_session(r.reviewer, session_id)
 
@@ -163,6 +170,14 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             strengths.append("{}: {}".format(reporter.name, r.strengths))
             traits_to_work_on.append("{}: {}".format(reporter.name, r.traits_to_work_on))
 
+            # There are a handful of fields we only display if it's a professor and a self review.
+            if r.reviewer == student_id:
+                # what you learned always
+                what_you_learned = r.what_you_learned
+                # proud_of_accomplishment only applies for finals
+                proud_of_accomplishment = r.proud_of_accomplishment
+
+        # If this is the student's self review, the comments get marked with asterisks.
         elif r.reviewer == student_id:
             weaknesses.append("**{}".format(r.weaknesses))
             strengths.append("**{}".format(r.strengths))
@@ -192,6 +207,8 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
                            points=points,
                            strengths=strengths,
                            weaknesses=weaknesses,
-                           traits_to_work_on=traits_to_work_on)
+                           traits_to_work_on=traits_to_work_on,
+                           what_you_learned=what_you_learned,
+                           proud_of_accomplishment=proud_of_accomplishment)
 
     return html
