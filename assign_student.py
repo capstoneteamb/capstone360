@@ -39,5 +39,5 @@ class assignTeam(MethodView):
             s_id = session.get_session_id(term, year)
             unassigned_students = students_table.get_unassigned_students(s_id)
             sessions = team_table.dashboard(session_id)
-            print(len(unassigned_students))
+            print(s_id)
             return render_template('assignTeam.html', lists=unassigned_students, sessions=sessions, session_id=s_id)

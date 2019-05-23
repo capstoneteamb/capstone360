@@ -281,10 +281,13 @@ class students(db.Model):
     # Input: session id to grab students
     # Output: Students who have no team.
     def get_unassigned_students(self, s_id):
-        no_team_id = teams.get_team_from_name("", s_id)
         try:
+            tname = ""
+            tid = teams.query.filter_by(name = tname, session_id =s_id).first()
+            tid = tid.id
+            print(tid)
             unassigned_students = students.query.filter_by(session_id = s_id,
-                                                           tid = no_team_id).all()
+                                                           tid = tid).all()
         except exc.SQLAlchemyError:
             unassigned_students = None
             return unassigned_students
