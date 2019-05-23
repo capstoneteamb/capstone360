@@ -292,6 +292,10 @@ input {
     width: 49%;
 }
 
+.yes-no{
+    width: 10% !important;
+}
+
 .input-card.date-card > form > input{
     font-size: 12px;
 }

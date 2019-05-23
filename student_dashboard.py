@@ -48,6 +48,7 @@ class StudentDashboard(MethodView):
         user_name = validate_student().id
         new_name = request.form.get('student_new_name')
         new_email = request.form.get('student_new_email')
+        lead = request.form['lead']
         # Only check email validation if new email is entered
         if new_email != '':
             if self.valid_email(str(new_email)) is False:
@@ -55,7 +56,7 @@ class StudentDashboard(MethodView):
                 return render_template('editStudent.html',
                                        error=error,
                                        user_name=user_name)
-        student.edit_student(user_name, new_name, new_email)
+        student.edit_student(user_name, new_name, new_email, int(lead))
         # Get new name
         student_name = validate_student().name
         return render_template('studentDashboard.html',

@@ -282,7 +282,7 @@ class review(MethodView):
             mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
             return render_template('review.html',
-                                   name=self.get_self_name(),
+                                   name=self.get_self_name(user_id),
                                    mems=None,
                                    state=None,
                                    input_error=None,

@@ -272,18 +272,19 @@ class students(db.Model):
     # Allows students to edit their name and email address
     # Input: student's new email and name and current user id
     # Output: apply new name and email to students in student table
-    def edit_student(self, id, new_name, new_email):
+    def edit_student(self, id, new_name, new_email, lead):
         try:
-            stds = students.query.filter(students.id == id).all()
+            student = students.query.filter(students.id == id).all()
         except exc.SQLAlchemyError:
-            stds = None
-        if stds is None:
+            student = None
+        if student is None:
             return False
-        for i in stds:
+        for i in student:
             if new_name != '':
                 i.name = new_name
             if new_email != '':
                 i.email_address = new_email
+            i.is_lead = lead
             db.session.commit()
         return True
 
