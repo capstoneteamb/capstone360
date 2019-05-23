@@ -3,7 +3,6 @@ from flask.views import MethodView
 from flask_cas import login_required
 from sqlalchemy.exc import SQLAlchemyError
 import gbmodel
-import datetime
 import csv
 import io
 
