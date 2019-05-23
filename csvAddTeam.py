@@ -12,12 +12,11 @@ import io
 class AddTeamCSV(MethodView):
     @login_required
     # Display webpage
-    # INPUT: Session id from the professor dashboard.
-    # OUTPUT: 
     def get(self):
         session_id = request.args.get('session_id')
         return render_template('csvAddTeam.html', session_id=session_id)
 
+    # Process csv file that was passed.
     def post(self):
         session_id = request.form['session_id']
         session_id = int(session_id)
