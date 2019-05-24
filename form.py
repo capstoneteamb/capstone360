@@ -1,6 +1,8 @@
-# This file operates the form that students will fill out to
-# complete their 360 reviews.
-# It handles get and post requests for review.html.
+"""
+This file operates the form that students will fill out to
+complete their 360 reviews.
+It handles get and post requests for review.html.
+"""
 
 from flask import flash, render_template, request, abort
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,11 +11,13 @@ from datetime import datetime
 import gbmodel
 from catCas import validate_student
 from flask_cas import login_required
-# The review class handles get and post requests for review.html, and it
-# includes helper functions for cleanliness
 
 
 class review(MethodView):
+    """
+    The review class handles get and post requests for review.html, and it
+    includes helper functions for cleanliness
+    """
 
     # holds fields that should appear in the table on the review page
     # -- these are what people will see
@@ -312,6 +316,7 @@ class review(MethodView):
         user_id = request.form.get('user_id')
         test_user = self.confirm_user(user_id, cap)
         if test_user is False:
+            print('Error when identifiyng user')
             return render_template('review.html',
                                    mems=None,
                                    state=None,
@@ -323,6 +328,7 @@ class review(MethodView):
         # get users state
         state = self.get_state(user_id, cap)
         if state == 'Error':
+            print('Error while retrieving student state')
             return render_template('review.html',
                                    name=self.get_self_name(user_id),
                                    mems=None,
@@ -333,6 +339,7 @@ class review(MethodView):
         try:
             mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
+            print('Error while retrieving team members')
             return render_template('review.html',
                                    name=self.get_self_name(),
                                    mems=None,

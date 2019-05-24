@@ -190,10 +190,13 @@ class students(db.Model):
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         return result
 
-    # Get all members of a team
-    # Input: team id as tid
-    # Output: Student objects representing the students on that team
+    
     def get_team_members(self, tid):
+        """
+        Get all members of a team
+        Input: team id as tid
+        Output: Student objects representing the students on that team
+        """
         try:
             mems = students.query.filter_by(tid=tid).distinct()
         except exc.SQLAlchemyError:
@@ -215,10 +218,13 @@ class students(db.Model):
             return None
         return results
 
-    # Returns all capstone sessions that a user belongs to
-    # Input: student_id: The database id of the student to retrieve capstone session ids for
-    # output: an array of objects representing the rows for each capstone the student belongs to
+    
     def get_user_sessions(self, student_id):
+        """
+        Returns all capstone sessions that a user belongs to
+        Input: student_id: The database id of the student to retrieve capstone session ids for
+        output: an array of objects representing the rows for each capstone the student belongs to
+        """
         try:
             results = []  # to store objects
 
@@ -281,22 +287,15 @@ class students(db.Model):
         else:
             return result
 
-    # Get the single student matching the id passed in
-    # input: student id of the student to retrieve
-    # output: the student's capstone session id value
-    def get_student(self, s_id):
-        try:
-            student = students.query.filter_by(id=s_id).first()
-        except exc.SQLAlchemyError:
-            return None
-        return student
 
-    # Check if the student passed in by id is the team lead
-    # Input: student id of the student to check
-    # Output: True if the student is a team lead, False otherwise
-    def check_team_lead(self, s_id):
+    def check_team_lead(self, s_id, sess_id):
+        """
+        Check if the student passed in by id is the team lead
+        Input: student id of the student to check
+        Output: True if the student is a team lead, False otherwise
+        """
         try:
-            student = students.query.filter_by(id=s_id).first()
+            student = students.query.filter(students.id == sid, students.session_id == session_id).first()
             if student.is_lead == 1:
                 return True
             else:
@@ -370,17 +369,20 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
-    # this method is for getting a specific capstone session object
-    # inputs: id of capstone session to retrieve
-    # outputs: capstone session object if found, none otherwise
+    
     def get_sess_by_id(self, id):
+    """
+    this method is for getting a specific capstone session object
+    inputs: id of capstone session to retrieve
+    outputs: capstone session object if found, none otherwise
+    """
         try:
             # query for session and return if found
             cap = capstone_session.query.filter_by(id=id).first()
             return cap
         except exc.SQLAlchemyError:
             return None
-            
+
     # Checks if the name of the term is valid
     # Input: start term of new session
     # Output: return True if valid, False otherwise
@@ -513,13 +515,16 @@ class capstone_session(db.Model):
         db.session.commit()
         return True
 
-    # Given a capstone session id to check and a date,
-    # this method determines the currently available review if any
-    # Inputs: a capstone session id and a date which should be a python date time object
-    # Outputs: 'final' if date is after the final start date for the session
-    # 'midterm' if the date is between the midterm and final start dates.
-    # 'error' otherwise
+    
     def check_review_state(self, session_id, date):
+        """
+        Given a capstone session id to check and a date,
+        this method determines the currently available review if any
+        Inputs: a capstone session id and a date which should be a python date time object
+        Outputs: 'final' if date is after the final start date for the session
+        'midterm' if the date is between the midterm and final start dates.
+        'error' otherwise
+        """
         try:
             # get the session
             session = capstone_session.query.filter(capstone_session.id == session_id).first()
@@ -546,13 +551,16 @@ class capstone_session(db.Model):
         except exc.SQLAlchemyError:
             return 'Error'
 
-    # This method is for determining is a review is late. It receives the type of review to check
-    # and compares the date sent into the method with the review's end period
-    # Inputs: session_id -- the value of the id for the capstone session to check
-    # date: the date that the review is submitted, type: "midterm" or "final" should be received
-    # Outputs: True -- the review is within the open period (the review is NOT late)
-    # or False -- the review IS late or an error was experienced
+    
     def check_not_late(Self, session_id, date, type):
+        """
+        This method is for determining is a review is late. It receives the type of review to check
+        and compares the date sent into the method with the review's end period
+        Inputs: session_id -- the value of the id for the capstone session to check
+        date: the date that the review is submitted, type: "midterm" or "final" should be received
+        Outputs: True -- the review is within the open period (the review is NOT late)
+        or False -- the review IS late or an error was experienced
+        """
         try:
             # get the session
             session = capstone_session.query.filter(capstone_session.id == session_id).first()
@@ -641,12 +649,15 @@ class reports(db.Model):
         except exc.SQLAlchemyError:
             return None
 
-    # Stages a report to be inserted into the database -- This does NOT commit the add!
-    # Inputs: Arguments for each individual field of the report
-    # Outputs: true if adding was successful, false if not
+    
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
                       ethic, com, coop, init, focus, cont, lead, org, dlg,
                       points, strn, wkn, traits, learned, proud, is_final, late):
+        """
+        Stages a report to be inserted into the database -- This does NOT commit the add!
+        Inputs: Arguments for each individual field of the report
+        Outputs: true if adding was successful, false if not
+        """
         try:
             # Build Report object from method input
             new_report = reports(session_id=sess_id,
@@ -679,10 +690,12 @@ class reports(db.Model):
             # if error, return false
             return False
 
-    # Method to commit changes to the DB through the model while updating the user's state
-    # input: None
-    # output: True if successful, false otherwise
     def commit_reports(self, id, state, sess_id, success):
+        """
+        Method to commit changes to the DB through the model while updating the user's state
+        input: None
+        output: True if successful, false otherwise
+        """
         # if adding reports was not successful, rollback changes to session
         try:
             if success is False:
@@ -707,11 +720,13 @@ class reports(db.Model):
             db.session.rollback()
             return False
 
-    # This method is for committing review updates
-    # input: success -- a boolean object indicating whether to proceed
-    #  with committing (true) or to roll back (false)
-    # output: False -- commit was not made, True - commit was made successfully
     def commit_updates(self, success):
+        """
+        This method is for committing review updates
+        input: success -- a boolean object indicating whether to proceed
+        with committing (true) or to roll back (false)
+        output: False -- commit was not made, True - commit was made successfully
+        """
         try:
             if success is False:
                 db.session.rollback()
