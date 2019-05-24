@@ -154,7 +154,7 @@ def test_generate_tables():
            and columns[0][5] == 1)
     assert(columns[1][1] == "tid"
            and columns[1][2] == "INTEGER"
-           and columns[1][3] == 0
+           and columns[1][3] == 1
            and columns[1][4] is None
            and columns[1][5] == 0)
     assert(columns[2][1] == "session_id"

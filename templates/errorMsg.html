@@ -8,11 +8,11 @@
                     <h3 class="login-error-h3">{{ msg }}</h3>
                 </div>
                 <div class="row">
-                    <a class="login-error-link" href="{{ url_for('cas.logout') }}"><button class="login-error-button">Logout</button></a>
+                    <a class="login-error-link" href="{{ url_for('cas.logout') }}"><div>Logout</div></a>
                 </div>
                 {% if student_register %}
                 <div class="row">
-                    <a class="login-error-link" href="{{ url_for('registerStudent') }}"><button class="login-error-button">Register for a session</button></a>
+                    <a class="login-error-link" href="{{ url_for('registerStudent') }}"><div>Register for a session</div></a>
                 </div>
                 {% endif %}
             </div>

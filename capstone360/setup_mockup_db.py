@@ -140,7 +140,7 @@ def generate_tables(cursor):
     # Create Students Table
     cursor.execute(('CREATE TABLE students( '
                     'id VARCHAR(128) NOT NULL, '
-                    'tid INTEGER NULL REFERENCES teams(id), '
+                    'tid INTEGER NOT NULL REFERENCES teams(id), '
                     'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
                     'name VARCHAR(128) NOT NULL, '
                     'is_lead BOOLEAN NOT NULL, '

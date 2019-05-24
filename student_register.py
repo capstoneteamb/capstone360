@@ -25,7 +25,7 @@ class StudentRegister(MethodView):
 
         # https://docs.python.org/3/howto/logging.html#logging-basic-tutorial
         # (discovered via: https://docs.python-guide.org/writing/logging/)
-        logging.error("Student Register Failure: " + console_error)
+        logging.error("Student Register Failure: " + str(console_error))
         return render_template("studentRegister.html", message=user_error, is_error=True)
 
     @login_required
@@ -61,22 +61,30 @@ class StudentRegister(MethodView):
         """
         # Get the database object we will need
         students = gbmodel.students()
+        teams = gbmodel.teams()
 
         # Otherwise, load the student page
         try:
-            # Get the student and session id from the post request, and try to find the student in the db
+            # Get the student_id and information the student submitted via the form
             student_id = CAS().username
             name = request.form.getlist('name')[0]
             email_address = request.form.getlist('email_address')[0]
             session_id = request.form.getlist('session_id')[0]
 
-            # Verify that the student isn't already registered in the current session
+            # Verify that the student isn't already registered for the target session
             if students.get_student_in_session(student_id, session_id) is not None:
                 return self.handle_error("Student already registered for target session",
                                          "You already registered for this session")
 
             # Add the student to the database
-            students.insert_student(name, email_address, student_id, session_id, None)
+            # The student won't be on a team when they first sign up, so we have to assign them to the
+            # empty team for the target session. We start by checking if the empty team exists. If the
+            # target session doesn't have one yet, we create it
+            if teams.get_team_from_name("", session_id) is None:
+                teams.insert_team(session_id, "")
+
+            # Insert the student into the database (as a part of the empty team)
+            students.insert_student(name, email_address, student_id, session_id, "")
 
             # Log the event and render the page with a message telling the student that they have been
             # registered (along with a link to the student page)

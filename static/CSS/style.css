@@ -250,12 +250,14 @@ input {
 }
 
 .login-error-link{
-    width: 100%;
-}
-.login-error-button{
+    width: 50%;
+    margin-left: 25%;
+    color: white;
     margin-top: 30px;
     background-color: #b7c229;
-    color: white
+    color: white;
+    padding: 5px 22px;
+    border-radius: 5px;
 }
 
 .student-login-btn{

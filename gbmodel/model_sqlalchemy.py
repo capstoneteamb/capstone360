@@ -187,6 +187,19 @@ class teams(db.Model):
             return None
         return result
 
+    def get_team_from_name(self, team_name, ses_id):
+        """
+        Get the team with the given name in the session with the given session id
+        Input: self, team_name, session_id
+        Output: the id of the team, if we found it
+        """
+        try:
+            result = teams.query.filter(teams.name == team_name,
+                                        teams.session_id == ses_id).first()
+        except exc.SQLAlchemyError:
+            return None
+        return result
+
 
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
@@ -552,17 +565,17 @@ class capstone_session(db.Model):
         month = int(currentDate.month)
         year = currentDate.year
         if month in range(9, 11):
-            start_term_1 = "Fall"
-            start_term_2 = "Winter"
-        elif month in range(3, 6):
-            start_term_1 = "Spring"
-            start_term_2 = "Fall"
-        elif month in range(6, 9):
             start_term_1 = "Summer"
+            start_term_2 = "Fall"
+        elif month in range(3, 6):
+            start_term_1 = "Winter"
             start_term_2 = "Spring"
-        else:
+        elif month in range(6, 9):
             start_term_1 = "Spring"
             start_term_2 = "Summer"
+        else:
+            start_term_1 = "Fall"
+            start_term_2 = "Winter"
 
         try:
             # http://www.leeladharan.com/sqlalchemy-query-with-or-and-like-common-filters
