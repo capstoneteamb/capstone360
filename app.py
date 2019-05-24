@@ -7,7 +7,7 @@ import dashboard  # noqa
 from prof_dashboard import ProfDashboard
 from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
-from csvAddTeam import AddTeamCSV
+from prof_dashboard import AddTeamCSV
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
 from student_dashboard import StudentDashboard

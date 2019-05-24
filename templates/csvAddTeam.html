@@ -1,19 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
-
-<div class="input-card">
-	<form id="upload-form" action="{{ url_for('addTeamCSV') }}" method="POST" enctype="multipart/form-data" style="
-        background-color: #b7c229;
-				color: white;
-				border: none;
-				border-radius:5px;
-				padding: 10px 20px;
-				cursor: pointer;">
-    <input type="hidden" value={{session_id}} name=session_id>
-    <input type="file" name="teamcsv" accept=".csv" />
-    <input type="submit" value="Create from File">
-	</form>
-	<a href="{{url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn">Dashboard</button></a>
+<div class="add-container">
+    <div class="input-card" style="width: 500px;">
+    {% if error %}
+    <p><strong>Error:</strong> {{ error }}
+    {% endif %}
+    <form action="{{ url_for('profDashboard') }}" method="POST" enctype="multipart/form-data">
+        <p class"heading"><b>Select CSV File:</b><input style="padding: 10px;" type="file" name="student_data_csv" accept=".csv"/></p>
+        <input type="hidden" value={{session_id}} name="session_id">
+        <input class="my-btn" type="submit" value="Import" style="
+            background-color: #b7c229;
+            color: white;
+            border: none;
+            border-radius:5px;
+            padding: 10px 20px;
+            cursor: pointer;">
+    </form>
+    <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: 21px;">Cancel</button></a>
 </div>
+<!--
 
 {% endblock %}
