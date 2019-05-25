@@ -499,7 +499,8 @@ class review(MethodView):
                     print('Checking if Late')
                     is_not_late = gbmodel.capstone_session().check_not_late(cid,
                                                                             datetime.now(),
-                                                                            self.get_state(user_id, capstone_id))
+                                                                            self.get_state(user_id,
+                                                                                           capstone_id))
 
                     if is_not_late is False:
                         late = 1

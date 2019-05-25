@@ -190,7 +190,6 @@ class students(db.Model):
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         return result
 
-    
     def get_team_members(self, tid):
         """
         Get all members of a team
@@ -218,7 +217,6 @@ class students(db.Model):
             return None
         return results
 
-    
     def get_user_sessions(self, student_id):
         """
         Returns all capstone sessions that a user belongs to
@@ -644,7 +642,7 @@ class reports(db.Model):
             return result
         except exc.SQLAlchemyError:
             return None
-  
+
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
                       ethic, com, coop, init, focus, cont, lead, org, dlg,
                       points, strn, wkn, traits, learned, proud, is_final, late):
