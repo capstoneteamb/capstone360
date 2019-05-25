@@ -6,9 +6,18 @@
             <div class="login-hero">
                 <h3>Welcome {{name}}</h3>
                 <a href="/editStudent"><div class="prof-login-btn" style="width: 150px; text-align: center">Edit</div></a>
-                <a href="/review"><div class="student-login-btn" style="width: 150px; text-align: center">Review </div></a>
+                <div class="student-login-btn" id="review-select" style="width: 150px; text-align: center">Review</div>
+                <form>
+                    <select id='options' name="selected_session">
+                        {% for i in caps %}
+                            <option value="{{i['id']}}" {% if i == caps|last %}selected{% endif %}>{{i['start_term']}} {{i['start_year']}} - {{i['end_term']}} {{i['end_year']}}</option>
+                        {% endfor %}
+                        
+                    </select>
+                </form>
             </div>
         </div>
     </div>
 </div>
+<script src="{{url_for('static', filename='Javascript/review_selector.js')}}"></script>
 {% endblock %}
