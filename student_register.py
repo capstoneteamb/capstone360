@@ -31,39 +31,41 @@ class StudentRegister(MethodView):
     @login_required
     def get(self):
         """
-        Determines how the Student Register class handles GET requests. It loads a page that a student can
-        fill out and submit to register for a selected capstone_session
+        Processes student register class GET requests. More specifically, it loads a form that a student (once
+        logged in) can fill out and submit in order to register for an active Capstone session.
         Input: self
-        Output: a rendering of the view student page
+        Output: a rendering of the student register page: featuring a student registration form if everything
+                went well, or an error message if something went wrong
         """
-        # Get the currently active sessions
-        parsed_sessions = []
-        active_sessions = gbmodel.capstone_session().get_active_sessions()
-        if active_sessions is None:
+        # Compile a data structure containing the start_term + start_year and session_id of the currently
+        # active sessions
+        sessions = gbmodel.capstone_session().get_active_sessions()
+        if sessions is None:
             return self.handle_error("No active sessions to register for",
                                      "No active capstone sessions to register for")
-        for session in active_sessions:
-            parsed_sessions.append({"id": session.id,
+
+        active_sessions = []
+        for session in sessions:
+            active_sessions.append({"id": session.id,
                                     "term": session.start_term + " " + str(session.start_year)})
 
         # Render the template
-        return render_template('studentRegister.html', sessions=parsed_sessions)
+        return render_template('studentRegister.html', sessions=active_sessions)
 
     @login_required
     def post(self):
         """
-        Determines how the Student Register class handles POST requests. It processes student register
-        requests so that they can be added to the class, then loads the student register page with a
-        message telling them that they have been successfully added to the course (and give them a link to
-        get to the student page
+        Processes student register page handles POST requests. More specifically, it handles student
+        registration requests submitted via the form that is loaded in GET requests
         Input: self
-        Output: the studentRegister page, with a success message and link, or an error message
+        Output: a rendering of the student register page: with a success message and link to the student
+                dashboard if everything went well, or with an error message if there was a problem
         """
         # Get the database object we will need
         students = gbmodel.students()
         teams = gbmodel.teams()
 
-        # Otherwise, load the student page
+        # Continue processing the POST request
         try:
             # Get the student_id and information the student submitted via the form
             student_id = CAS().username
@@ -88,7 +90,7 @@ class StudentRegister(MethodView):
 
             # Log the event and render the page with a message telling the student that they have been
             # registered (along with a link to the student page)
-            logging.info("Student Registered For Capstone Session")
+            logging.info("A student registered for a Capstone session")
             return render_template('studentRegister.html', message="Successfully registered!", is_error=False)
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python

@@ -189,9 +189,9 @@ class teams(db.Model):
 
     def get_team_from_name(self, team_name, ses_id):
         """
-        Get the team with the given name in the session with the given session id
+        Get the team with the given name in the session identified by the given session id
         Input: self, team_name, session_id
-        Output: the id of the team, if we found it
+        Output: the team, if we found it
         """
         try:
             result = teams.query.filter(teams.name == team_name,
@@ -226,11 +226,8 @@ class students(db.Model):
         Output: return False if student id already exists in the current session
                 add student to the database and return True otherwise
         """
-        # Get team id, if a team name was given
-        tid = None
-        if t_name is not None:
-            result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
-            tid = result.id
+        result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
+        tid = result.id
 
         # Add student to table
         new_student = students(id=id,
@@ -557,10 +554,9 @@ class capstone_session(db.Model):
         """
         Get a list of active capstone sessions
         Input: self
-        Output: a list of currently active capstone sessions
+        Output: the list of currently active capstone sessions
         """
         # Get the terms the currently active sessions are expected to start on
-        # To me, I guessed that it would be the current term and the term before
         currentDate = datetime.datetime.now()
         month = int(currentDate.month)
         year = currentDate.year
