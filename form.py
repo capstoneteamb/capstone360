@@ -250,6 +250,9 @@ class review(MethodView):
                     dat["proud"] = report.proud_of_accomplishment
             itemize.append(dat)
 
+            print("Editing the following information: ")
+            print(itemize)
+
             return itemize
         except SQLAlchemyError:
             return None

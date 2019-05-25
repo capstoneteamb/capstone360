@@ -648,8 +648,7 @@ class reports(db.Model):
             return result
         except exc.SQLAlchemyError:
             return None
-
-    
+  
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
                       ethic, com, coop, init, focus, cont, lead, org, dlg,
                       points, strn, wkn, traits, learned, proud, is_final, late):
@@ -685,6 +684,7 @@ class reports(db.Model):
                                  is_late=late)
             # add the report and return true for success
             db.session.add(new_report)
+            print('Adding Report to Session')
             return True
         except exc.SQLAlchemyError:
             # if error, return false
@@ -700,12 +700,14 @@ class reports(db.Model):
         try:
             if success is False:
                 try:
+                    print('Rolling Back Reports')
                     db.session.rollback()
                 except exc.SQLAlchemyError:
                     return False
                 return False
 
             # update appropriate student 'done' attribute
+            print('Finding Student')
             student = students.query.filter_by(id=id, session_id=sess_id).first()
             if state == 'midterm':
                 student.midterm_done = 1
@@ -714,9 +716,12 @@ class reports(db.Model):
             else:
                 return False
 
+            print('Committing Reports')
+
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
+            print('Rolling Back Reports')
             db.session.rollback()
             return False
 
@@ -729,12 +734,15 @@ class reports(db.Model):
         """
         try:
             if success is False:
+                print('Rolling Back Edits')
                 db.session.rollback()
                 return False
             else:
+                print('Committing Edits')
                 db.session.commit()
                 return True
         except exc.SQLAlchemyError:
+            print('Rolling Back Edits')
             db.session.rollback()
             return False
 
