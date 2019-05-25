@@ -470,20 +470,26 @@ class review(MethodView):
 
                 # Get string inputs
                 strn = request.form[('str_' + str(i))]
+                strn.strip()
                 wkn = request.form[('wkn_' + str(i))]
+                wkn.strip()
                 traits = request.form[('traits_' + str(i))]
+                traits.strip()
 
                 learned = None
                 if i == user_id:
                     learned = request.form[('learned')]
+                    learned.strip()
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
                 if self.get_state(user_id, capstone_id) == 'final':
                     if i == user_id:
                         proud = request.form[('proud')]
+                        proud.strip()
 
                 points = request.form[('points_' + str(i))]
+                points.strip()
                 points = self.convert_to_int(points)
 
                 # default to not late
