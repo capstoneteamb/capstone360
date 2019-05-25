@@ -81,10 +81,10 @@ class review(MethodView):
     # This method returns the current user's name to display on the web page
     # input: only self
     # output: A string representing the user's name
-    def get_self_name(self, user_id, cap):
+    def get_self_name(self, user_id, capstone_id):
         # query database to get student
         try:
-            student = gbmodel.students().get_student_in_session(user_id, cap)
+            student = gbmodel.students().get_student_in_session(user_id, capstone_id)
             # get name
             name = student.name
         except SQLAlchemyError:
@@ -100,11 +100,11 @@ class review(MethodView):
     # the user exists in the database.
     # input: only self
     # output: the user's tid as an integer
-    def get_tid(self, user_id, cap):
+    def get_tid(self, user_id, capstone_id):
         # get the user's team id
         tid = 0
         try:
-            student = gbmodel.students().get_student_in_session(user_id, cap)
+            student = gbmodel.students().get_student_in_session(user_id, capstone_id)
             # get tid
             tid = student.tid
         except SQLAlchemyError:
@@ -121,10 +121,10 @@ class review(MethodView):
     # input: only self
     # output: String -- The user's "active" attribute or 'Error' to indicate
     # something went wrong (could be user error, thus no need to abort)
-    def get_state(self, user_id, cap):
+    def get_state(self, user_id, capstone_id):
         try:
             # get the state based on the capstone id and the current time
-            state = gbmodel.capstone_session().check_review_state(cap, datetime.now())
+            state = gbmodel.capstone_session().check_review_state(capstone_id, datetime.now())
         except SQLAlchemyError:
             print('Student Look Up Error - Get State')
             return 'Error'
@@ -135,14 +135,14 @@ class review(MethodView):
     # check if the user is done with their review
     # input: id of user to check, capstone session to check
     # output: none if no result, otherwise the midterm or final done attribute of the student record
-    def get_done(self, user_id, cap):
+    def get_done(self, user_id, capstone_id):
         try:
-            student = gbmodel.students().get_student_in_session(user_id, cap)
+            student = gbmodel.students().get_student_in_session(user_id, capstone_id)
             if student is None:
                 return None
 
             # check the user's active reports
-            state = self.get_state(user_id, cap)
+            state = self.get_state(user_id, capstone_id)
             if state == 'Error':
                 return None
 
@@ -166,14 +166,14 @@ class review(MethodView):
     # Input: self and user_id
     # Output: A boolean indication for
     # if the user was successfully confirmed (true) or not (false)
-    def confirm_user(self, user_id, cap):
+    def confirm_user(self, user_id, capstone_id):
         # check if the current user is found in the database
-        student = gbmodel.students().get_student_in_session(user_id, cap)
+        student = gbmodel.students().get_student_in_session(user_id, capstone_id)
         if student is None:
             return False
 
         # check the user's active reports
-        state = self.get_state(user_id, cap)
+        state = self.get_state(user_id, capstone_id)
         if state == 'Error':
             return False
 
@@ -198,11 +198,11 @@ class review(MethodView):
     # input: id of the student to retrieve review info for, the capstone session id to check
     # output: an array of one dictionary object containing all report info in a
     # style that matches review.html fields
-    def get_data(self, id, cap):
+    def get_data(self, id, capstone_id):
         try:
             # get student info
-            tid = self.get_tid(id, cap)
-            state = self.get_state(id, cap)
+            tid = self.get_tid(id, capstone_id)
+            state = self.get_state(id, capstone_id)
             is_final = 0
             if state == 'final':
                 is_final = 1
@@ -238,20 +238,23 @@ class review(MethodView):
         except SQLAlchemyError:
             return None
 
-    # This method handles get requests to review.html.
-    # Input: only self
-    # Output: rendering the review.html template with given conditions --
-    # team members to displate, the student's open reports state,
-    # if there are any user input errors to report, and if there are
-    # any fatal errors to report as a result of user action.
-    def get(self, cap):
+    def get(self, capstone_id):
+        """
+        This method handles get requests to review.html.
+        Input: only self
+        Output: rendering the review.html template with given conditions --
+        team members to displate, the student's open reports state,
+        if there are any user input errors to report, and if there are
+        any fatal errors to report as a result of user action.
+        """
+        
         # check if user exists
         # user_id = request.args.get('user_name')
         if validate_student() is False:
             return render_template('index.html')
         else:
             user_id = validate_student().id
-        test_user = self.confirm_user(user_id, cap)
+        test_user = self.confirm_user(user_id, capstone_id)
 
         if test_user is False:
             return render_template('review.html',
@@ -260,10 +263,10 @@ class review(MethodView):
                                    input_error=None,
                                    fatal_error='You have no open reviews.')
         # get user name
-        user_name = self.get_self_name(user_id, cap)
+        user_name = self.get_self_name(user_id, capstone_id)
 
         # get user's team id
-        tid = self.get_tid(user_id, cap)
+        tid = self.get_tid(user_id, capstone_id)
 
         # get user's team members
         try:
@@ -282,7 +285,7 @@ class review(MethodView):
                                    fatal_error='There are no team members to review')
 
         # get user's state of open/closed reports
-        state = self.get_state(user_id, cap)
+        state = self.get_state(user_id, capstone_id)
         if state == 'Error':
             return render_template('review.html',
                                    mems=None,
@@ -291,8 +294,8 @@ class review(MethodView):
                                    fatal_error='There was an error while retrieving user information.')
 
         # for editing, check if the user is done and get their prior data
-        data = self.get_data(user_id, cap)
-        done = self.get_done(user_id, cap)
+        data = self.get_data(user_id, capstone_id)
+        done = self.get_done(user_id, capstone_id)
         # If all successful, render the page with team members and the state
         return render_template('review.html',
                                name=user_name,
@@ -306,15 +309,17 @@ class review(MethodView):
                                input_error=None,
                                fatal_error=None)
 
-    # This method handles post requests from review.html.
-    # Input: only self
-    # Output: rendering the review.html template with errors reported
-    #  to the user or rendering the success page to indicate
-        # the user was successful in submitting their reform
-    def post(self, cap):
+    def post(self, capstone_id):
+        """
+        This method handles post requests from review.html.
+        Input: only self
+        Output: rendering the review.html template with errors reported
+        to the user or rendering the success page to indicate
+        the user was successful in submitting their reform
+        """
         # check if user exists
         user_id = request.form.get('user_id')
-        test_user = self.confirm_user(user_id, cap)
+        test_user = self.confirm_user(user_id, capstone_id)
         if test_user is False:
             print('Error when identifiyng user')
             return render_template('review.html',
@@ -324,9 +329,9 @@ class review(MethodView):
                                    fatal_error='You have no open reviews.')
 
         # get user's team id
-        tid = self.get_tid(user_id, cap)
+        tid = self.get_tid(user_id, capstone_id)
         # get users state
-        state = self.get_state(user_id, cap)
+        state = self.get_state(user_id, capstone_id)
         if state == 'Error':
             print('Error while retrieving student state')
             return render_template('review.html',
@@ -348,7 +353,7 @@ class review(MethodView):
                                    fatal_error='There was an error while retrieving user team members.')
 
         # get student's cid
-        cid = cap
+        cid = capstone_id
 
         # generate a list of the DB ids for students on the team
         id_list = []
@@ -362,6 +367,7 @@ class review(MethodView):
 
         # check that conditions for points match requirements
         for j in id_list:
+            print('checking points')
             # check points for being in bounds and adding to 100
             points = request.form[('points_' + str(j))]
             try:
@@ -393,9 +399,10 @@ class review(MethodView):
             flash('Points total must be 100')
             points_pass = False
 
-        done = self.get_done(user_id, cap)
+        done = self.get_done(user_id, capstone_id)
         # get form inputs and submit to the database
         if points_pass is True:
+            print('Retrieving Form Input')
             pass_insert = True  # will test if all insertions are successful
             for i in id_list:
                 # Get each radio input and verify that it's an integer
@@ -453,7 +460,7 @@ class review(MethodView):
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
-                if self.get_state(user_id, cap) == 'final':
+                if self.get_state(user_id, capstone_id) == 'final':
                     if i == user_id:
                         proud = request.form[('proud')]
 
@@ -464,25 +471,29 @@ class review(MethodView):
                 late = 0
                 is_final = 0
                 try:
+                    print('Checking if Late')
                     is_not_late = gbmodel.capstone_session().check_not_late(cid,
                                                                             datetime.now(),
-                                                                            self.get_state(user_id, cap))
+                                                                            self.get_state(user_id, capstone_id))
 
                     if is_not_late is False:
                         late = 1
                 except SQLAlchemyError:
                     self.display_error('student look up error - capstone')
 
-                if self.get_state(user_id, cap) == 'midterm':
+                print('checking student state')
+
+                if self.get_state(user_id, capstone_id) == 'midterm':
                     # for midterm set final to false
                     is_final = 0
-                elif self.get_state(user_id, cap) == 'final':
+                elif self.get_state(user_id, capstone_id) == 'final':
                     # for midterm set final to false
                     is_final = 1
 
                 if done == 1:
                     # update existing record
                     try:
+                        print('updating report')
                         report = gbmodel.reports().get_report(user_id, i, tid, is_final)
                         report.tech_mastery = tech
                         report.work_ethic = ethic
@@ -504,6 +515,7 @@ class review(MethodView):
                     except SQLAlchemyError:
                         pass_insert = False
                 else:
+                    print('creating report')
                     # insert new record
                     # add report, but do not commit yet
                     test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
@@ -513,17 +525,20 @@ class review(MethodView):
                                                                is_final, late)
                     # remember if this report submission failed
                     if test_sub is False:
+                        print('report creation failure')
                         pass_insert = False
 
             if done == 1:
                 # commit updates
+                print('committing edits')
                 test_commit = gbmodel.reports().commit_updates(pass_insert)
             else:
+                print('committing reports')
                 # commit reports and update the user's state.
                 #  roll back changes if insertion failed
                 test_commit = gbmodel.reports().commit_reports(user_id,
-                                                               self.get_state(user_id, cap),
-                                                               cap,
+                                                               self.get_state(user_id, capstone_id),
+                                                               capstone_id,
                                                                pass_insert)
             if test_commit is True:
                 # success
@@ -532,10 +547,10 @@ class review(MethodView):
                 self.display_error('Submission Errror')
 
         return render_template('review.html',
-                               name=self.get_self_name(user_id, cap),
+                               name=self.get_self_name(user_id, capstone_id),
                                mems=mems,
                                human_fields=self.human_fields,
                                code_fields=self.code_fields,
-                               state=self.get_state(user_id, cap),
+                               state=self.get_state(user_id, capstone_id),
                                input_error=True,
                                fatal_error=None)
