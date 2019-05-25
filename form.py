@@ -453,7 +453,7 @@ class review(MethodView):
 
                 # check if current student is leader
                 try:
-                    is_lead = gbmodel.students().check_team_lead(i)
+                    is_lead = gbmodel.students().check_team_lead(i, capstone_id)
                 except SQLAlchemyError:
                     self.display_error('student look up error')
 

@@ -287,7 +287,6 @@ class students(db.Model):
         else:
             return result
 
-
     def check_team_lead(self, s_id, sess_id):
         """
         Check if the student passed in by id is the team lead
@@ -369,13 +368,12 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
-    
     def get_sess_by_id(self, id):
-    """
-    this method is for getting a specific capstone session object
-    inputs: id of capstone session to retrieve
-    outputs: capstone session object if found, none otherwise
-    """
+        """
+        this method is for getting a specific capstone session object
+        inputs: id of capstone session to retrieve
+        outputs: capstone session object if found, none otherwise
+        """
         try:
             # query for session and return if found
             cap = capstone_session.query.filter_by(id=id).first()
@@ -515,7 +513,6 @@ class capstone_session(db.Model):
         db.session.commit()
         return True
 
-    
     def check_review_state(self, session_id, date):
         """
         Given a capstone session id to check and a date,
@@ -551,7 +548,6 @@ class capstone_session(db.Model):
         except exc.SQLAlchemyError:
             return 'Error'
 
-    
     def check_not_late(Self, session_id, date, type):
         """
         This method is for determining is a review is late. It receives the type of review to check
