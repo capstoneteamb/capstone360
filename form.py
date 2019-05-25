@@ -56,21 +56,25 @@ class review(MethodView):
                    'traits']
 
     @login_required
-    # If an unrecoverable error occurs and there is a need to abort,
-    # report an internal server error and print the error to the console.
-    # As the code indicates, this should be reserved for internal errors. User
-    # error should not lead here.
-    # input: self and a string to report to the console
-    # output: none
     def display_error(self, err_str):
+        """
+        If an unrecoverable error occurs and there is a need to abort,
+        report an internal server error and print the error to the console.
+        As the code indicates, this should be reserved for internal errors. User
+        error should not lead here.
+        input: self and a string to report to the console
+        output: none
+        """
         print(err_str)
         abort(500)
 
-    # Converts strings to integers and tests if the input was an integer.
-    # User textarea input from reviews should not come into this method.
-    # input: self and a number to be converted to the integer format
-    # output: the same number as an integer
     def convert_to_int(self, to_convert):
+        """
+        Converts strings to integers and tests if the input was an integer.
+        User textarea input from reviews should not come into this method.
+        input: self and a number to be converted to the integer format
+        output: the same number as an integer
+        """
         try:
             to_convert = int(to_convert)
         except ValueError:
@@ -78,10 +82,12 @@ class review(MethodView):
 
         return to_convert
 
-    # This method returns the current user's name to display on the web page
-    # input: only self
-    # output: A string representing the user's name
     def get_self_name(self, user_id, capstone_id):
+        """
+        This method returns the current user's name to display on the web page
+        input: only self
+        output: A string representing the user's name
+        """
         # query database to get student
         try:
             student = gbmodel.students().get_student_in_session(user_id, capstone_id)
@@ -96,11 +102,13 @@ class review(MethodView):
 
         return name
 
-    # This method returns the current user's team id value while testing if
-    # the user exists in the database.
-    # input: only self
-    # output: the user's tid as an integer
     def get_tid(self, user_id, capstone_id):
+        """
+        This method returns the current user's team id value while testing if
+        the user exists in the database.
+        input: only self
+        output: the user's tid as an integer
+        """
         # get the user's team id
         tid = 0
         try:
@@ -116,12 +124,14 @@ class review(MethodView):
 
         return tid
 
-    # This method queries the database to get the user's report state. It will
-    # test for any database errors.
-    # input: only self
-    # output: String -- The user's "active" attribute or 'Error' to indicate
-    # something went wrong (could be user error, thus no need to abort)
     def get_state(self, user_id, capstone_id):
+        """
+        This method queries the database to get the user's report state. It will
+        test for any database errors.
+        input: only self
+        output: String -- The user's "active" attribute or 'Error' to indicate
+        something went wrong (could be user error, thus no need to abort)
+        """
         try:
             # get the state based on the capstone id and the current time
             state = gbmodel.capstone_session().check_review_state(capstone_id, datetime.now())
@@ -132,10 +142,12 @@ class review(MethodView):
         # return student state
         return state
 
-    # check if the user is done with their review
-    # input: id of user to check, capstone session to check
-    # output: none if no result, otherwise the midterm or final done attribute of the student record
     def get_done(self, user_id, capstone_id):
+        """
+        check if the user is done with their review
+        input: id of user to check, capstone session to check
+        output: none if no result, otherwise the midterm or final done attribute of the student record
+        """
         try:
             student = gbmodel.students().get_student_in_session(user_id, capstone_id)
             if student is None:
@@ -161,12 +173,14 @@ class review(MethodView):
         except SQLAlchemyError:
             return None
 
-    # This method checks to ensure that the user trying to access
-    #  the review exists and has an open review.
-    # Input: self and user_id
-    # Output: A boolean indication for
-    # if the user was successfully confirmed (true) or not (false)
     def confirm_user(self, user_id, capstone_id):
+        """
+        This method checks to ensure that the user trying to access
+        the review exists and has an open review.
+        Input: self and user_id
+        Output: A boolean indication for
+         if the user was successfully confirmed (true) or not (false)
+        """
         # check if the current user is found in the database
         student = gbmodel.students().get_student_in_session(user_id, capstone_id)
         if student is None:
@@ -194,11 +208,13 @@ class review(MethodView):
         # no errors, so return true
         return True
 
-    # This method collects information of a student's submitted reviews into an object for jinja2 templating
-    # input: id of the student to retrieve review info for, the capstone session id to check
-    # output: an array of one dictionary object containing all report info in a
-    # style that matches review.html fields
     def get_data(self, id, capstone_id):
+        """
+        This method collects information of a student's submitted reviews into an object for jinja2 templating
+        input: id of the student to retrieve review info for, the capstone session id to check
+        output: an array of one dictionary object containing all report info in a
+        style that matches review.html fields
+        """
         try:
             # get student info
             tid = self.get_tid(id, capstone_id)
@@ -247,7 +263,7 @@ class review(MethodView):
         if there are any user input errors to report, and if there are
         any fatal errors to report as a result of user action.
         """
-        
+
         # check if user exists
         # user_id = request.args.get('user_name')
         if validate_student() is False:
