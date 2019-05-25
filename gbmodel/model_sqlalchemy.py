@@ -294,7 +294,7 @@ class students(db.Model):
         Output: True if the student is a team lead, False otherwise
         """
         try:
-            student = students.query.filter(students.id == sid, students.session_id == session_id).first()
+            student = students.query.filter(students.id == s_id, students.session_id == sess_id).first()
             if student.is_lead == 1:
                 return True
             else:
