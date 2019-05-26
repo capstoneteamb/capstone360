@@ -23,6 +23,7 @@ class StudentDashboard(MethodView):
                         '(|.[a-z0-9-]+)*(|.[a-z]{2,4})$', email) is not None:
                 return True
         return False
+
     @login_required
     def get(self):
         """
@@ -50,6 +51,7 @@ class StudentDashboard(MethodView):
         Output: prompt to the user error message if the inputs are invalid
                 Add new info to the database and return to studentDashboard.html
         """
+        student = gbmodel.students()
         student_name = validate_student().name
         user_name = validate_student().id
         new_name = request.form.get('student_new_name')
