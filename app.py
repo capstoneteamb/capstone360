@@ -38,6 +38,8 @@ app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
 app.config['CAS_AFTER_LOGIN'] = 'profDashboard'
 app.config['CAS_AFTER_LOGIN'] = 'studentDashboard'
 app.config['CAS_AFTER_LOGOUT'] = 'logout'
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
@@ -50,7 +52,7 @@ app.add_url_rule('/editStudent',
                  view_func=EditStudent.as_view('editStudent'),
                  methods=['GET'])
 
-app.add_url_rule('/review/',
+app.add_url_rule('/review/<capstone_id>',
                  view_func=review.as_view('review'),
                  methods=['GET', 'POST'])
 
