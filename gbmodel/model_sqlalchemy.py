@@ -140,6 +140,7 @@ class teams(db.Model):
             for team_member in team_members:
                 for p in member_points:
                     if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
+<<<<<<< HEAD
                         temp.append({"name": team_member.name,
                                      "id": team_member.id,
                                      "min_points": p.min_points,
@@ -151,6 +152,13 @@ class teams(db.Model):
                                  "id": team_member.id,
                                  "points": "N/A",
                                  "lead": int(team_member.is_lead)})
+=======
+                        temp.append({"name": team_member.name, "id": team_member.id,
+                                     "min_points": p.min_points, "max_points": p.max_points, "lead": int(team_member.is_lead)})
+                        flag = 1
+                if flag == 0:
+                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A", "lead": int(team_member.is_lead)})
+>>>>>>> d879b892c69899aaca173909b6bccc94d3e3f842
                 flag = 0
             lists[i] = temp
         sessions = session.get_sessions()
