@@ -6,28 +6,32 @@ import gbmodel
 import re
 
 
-# Student Dashboard class handles get requests from index.html
-# when student login button is clicked on
-
-
 class StudentDashboard(MethodView):
-    # Verify if the new email is in a correct syntax
-    # by checking if it has '@' and '.'
-    # Input: self and new email
-    # Output: return True if it matches the format, False otherwise
+    """
+    Student Dashboard class handles get requests from index.html
+    when student login button is clicked on
+    """
     def valid_email(self, email):
+        """
+        Verify if the new email is in a correct syntax
+        by checking if it has '@' and '.'
+        Input: self and new email
+        Output: return True if it matches the format, False otherwise
+        """
         if len(email) > 7:
             if re.match('^[_a-z0-9-]+(|.[_a-z0-9-]+)*@[a-z0-9-]+'
                         '(|.[a-z0-9-]+)*(|.[a-z]{2,4})$', email) is not None:
                 return True
         return False
 
-    # This method handles get requests to studentDashboard.html
-    # Input: only self
-    # Output: return to index.html if the student id is not in the student
-    # table, rendering the studentDashboard.html template
     @login_required
     def get(self):
+        """
+        This method handles get requests to studentDashboard.html
+        Input: only self
+        Output: return to index.html if the student id is not in the student
+        table, rendering the studentDashboard.html template
+        """
         if validate_student() is False:
             msg = "Student not found"
             return render_template('errorMsg.html', msg=msg)
@@ -40,11 +44,13 @@ class StudentDashboard(MethodView):
                                    user_name=user_name,
                                    caps=caps)
 
-    # This method handles post request from editStudent.html
-    # Input: only self
-    # Output: prompt to the user error message if the inputs are invalid
-    #         Add new info to the database and return to studentDashboard.html
     def post(self):
+        """
+        This method handles post request from editStudent.html
+        Input: only self
+        Output: prompt to the user error message if the inputs are invalid
+                Add new info to the database and return to studentDashboard.html
+        """
         student = gbmodel.students()
         student_name = validate_student().name
         user_name = validate_student().id
@@ -65,16 +71,20 @@ class StudentDashboard(MethodView):
                                name=student_name,
                                user_name=user_name,
                                caps=caps)
-# Edit Student class handles get requests from
-# student Dashboard when Edit is clicked on
 
 
 class EditStudent(MethodView):
-    # This method handles get request from studentDashboard.html
-    # Input: only self
-    # Output: return to editStudent.html
+    """
+    Edit Student class handles get requests from
+    student Dashboard when Edit is clicked on
+    """
     @login_required
     def get(self):
+        """
+        This method handles get request from studentDashboard.html
+        Input: only self
+        Output: return to editStudent.html
+        """
         user_name = validate_student().id
         return render_template('editStudent.html',
                                error=None,
