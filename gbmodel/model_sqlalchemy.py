@@ -273,7 +273,7 @@ class students(db.Model):
             return True
         except exc.SQLAlchemyError:
             return False
-    
+ 
     # Check if the student passed in by id is the team lead
     # Input: student id of the student to check
     # Output: True if the student is a team lead, False otherwise
@@ -293,10 +293,10 @@ class students(db.Model):
     def get_unassigned_students(self, s_id):
         try:
             tname = ""
-            tid = teams.query.filter_by(name = tname, session_id =s_id).first()
+            tid = teams.query.filter_by(name=tname, session_id=s_id).first()
             tid = tid.id
-            unassigned_students = students.query.filter_by(session_id = s_id,
-                                                           tid = tid).all()
+            unassigned_students = students.query.filter_by(session_id=s_id,
+                                                           tid=tid).all()
         except exc.SQLAlchemyError:
             unassigned_students = None
             return unassigned_students
