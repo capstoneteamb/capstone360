@@ -108,12 +108,12 @@ class ProfDashboard(MethodView):
             size = request.form.get('size')
             size = int(size)
             unassigned_students = student.get_unassigned_students\
-            (session_id)
+(session_id)
             team_names = []
             i = 1
             while i <= size:
                 team_name = (request.form.get('assigned_team'+str(i)))
-                if team.check_dup_team(team_name, session_id) == False:
+                if team.check_dup_team(team_name, session_id) is False:
                     t_id = team.get_team_from_name(team_name, session_id)
                     student.update_team(unassigned_students[i-1].name,
                                         session_id, t_id)
@@ -123,15 +123,14 @@ class ProfDashboard(MethodView):
                     student.update_team(unassigned_students[i-1].name,
                                         session_id, t_id)
                 team_names.append(team_name)
-                i+=1
-            print(team_names)
-            print(unassigned_students)
+                i+ = 1
             lists, sessions = team.dashboard(session_id)
             return render_template('profDashboard.html',
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
-            
+
+ 
         # If SET DATE for reviews was submitted (setDate)
         elif 'midterm_start' in request.form:
             midterm_start = request.form.get('midterm_start')
@@ -201,4 +200,7 @@ class assignTeam(MethodView):
         team_table = gbmodel.teams()
         unassigned_students = students_table.get_unassigned_students(s_id)
         sessions = team_table.dashboard(s_id)
-        return render_template('assignTeam.html', lists=unassigned_students, sessions=sessions, session_id=s_id)
+        return render_template('assignTeam.html', 
+                               lists=unassigned_students, 
+                               sessions=sessions, 
+                               session_id=s_id)

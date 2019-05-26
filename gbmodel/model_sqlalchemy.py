@@ -138,8 +138,6 @@ class teams(db.Model):
         try:
             result = teams.query.filter(teams.name == team_name,
                                         teams.session_id == ses_id).first()
-            print(result)
-            print("LOOK UP^^^")
         except exc.SQLAlchemyError:
             return None
         return result.id
@@ -271,7 +269,6 @@ class students(db.Model):
             students.query.filter_by(name=name,
                                      session_id=s_id).\
                                      update(dict(tid=t_id))
-            print("Updating student!")
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
