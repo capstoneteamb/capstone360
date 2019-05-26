@@ -316,7 +316,7 @@ class students(db.Model):
     # Check if the student passed in by id is the team lead
     # Input: student id of the student to check
     # Output: True if the student is a team lead, False otherwise
-    def check_team_lead(self, s_id):
+    def check_team_lead(self, s_id, sess_id):
         """
         Check if the student passed in by id is the team lead
         Input: student id of the student to check
