@@ -1,25 +1,17 @@
-{% extends "menu.html" %}
+{% extends "layout.html" %}
 {% block content %}
 
 <div class="container assign_team-container">
-<div class="session-selector" style="padding-top: 100px;" method='POST'>Sessions
- <form style="display: inline;">{{session_id}}
-                <select name="selected_session" onchange="this.form.submit()">
-                    {% for i in sessions %}
-                    <option value="{{i}}">{{i}}</option>
-                    {% endfor %}
-                      <option selected disabled hidden>Select Term</option>
-                </select>
-                <noscript><input type="submit" value="Submit"></noscript>
-            </form>
-            </div>
   <div class="student-card display-card">
-  <form action="{{ url_for('profDashboard', session_id=session_id) }}" met    hod=POST>
+  <form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 	{% for student in lists %}
     <p style="padding-top: 25px;">{{student['name']}}</p>
       Place on Team:<br>
-      <input type="text" name="teamName" style="width: 400px;">
+      <input type="text" name={{ "assigned_team" + (loop.index|string)}} style="width: 400px;">
 	{% endfor %}
+  <input type="hidden" name=assigned_teams>
+  <input type="hidden" name=size value={{lists|length}}>
+  <input type="hidden" value={{session_id}} name=session_id>
   <p><input class="my-btn" type=submit value='Submit Changes'>
   </form>
   </div>
