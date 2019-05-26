@@ -154,7 +154,7 @@ class ProfDashboard(MethodView):
                 return render_template('addSession.html', error=error, session_id=session_id)
             while not session.check_dup_session(
                 request.form['start_term'], request.form['start_year'], request.form['professor_id']):
-                    error = "Session already exists"
+                error = "Session already exists"
                     return render_template('addSession.html', error=error, session_id=session_id)
             start_term = request.form.get('start_term')
             start_year = request.form.get('start_year')
