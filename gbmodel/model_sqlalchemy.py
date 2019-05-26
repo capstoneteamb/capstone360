@@ -273,7 +273,7 @@ class students(db.Model):
             return True
         except exc.SQLAlchemyError:
             return False
- 
+
     # Check if the student passed in by id is the team lead
     # Input: student id of the student to check
     # Output: True if the student is a team lead, False otherwise
