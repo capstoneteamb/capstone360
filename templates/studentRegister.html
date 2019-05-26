@@ -23,7 +23,7 @@
                     <p class="heading">Session:</p>
                         <select name="session_id" style="width: 50%;">
                             {% for session in sessions %}
-                            <option value="{{session['id']}}">{{session['term']}}</option>
+                            <option value="{{session['id']}}">{{session['descriptor']}}</option>
                             {% endfor %}
                         </select>
                     <input class="my-btn" type="submit" value='Submit' style="

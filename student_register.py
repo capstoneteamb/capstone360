@@ -8,25 +8,16 @@ import logging
 class StudentRegister(MethodView):
     """
     Facilitates the rendering and processing of the register student page, which allows students to register
-    for a currently ongoing capstone session
+    for a currently ongoing Capstone session
     """
 
-    def handle_error(self, console_error, user_error=None):
+    def display_error(self, error_msg):
         """
-        Handles errors (print the error message to the console and return an error page to the user
-        Input: self, console_error (the error message to be printed to the console or be logged), user_error
-               (an error message to be displayed to the user, if given. If not given, the user will see the
-               console_error message)
-        Output: an error page version of the studentRegister.html template
+        Returns an error-page rendering of studentRegister.html that displays the given error_msg
+        Input: self, error_msg
+        Output: the error-page rendering of the studentRegister.html template
         """
-
-        if user_error is None:
-            user_error = console_error
-
-        # https://docs.python.org/3/howto/logging.html#logging-basic-tutorial
-        # (discovered via: https://docs.python-guide.org/writing/logging/)
-        logging.error("Student Register Failure: " + str(console_error))
-        return render_template("studentRegister.html", message=user_error, is_error=True)
+        return render_template("studentRegister.html", message=error_msg, is_error=True)
 
     @login_required
     def get(self):
@@ -37,31 +28,49 @@ class StudentRegister(MethodView):
         Output: a rendering of the student register page: featuring a student registration form if everything
                 went well, or an error message if something went wrong
         """
-        # Compile a data structure containing the start_term + start_year and session_id of the currently
-        # active sessions
-        sessions = gbmodel.capstone_session().get_active_sessions()
-        if sessions is None:
-            return self.handle_error("No active sessions to register for",
-                                     "No active capstone sessions to register for")
 
+        # Get the database objects we will need
+        capstone_session = gbmodel.capstone_session()
+        professors = gbmodel.professors()
+
+        # Get the currently active Capstone sessions
+        sessions = capstone_session.get_active_sessions()
+        if sessions is None:
+            # https://docs.python.org/3/howto/logging.html#logging-basic-tutorial
+            # (discovered via: https://docs.python-guide.org/writing/logging/)
+            logging.warning(("A student tried to register for a Capstone session, but no active sessions "
+                             "were available"))
+            return self.display_error("There aren't any active Capstone sessions to register for")
+
+        # Build a list containing the id and a descriptor string of the active sessions
         active_sessions = []
         for session in sessions:
-            active_sessions.append({"id": session.id,
-                                    "term": session.start_term + " " + str(session.start_year)})
+            # Get the name of the professor running the session
+            professor = professors.get_professors(session.professor_id)
+            if professor is None:
+                logging.error(("Student Registration Failure - the professor of a specific Capstone session "
+                               "wasn't found. Was the professor removed from the database?"))
+                return self.display_error("Something went wrong")
 
-        # Render the template
+            # Create the data structure entry
+            active_sessions.append({"id": session.id,
+                                    "descriptor": "{} {} - {}".format(session.start_term,
+                                                                      str(session.start_year),
+                                                                      professor.name)})
+
+        # Render the studentRegister template using the list we put together
         return render_template('studentRegister.html', sessions=active_sessions)
 
     @login_required
     def post(self):
         """
-        Processes student register page handles POST requests. More specifically, it handles student
-        registration requests submitted via the form that is loaded in GET requests
+        Handles student registration requests, which come in the form of POST requests submitted via the form
+        that is generated in GET requests
         Input: self
         Output: a rendering of the student register page: with a success message and link to the student
                 dashboard if everything went well, or with an error message if there was a problem
         """
-        # Get the database object we will need
+        # Get the database objects we will need
         students = gbmodel.students()
         teams = gbmodel.teams()
 
@@ -75,8 +84,9 @@ class StudentRegister(MethodView):
 
             # Verify that the student isn't already registered for the target session
             if students.get_student_in_session(student_id, session_id) is not None:
-                return self.handle_error("Student already registered for target session",
-                                         "You already registered for this session")
+                logging.warning(("A student tried to register for a Capstone session, but the student was "
+                                 "already registered for the session"))
+                return self.display_error("You are already in this session")
 
             # Add the student to the database
             # The student won't be on a team when they first sign up, so we have to assign them to the
@@ -95,4 +105,5 @@ class StudentRegister(MethodView):
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
         except Exception as error:
-            return self.handle_error(error, "Something went wrong")
+            logging.error("Student Registration Failure: " + str(error))
+            return self.display_error("Something went wrong")

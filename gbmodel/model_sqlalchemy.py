@@ -556,29 +556,46 @@ class capstone_session(db.Model):
         Input: self
         Output: the list of currently active capstone sessions
         """
-        # Get the terms the currently active sessions are expected to start on
+        # Calculate the start term and year of the sessions we expect to be active
         currentDate = datetime.datetime.now()
         month = int(currentDate.month)
-        year = currentDate.year
-        if month in range(9, 11):
-            start_term_1 = "Summer"
-            start_term_2 = "Fall"
-        elif month in range(3, 6):
-            start_term_1 = "Winter"
-            start_term_2 = "Spring"
-        elif month in range(6, 9):
-            start_term_1 = "Spring"
-            start_term_2 = "Summer"
-        else:
+        if month in range(1, 3):
+            # Fall term of last year
             start_term_1 = "Fall"
-            start_term_2 = "Winter"
+            start_year_1 = currentDate.year - 1
 
+            # Winter term of current year
+            start_term_2 = "Winter"
+            start_year_2 = currentDate.year
+        else:
+            # Both terms will start in the same year
+            start_year_1 = currentDate.year
+            start_year_2 = currentDate.year
+
+            # Winter and Spring terms
+            if month in range(3, 6):
+                start_term_1 = "Winter"
+                start_term_2 = "Spring"
+            # Spring and Summer terms
+            elif month in range(6, 9):
+                start_term_1 = "Spring"
+                start_term_2 = "Summer"
+            # Summer and Fall terms
+            else:
+                start_term_1 = "Summer"
+                start_term_2 = "Fall"
+
+        # Query the db for active sessions using the start term and year information we calculated above
         try:
-            # http://www.leeladharan.com/sqlalchemy-query-with-or-and-like-common-filters
             # https://stackoverflow.com/questions/7942547/using-or-in-sqlalchemy
-            return capstone_session.query.filter(capstone_session.start_year == year,
-                                                 or_(capstone_session.start_term == start_term_1,
-                                                     capstone_session.start_term == start_term_2)).all()
+            # Algorithm: SELECT * FROM CAPSTONE_SESSION WHERE
+            #               (start_term = start_term_1 AND start_year = start_year_1)
+            #                 OR
+            #               (start_term = start_term_2 AND start_year = start_year_2)
+            return capstone_session.query.filter(((capstone_session.start_year == start_year_1) &
+                                                  (capstone_session.start_term == start_term_1)) |
+                                                 ((capstone_session.start_year == start_year_2) &
+                                                  (capstone_session.start_term == start_term_2))).all()
         except exc.SQLAlchemyError:
             return None
 
