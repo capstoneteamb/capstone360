@@ -229,8 +229,12 @@ class assignTeam(MethodView):
         students_table = gbmodel.students()
         team_table = gbmodel.teams()
         unassigned_students = students_table.get_unassigned_students(s_id)
+        if unassigned_students is None:
+            error = "No students unassigned to a team."
+            return render_template('errorMsg.html', msg=error)
         sessions = team_table.dashboard(s_id)
         return render_template('assignTeam.html',
                                lists=unassigned_students,
                                sessions=sessions,
-                               session_id=s_id)
+                               session_id=s_id,
+                               error=None)

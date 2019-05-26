@@ -344,6 +344,9 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             unassigned_students = None
             return unassigned_students
+        except AttributeError:
+            unassigned_students = None
+            return unassigned_students
         return unassigned_students
 
     # Allows students to edit their name and email address
