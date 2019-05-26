@@ -293,7 +293,6 @@ class students(db.Model):
         else:
             return result
 
-<<<<<<< HEAD
     # Get the single student matching the id passed in
     # input: student id of the student to retrieve
     # output: the student's capstone session id value
@@ -318,14 +317,11 @@ class students(db.Model):
     # Input: student id of the student to check
     # Output: True if the student is a team lead, False otherwise
     def check_team_lead(self, s_id):
-=======
-    def check_team_lead(self, s_id, sess_id):
         """
         Check if the student passed in by id is the team lead
         Input: student id of the student to check
         Output: True if the student is a team lead, False otherwise
         """
->>>>>>> 5b12996ac546bab77e23ff043c3dfd8292bf7530
         try:
             student = students.query.filter(students.id == s_id, students.session_id == sess_id).first()
             if student.is_lead == 1:

@@ -9,11 +9,8 @@ from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
-<<<<<<< HEAD
 from prof_dashboard import assignTeam
-=======
 from prof_dashboard import AddSession
->>>>>>> 5b12996ac546bab77e23ff043c3dfd8292bf7530
 from student_dashboard import StudentDashboard
 from student_dashboard import EditStudent
 from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
