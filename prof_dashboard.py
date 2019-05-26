@@ -4,9 +4,21 @@ import gbmodel
 import datetime
 from catCas import validate_professor
 from flask_cas import login_required
+import re
 
 
 class ProfDashboard(MethodView):
+    # Verify if the added email is in a correct syntax
+    # by checking if it has '@' and '.'
+    # Input: self and new email
+    # Output: return True if it matches the format, False otherwise
+    def valid_email(self, email):
+        if len(email) > 7:
+            if re.match('^[_a-z0-9-]+(|.[_a-z0-9-]+)*@[a-z0-9-]+'
+                        '(|.[a-z0-9-]+)*(|.[a-z]{2,4})$', email) is not None:
+                return True
+        return False
+
     @login_required
     def get(self):
         if validate_professor() is False:
@@ -23,7 +35,8 @@ class ProfDashboard(MethodView):
             if user_session is not None:
                 user_session = user_session.split('-')
                 term = str(user_session[0].strip())
-                year = int(user_session[1].strip())
+                year = int(user_session[1][:5].strip())
+                prof = str(user_session[1][7:-1])
             else:
                 current_date = datetime.datetime.now()
                 month = int(current_date.month)
@@ -36,7 +49,8 @@ class ProfDashboard(MethodView):
                     term = "Summer"
                 else:
                     term = "Winter"
-            session_id = session.get_session_id(term, year)
+                prof = validate_professor().name
+            session_id = session.get_session_id(term, year, prof)
         # Lists - a list of teams and students of a selected session to display on the dashboard
         # Sessions - a list of sessions to display in drop downs
         lists, sessions = team.dashboard(session_id)
@@ -60,6 +74,14 @@ class ProfDashboard(MethodView):
                                        team_name=team_name,
                                        session_id=session_id,
                                        error=error)
+            if request.form['student_email'] != '':
+                if self.valid_email(str(request.form['student_email'])) is False:
+                    error = "Invalid Email Address"
+                    team_name = team_name.replace(" ", "_")
+                    return render_template('addStudent.html',
+                                           team_name=team_name,
+                                           session_id=session_id,
+                                           error=error)
             student.insert_student(request.form['student_name'],
                                    request.form['student_email'],
                                    request.form['student_id'],
@@ -142,6 +164,17 @@ class ProfDashboard(MethodView):
                 error_msg = session.date_error(params)
                 return render_template('setDate.html', error=error_msg, session_id=session_id)
             session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        # IF set team lead is submitted
+        elif 'team_lead' in request.form:
+            team_name = request.form.get('team_lead')
+            student_name = request.form.get('is_lead')
+            team_name = team_name.replace("_", " ")
+            student.set_lead(session_id, team_name, student_name)
             lists, sessions = team.dashboard(session_id)
             return render_template('profDashboard.html',
                                    lists=lists,

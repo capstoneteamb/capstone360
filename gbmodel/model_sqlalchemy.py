@@ -36,6 +36,17 @@ class professors(db.Model):
             return True
         return False
 
+    # Input: professor name
+    # Output: return professor's id
+    def prof_id(self, name):
+        try:
+            prof = professors.query.filter_by(name=name).first()
+        except exc.SQLAlchemyError:
+            prof = None
+        if prof is None:
+            return -1
+        return prof.id
+
 
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
@@ -58,7 +69,8 @@ class teams(db.Model):
     # Output: return False if the team already exists, True otherwise
     def check_dup_team(self, t_name, session_id):
         try:
-            result = teams().query.filter_by(name=t_name, session_id=session_id).first()
+            result = teams().query.filter_by(name=t_name,
+                                             session_id=session_id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is not None:
@@ -84,14 +96,17 @@ class teams(db.Model):
     def remove_team(self, name, session_id):
         student = students()
         removed_student = removed_students()
-        result = teams.query.filter(teams.name == name, teams.session_id == session_id).first()
+        result = teams.query.filter(teams.name == name,
+                                    teams.session_id == session_id).first()
         tid = result.id
         list_students = student.get_students(tid, session_id)
         if list_students is not None:
             for i in list_students:
-                result = students.query.filter(students.name == i, students.session_id == session_id).first()
+                result = students.query.filter(students.name == i,
+                                               students.session_id == session_id).first()
                 removed_student.add_student(result)
-        student_list = students.query.filter(students.tid == tid, students.session_id == session_id).all()
+        student_list = students.query.filter(students.tid == tid,
+                                             students.session_id == session_id).all()
         for i in student_list:
             db.session.delete(i)
             db.session.commit()
@@ -126,10 +141,10 @@ class teams(db.Model):
                 for p in member_points:
                     if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
                         temp.append({"name": team_member.name, "id": team_member.id,
-                                     "min_points": p.min_points, "max_points": p.max_points})
+                                     "min_points": p.min_points, "max_points": p.max_points, "lead": int(team_member.is_lead)})
                         flag = 1
                 if flag == 0:
-                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A"})
+                    temp.append({"name": team_member.name, "id": team_member.id, "points": "N/A", "lead": int(team_member.is_lead)})
                 flag = 0
             lists[i] = temp
         sessions = session.get_sessions()
@@ -287,16 +302,38 @@ class students(db.Model):
     # Output: apply new name and email to students in student table
     def edit_student(self, id, new_name, new_email):
         try:
-            stds = students.query.filter(students.id == id).all()
+            student = students.query.filter(students.id == id).all()
         except exc.SQLAlchemyError:
-            stds = None
-        if stds is None:
+            student = None
+        if student is None:
             return False
-        for i in stds:
+        for i in student:
             if new_name != '':
                 i.name = new_name
             if new_email != '':
                 i.email_address = new_email
+            db.session.commit()
+        return True
+
+    # Professor can set a lead for each team
+    # Input: self, chosen session id, team name and lead name
+    # Output: set 1 to team lead and 0 to the rest of students in the team
+    def set_lead(self, session_id, team_name, lead):
+        if team_name is None or lead is None:
+            return False
+        try:
+            result = teams.query.filter(teams.session_id == session_id, teams.name == team_name).first()
+            team_id = result.id
+        except exc.SQLAlchemyError:
+            team_id = None
+            return False
+        # Get list of students in the given team
+        student = students.query.filter(students.tid == team_id).all()
+        for i in student:
+            if i.name == lead:
+                i.is_lead = 1
+            else:
+                i.is_lead = 0
             db.session.commit()
         return True
 
@@ -386,14 +423,17 @@ class capstone_session(db.Model):
     # Input: term and year
     # Output: if the term and year are not found, add them to the database and
     #         return added session id. Otherwise, return the id of the session
-    def get_session_id(self, term, year):
+    def get_session_id(self, term, year, prof):
+        prof_id = professors().prof_id(prof)
         try:
             id = capstone_session.query.filter(capstone_session.start_term == term,
-                                               capstone_session.start_year == year).first()
+                                               capstone_session.start_year == year,
+                                               capstone_session.professor_id == prof_id).first()
         except exc.SQLAlchemyError:
             id = None
         if id is None:
-            return self.insert_session(term, year)
+            prof_id = professors().prof_id(prof)
+            return self.insert_session(term, str(year), prof_id)
         else:
             return id.id
 
@@ -402,7 +442,8 @@ class capstone_session(db.Model):
         caps = capstone_session.query.all()
         lists = []
         for i in caps:
-            temp = str(i.start_term) + " - " + str(i.start_year)
+            prof = professors.query.filter(professors.id == i.professor_id).first()
+            temp = str(i.start_term) + " - " + str(i.start_year) + " (" + str(prof.name) + ")"
             lists.append(temp)
         return lists
 
