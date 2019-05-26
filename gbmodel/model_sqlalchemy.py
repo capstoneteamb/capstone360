@@ -348,6 +348,19 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
+    # Removes an entire session with all the teams and students
+    # Input: session id
+    def remove_session(self, session_id):
+        team = teams()
+        session_teams = team.query.filter_by(session_id=session_id).all()
+        del_session = capstone_session.query.filter(capstone_session.id == session_id).first()
+        for t in session_teams:
+            team_name = t.name
+            team.remove_team(team_name, session_id)
+        db.session.delete(del_session)
+        db.session.commit()
+        return True
+
     # Checks if the name of the term is valid
     # Input: start term of new session
     # Output: return True if valid, False otherwise
@@ -368,14 +381,16 @@ class capstone_session(db.Model):
             return False
         return True
 
-    # Check if the new session name already exists in the database
+    # Check if the new session already exists in the database with the same proefssor
     # Input: start term & year of the new session
     # Output: return False if the team already exists, True otherwise
-    def check_dup_session(self, s_term, s_year):
+    def check_dup_session(self, s_term, s_year, p_id):
         try:
             s_term = s_term.strip().lower().capitalize()
             s_year = s_year.strip().lower().capitalize()
-            result = capstone_session().query.filter_by(start_term=s_term, start_year=s_year).first()
+            p_id = p_id.strip().lower()
+            result = capstone_session().query.filter_by(
+                start_term=s_term, start_year=s_year, professor_id=p_id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is not None:
@@ -386,14 +401,15 @@ class capstone_session(db.Model):
     # Input: term and year
     # Output: if the term and year are not found, add them to the database and
     #         return added session id. Otherwise, return the id of the session
-    def get_session_id(self, term, year):
+    def get_session_id(self, term, year, prof_id):
         try:
             id = capstone_session.query.filter(capstone_session.start_term == term,
-                                               capstone_session.start_year == year).first()
+                                               capstone_session.start_year == year, 
+                                               capstone_session.professor_id == prof_id).first()
         except exc.SQLAlchemyError:
             id = None
         if id is None:
-            return self.insert_session(term, year)
+            return self.insert_session(term, year, prof_id)
         else:
             return id.id
 
@@ -402,7 +418,7 @@ class capstone_session(db.Model):
         caps = capstone_session.query.all()
         lists = []
         for i in caps:
-            temp = str(i.start_term) + " - " + str(i.start_year)
+            temp = str(i.start_term) + " - " + str(i.start_year) + " - " + str(i.professor_id)
             lists.append(temp)
         return lists
 

@@ -10,6 +10,7 @@ from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
 from prof_dashboard import AddSession
+from prof_dashboard import RemoveSession
 from student_dashboard import StudentDashboard
 from student_dashboard import EditStudent
 from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
@@ -63,6 +64,10 @@ app.add_url_rule('/addStudent/',
 
 app.add_url_rule('/addSession/',
                  view_func=AddSession.as_view('addSession'),
+                 methods=['GET', 'POST'])
+
+app.add_url_rule('/removeSession/',
+                 view_func=RemoveSession.as_view('removeSession'),
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/addTeam/',
