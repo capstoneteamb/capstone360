@@ -9,7 +9,11 @@ from prof_dashboard import AddTeam
 from prof_dashboard import AddStudent
 from prof_dashboard import RemoveTeam
 from prof_dashboard import SetDate
+<<<<<<< HEAD
 from prof_dashboard import assignTeam
+=======
+from prof_dashboard import AddSession
+>>>>>>> 5b12996ac546bab77e23ff043c3dfd8292bf7530
 from student_dashboard import StudentDashboard
 from student_dashboard import EditStudent
 from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
@@ -37,6 +41,8 @@ app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
 app.config['CAS_AFTER_LOGIN'] = 'profDashboard'
 app.config['CAS_AFTER_LOGIN'] = 'studentDashboard'
 app.config['CAS_AFTER_LOGOUT'] = 'logout'
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 app.add_url_rule('/',
                  view_func=Index.as_view('index'))
@@ -49,7 +55,7 @@ app.add_url_rule('/editStudent',
                  view_func=EditStudent.as_view('editStudent'),
                  methods=['GET'])
 
-app.add_url_rule('/review/',
+app.add_url_rule('/review/<capstone_id>',
                  view_func=review.as_view('review'),
                  methods=['GET', 'POST'])
 
@@ -59,6 +65,10 @@ app.add_url_rule('/profDashboard/',
 
 app.add_url_rule('/addStudent/',
                  view_func=AddStudent.as_view('addStudent'),
+                 methods=['GET', 'POST'])
+
+app.add_url_rule('/addSession/',
+                 view_func=AddSession.as_view('addSession'),
                  methods=['GET', 'POST'])
 
 app.add_url_rule('/addTeam/',

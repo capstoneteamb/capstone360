@@ -2,7 +2,7 @@
 import os
 import sys
 import datetime
-from app import db, engine, db_session  # noqa
+from app import db, engine # noqa
 from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
@@ -22,6 +22,19 @@ class professors(db.Model):
         if result is None:
             return False
         return result
+
+    # Checks if professor ID exists in the DB
+    # Input: professor ID given
+    # Output: True if it exists, False otherwise
+    def check_professor(self, prof_id):
+        try:
+            prof_id = prof_id.strip().lower()
+            result = professors().query.filter_by(id=prof_id).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is not None:
+            return True
+        return False
 
 
 class teams(db.Model):
@@ -185,10 +198,12 @@ class students(db.Model):
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         return result
 
-    # Get all members of a team
-    # Input: team id as tid
-    # Output: Student objects representing the students on that team
     def get_team_members(self, tid):
+        """
+        Get all members of a team
+        Input: team id as tid
+        Output: Student objects representing the students on that team
+        """
         try:
             mems = students.query.filter_by(tid=tid).distinct()
         except exc.SQLAlchemyError:
@@ -209,6 +224,30 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return None
         return results
+
+    def get_user_sessions(self, student_id):
+        """
+        Returns all capstone sessions that a user belongs to
+        Input: student_id: The database id of the student to retrieve capstone session ids for
+        output: an array of objects representing the rows for each capstone the student belongs to
+        """
+        try:
+            results = []  # to store objects
+
+            # get all matching records
+            student_records = students.query.filter_by(id=student_id).all()
+            if student_records is not None:
+
+                # for each record, add the capstone the id points to
+                for rec in student_records:
+                    cap = capstone_session().get_sess_by_id(rec.session_id)
+                    if cap is not None:
+                        results.append(cap)
+
+            return results
+
+        except exc.SQLAlchemyError:
+            return None
 
     def get_student_in_session(self, sid, session_id):
         """
@@ -254,6 +293,7 @@ class students(db.Model):
         else:
             return result
 
+<<<<<<< HEAD
     # Get the single student matching the id passed in
     # input: student id of the student to retrieve
     # output: the student's capstone session id value
@@ -278,8 +318,16 @@ class students(db.Model):
     # Input: student id of the student to check
     # Output: True if the student is a team lead, False otherwise
     def check_team_lead(self, s_id):
+=======
+    def check_team_lead(self, s_id, sess_id):
+        """
+        Check if the student passed in by id is the team lead
+        Input: student id of the student to check
+        Output: True if the student is a team lead, False otherwise
+        """
+>>>>>>> 5b12996ac546bab77e23ff043c3dfd8292bf7530
         try:
-            student = students.query.filter_by(id=s_id).first()
+            student = students.query.filter(students.id == s_id, students.session_id == sess_id).first()
             if student.is_lead == 1:
                 return True
             else:
@@ -340,26 +388,80 @@ class capstone_session(db.Model):
     # Add a current session (only if it wasn't in the database)
     # Input: starting term and year of the session
     # Output: return id of the added session
-    def insert_session(self, term, year):
+    def insert_session(self, term, year, professor_id):
+        term = term.strip().lower()
+        year = year.strip().lower()
         e_term = None
         e_year = 0
-        terms = ["Fall", "Winter", "Spring", "Summer"]
+        terms = ["fall", "winter", "spring", "summer"]
         for i in range(len(terms)):
             if terms[i] == term:
                 e_term = terms[(i+1) % 4]
-        if term == 'Winter':
-            e_year = year+1
+                e_term = e_term.capitalize()
+        if term == 'fall':
+            e_year = int(year)+1
         else:
             e_year = year
         id = self.get_max()
+        term = term.capitalize()
+        year = year.capitalize()
+        prof_id = professor_id.lower()
         new_sess = capstone_session(id=id,
                                     start_term=term,
                                     start_year=year,
                                     end_term=e_term,
-                                    end_year=e_year)
+                                    end_year=e_year,
+                                    professor_id=prof_id)
         db.session.add(new_sess)
         db.session.commit()
         return id
+
+    def get_sess_by_id(self, id):
+        """
+        this method is for getting a specific capstone session object
+        inputs: id of capstone session to retrieve
+        outputs: capstone session object if found, none otherwise
+        """
+        try:
+            # query for session and return if found
+            cap = capstone_session.query.filter_by(id=id).first()
+            return cap
+        except exc.SQLAlchemyError:
+            return None
+
+    # Checks if the name of the term is valid
+    # Input: start term of new session
+    # Output: return True if valid, False otherwise
+    def check_term_name(self, s_term):
+        s_term = s_term.strip().lower()
+        terms = ["fall", "winter", "spring", "summer"]
+        for i in range(len(terms)):
+            if terms[i] == s_term:
+                return True
+        return False
+
+    # Checks if the year of the term is valid
+    # Input: start year of new session
+    # Output: return False if invalid, True otherwise
+    def check_term_year(self, s_year):
+        check_year = s_year.isdigit()
+        if not check_year:
+            return False
+        return True
+
+    # Check if the new session name already exists in the database
+    # Input: start term & year of the new session
+    # Output: return False if the team already exists, True otherwise
+    def check_dup_session(self, s_term, s_year):
+        try:
+            s_term = s_term.strip().lower().capitalize()
+            s_year = s_year.strip().lower().capitalize()
+            result = capstone_session().query.filter_by(start_term=s_term, start_year=s_year).first()
+        except exc.SQLAlchemyError:
+            result = None
+        if result is not None:
+            return False
+        return True
 
     # Get id of a selected session
     # Input: term and year
@@ -459,17 +561,18 @@ class capstone_session(db.Model):
         db.session.commit()
         return True
 
-    # Given a capstone session id to check and a date,
-    # this method determines the currently available review if any
-    # Inputs: a capstone session id and a date which should be a python date time object
-    # Outputs: 'final' if date is after the final start date for the session
-    # 'midterm' if the date is between the midterm and final start dates.
-    # 'error' otherwise
     def check_review_state(self, session_id, date):
+        """
+        Given a capstone session id to check and a date,
+        this method determines the currently available review if any
+        Inputs: a capstone session id and a date which should be a python date time object
+        Outputs: 'final' if date is after the final start date for the session
+        'midterm' if the date is between the midterm and final start dates.
+        'error' otherwise
+        """
         try:
             # get the session
             session = capstone_session.query.filter(capstone_session.id == session_id).first()
-
             # check if final exists:
             if session.final_start is not None:
                 # if after final period, return final
@@ -492,6 +595,53 @@ class capstone_session(db.Model):
                 return 'Error'
         except exc.SQLAlchemyError:
             return 'Error'
+
+    def check_not_late(Self, session_id, date, type):
+        """
+        This method is for determining is a review is late. It receives the type of review to check
+        and compares the date sent into the method with the review's end period
+        Inputs: session_id -- the value of the id for the capstone session to check
+        date: the date that the review is submitted, type: "midterm" or "final" should be received
+        Outputs: True -- the review is within the open period (the review is NOT late)
+        or False -- the review IS late or an error was experienced
+        """
+        try:
+            # get the session
+            session = capstone_session.query.filter(capstone_session.id == session_id).first()
+
+            # check the type:
+
+            if type == 'midterm':
+                # check if midterm date exists
+                if session.midterm_end is not None:
+                    # check date to see if its currently or before the midterm start state
+                    if date <= session.midterm_end:
+                        # on time
+                        return True
+                    else:
+                        # late
+                        return False
+                else:
+                    # error
+                    return False
+            elif type == 'final':
+                # check if final date exists
+                if session.final_end is not None:
+                    # check date
+                    if date <= session.final_end:
+                        # on time
+                        return True
+                    else:
+                        # late
+                        return False
+                else:
+                    # error
+                    return False
+            else:
+                # error
+                return False
+        except exc.SQLAlchemyError:
+            return False
 
 
 class reports(db.Model):
@@ -532,12 +682,25 @@ class reports(db.Model):
                                       reports.reviewee == reviewee_id).first()
         return result
 
-    # Stages a report to be inserted into the database -- This does NOT commit the add!
-    # Inputs: Arguments for each individual field of the report
-    # Outputs: true if adding was successful, false if not
+    # this method is for getting the reports of an entire team
+    # inputs: tid -- team id of reports to retrieve, is_final - if it's the second term
+    # outputs: result - all report objects for the team
+    def get_team_reports(self, tid, is_final):
+        try:
+            result = reports.query.filter(reports.tid == tid,
+                                          reports.is_final == is_final).distinct()
+            return result
+        except exc.SQLAlchemyError:
+            return None
+
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
                       ethic, com, coop, init, focus, cont, lead, org, dlg,
-                      points, strn, wkn, traits, learned, proud, is_final):
+                      points, strn, wkn, traits, learned, proud, is_final, late):
+        """
+        Stages a report to be inserted into the database -- This does NOT commit the add!
+        Inputs: Arguments for each individual field of the report
+        Outputs: true if adding was successful, false if not
+        """
         try:
             # Build Report object from method input
             new_report = reports(session_id=sess_id,
@@ -561,29 +724,35 @@ class reports(db.Model):
                                  traits_to_work_on=traits,
                                  what_you_learned=learned,
                                  proud_of_accomplishment=proud,
-                                 is_final=is_final)
+                                 is_final=is_final,
+                                 is_late=late)
             # add the report and return true for success
             db.session.add(new_report)
+            print('Adding Report to Session')
             return True
         except exc.SQLAlchemyError:
             # if error, return false
             return False
 
-    # Method to commit changes to the DB through the model while updating the user's state
-    # input: None
-    # output: True if successful, false otherwise
-    def commit_reports(self, id, state, success):
+    def commit_reports(self, id, state, sess_id, success):
+        """
+        Method to commit changes to the DB through the model while updating the user's state
+        input: None
+        output: True if successful, false otherwise
+        """
         # if adding reports was not successful, rollback changes to session
         try:
             if success is False:
                 try:
+                    print('Rolling Back Reports')
                     db.session.rollback()
                 except exc.SQLAlchemyError:
                     return False
                 return False
 
             # update appropriate student 'done' attribute
-            student = students.query.filter_by(id=id).first()
+            print('Finding Student')
+            student = students.query.filter_by(id=id, session_id=sess_id).first()
             if state == 'midterm':
                 student.midterm_done = 1
             elif state == 'final':
@@ -591,9 +760,33 @@ class reports(db.Model):
             else:
                 return False
 
+            print('Committing Reports')
+
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
+            print('Rolling Back Reports')
+            db.session.rollback()
+            return False
+
+    def commit_updates(self, success):
+        """
+        This method is for committing review updates
+        input: success -- a boolean object indicating whether to proceed
+        with committing (true) or to roll back (false)
+        output: False -- commit was not made, True - commit was made successfully
+        """
+        try:
+            if success is False:
+                print('Rolling Back Edits')
+                db.session.rollback()
+                return False
+            else:
+                print('Committing Edits')
+                db.session.commit()
+                return True
+        except exc.SQLAlchemyError:
+            print('Rolling Back Edits')
             db.session.rollback()
             return False
 

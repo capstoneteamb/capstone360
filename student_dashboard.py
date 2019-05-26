@@ -34,9 +34,11 @@ class StudentDashboard(MethodView):
         else:
             student_name = validate_student().name
             user_name = validate_student().id
+            caps = gbmodel.students().get_user_sessions(user_name)  # get user's capstone sessions
             return render_template('studentDashboard.html',
                                    name=student_name,
-                                   user_name=user_name)
+                                   user_name=user_name,
+                                   caps=caps)
 
     # This method handles post request from editStudent.html
     # Input: only self
@@ -48,6 +50,7 @@ class StudentDashboard(MethodView):
         user_name = validate_student().id
         new_name = request.form.get('student_new_name')
         new_email = request.form.get('student_new_email')
+        caps = gbmodel.students().get_user_sessions(user_name)
         # Only check email validation if new email is entered
         if new_email != '':
             if self.valid_email(str(new_email)) is False:
@@ -60,7 +63,8 @@ class StudentDashboard(MethodView):
         student_name = validate_student().name
         return render_template('studentDashboard.html',
                                name=student_name,
-                               user_name=user_name)
+                               user_name=user_name,
+                               caps=caps)
 # Edit Student class handles get requests from
 # student Dashboard when Edit is clicked on
 

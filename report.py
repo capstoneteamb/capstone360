@@ -140,6 +140,15 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     # Compile all strengths and weaknesses into a list, tally up scores, etc.
     strengths = []
     weaknesses = []
+    traits_to_work_on = []
+
+    # These two fields are only on self reviews.
+    what_you_learned = None
+    proud_of_accomplishment = None
+
+    # Iterate through all reports, tallying scores.
+    # As we go we also collect a list of all the text box answers.
+    points = 0
     for r in reports:
         for key, value in scores.items():
             this_score = getattr(r, key)
@@ -150,29 +159,56 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
             # things left by one in the table.
             scores[key][this_score-1] = scores[key][this_score-1] + 1
 
+        # If this is for the professor, all the comments should have names attached.
         if is_professor_report:
             reporter = gbmodel.students().get_student_in_session(r.reviewer, session_id)
 
             if reporter is None:
                 raise MissingStudentException("The reporting student in a review doesn't exist.")
 
-            weaknesses.append(reporter.name + ": " + r.weaknesses)
-            strengths.append(reporter.name + ": " + r.strengths)
+            weaknesses.append("{}: {}".format(reporter.name, r.weaknesses))
+            strengths.append("{}: {}".format(reporter.name, r.strengths))
+            traits_to_work_on.append("{}: {}".format(reporter.name, r.traits_to_work_on))
+
+            # There are a handful of fields we only display if it's a professor and a self review.
+            if r.reviewer == student_id:
+                # what you learned always
+                what_you_learned = r.what_you_learned
+                # proud_of_accomplishment only applies for finals
+                proud_of_accomplishment = r.proud_of_accomplishment
+
+        # If this is the student's self review, the comments get marked with asterisks.
+        elif r.reviewer == student_id:
+            weaknesses.append("**{}".format(r.weaknesses))
+            strengths.append("**{}".format(r.strengths))
+            traits_to_work_on.append("**{}".format(r.traits_to_work_on))
+
         else:
             weaknesses.append(r.weaknesses)
             strengths.append(r.strengths)
+            traits_to_work_on.append(r.traits_to_work_on)
 
-    # TODO Mark all the self reported scores
+        # Tally up points
+        points += r.points
+
+    # Mark all the self reported scores
     for r in reports:
         if r.reviewer == student_id:
-            pass
+            for key, value in scores.items():
+                this_score = getattr(r, key)
+                if this_score is not None:
+                    scores[key][this_score-1] = "**{}".format(scores[key][this_score-1])
 
     # Render the HTML version of the template
     html = render_template('report.html',
                            name=name,
                            team=team_name,
                            scores=scores,
+                           points=points,
                            strengths=strengths,
-                           weaknesses=weaknesses)
+                           weaknesses=weaknesses,
+                           traits_to_work_on=traits_to_work_on,
+                           what_you_learned=what_you_learned,
+                           proud_of_accomplishment=proud_of_accomplishment)
 
     return html

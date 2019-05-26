@@ -46,6 +46,7 @@ class ProfDashboard(MethodView):
         session = gbmodel.capstone_session()
         student = gbmodel.students()
         team = gbmodel.teams()
+        professor = gbmodel.professors()
         session_id = request.form['session_id']
         session_id = int(session_id)
         # If ADD STUDENT form was submitted (addStudent)
@@ -90,6 +91,30 @@ class ProfDashboard(MethodView):
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
+        # If ADD SESSION was submitted (addSession)
+        elif 'start_term' in request.form:
+            while not session.check_term_name(request.form['start_term']):
+                error = "Enter a valid term (Example: Summer)"
+                return render_template('addSession.html', error=error, session_id=session_id)
+            while not session.check_term_year(request.form['start_year']):
+                error = "Enter a valid year (Example: 2019)"
+                return render_template('addSession.html', error=error, session_id=session_id)
+            while not professor.check_professor(request.form['professor_id']):
+                error = "Enter a valid professor ID"
+                return render_template('addSession.html', error=error, session_id=session_id)
+            while not session.check_dup_session(request.form['start_term'], request.form['start_year']):
+                error = "Session already exists"
+                return render_template('addSession.html', error=error, session_id=session_id)
+            start_term = request.form.get('start_term')
+            start_year = request.form.get('start_year')
+            start_term = start_term.replace("_", " ")
+            start_year = start_year.replace("_", " ")
+            professor_id = request.form.get('professor_id')
+            professor_id = professor_id.replace("_", " ")
+            session_id = session.insert_session(start_term, start_year, professor_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template(
+                'profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If ADD TEAM was submitted (addTeam)
         elif 'team_name' in request.form:
             if not team.check_dup_team(request.form['team_name'], session_id):
@@ -157,6 +182,14 @@ class AddStudent(MethodView):
         team_name = team_name.replace(" ", "_")
         session_id = request.args.get('session_id')
         return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
+
+
+class AddSession(MethodView):
+    @login_required
+    def get(self):
+        # Get seesion id from dashboard
+        session_id = request.args.get('session_id')
+        return render_template('addSession.html', error=None, session_id=session_id)
 
 
 class AddTeam(MethodView):
