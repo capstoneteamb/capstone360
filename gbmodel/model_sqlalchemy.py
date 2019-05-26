@@ -1,4 +1,3 @@
-# This file handles the backends from prof_dashboard.py
 import os
 import sys
 import datetime
@@ -11,10 +10,12 @@ sys.path.append(os.getcwd())
 class professors(db.Model):
     __table__ = db.Model.metadata.tables['professors']
 
-    # Get a list of professors
-    # Input: team id, session id
-    # Output: list of professors id
     def get_professors(self, id):
+        """
+        Get a list of professors
+        Input: team id, session id
+        Output: list of professors id
+        """
         try:
             result = professors.query.filter(professors.id == id).first()
         except exc.SQLAlchemyError:
@@ -23,10 +24,12 @@ class professors(db.Model):
             return False
         return result
 
-    # Checks if professor ID exists in the DB
-    # Input: professor ID given
-    # Output: True if it exists, False otherwise
     def check_professor(self, prof_id):
+        """
+        Checks if professor ID exists in the DB
+        Input: professor ID given
+        Output: True if it exists, False otherwise
+        """
         try:
             prof_id = prof_id.strip().lower()
             result = professors().query.filter_by(id=prof_id).first()
@@ -36,9 +39,11 @@ class professors(db.Model):
             return True
         return False
 
-    # Input: professor name
-    # Output: return professor's id
     def prof_id(self, name):
+        """
+        Input: professor name
+        Output: return professor's id
+        """
         try:
             prof = professors.query.filter_by(name=name).first()
         except exc.SQLAlchemyError:
@@ -51,10 +56,12 @@ class professors(db.Model):
 class teams(db.Model):
     __table__ = db.Model.metadata.tables['teams']
 
-    # Calculate the next id for a newly added team
-    # if the table is empty, returns 1
-    # Otherwise, return the max id+1
     def get_max_team_id(self):
+        """
+        Calculate the next id for a newly added team
+        if the table is empty, returns 1
+        Otherwise, return the max id+1
+        """
         try:
             max_id = db.session.query(func.max(teams.id)).scalar()
         except exc.SQLAlchemyError:
@@ -64,10 +71,12 @@ class teams(db.Model):
         else:
             return max_id + 1
 
-    # Check if the new team name already existed in the given session
-    # Input: name of the new team and session id of the selected session
-    # Output: return False if the team already exists, True otherwise
     def check_dup_team(self, t_name, session_id):
+        """
+        Check if the new team name already existed in the given session
+        Input: name of the new team and session id of the selected session
+        Output: return False if the team already exists, True otherwise
+        """
         try:
             result = teams().query.filter_by(name=t_name,
                                              session_id=session_id).first()
@@ -77,23 +86,29 @@ class teams(db.Model):
             return False
         return True
 
-    # Insert a team to database
-    # Input: self, session id and name of the new team
     def insert_team(self, session_id, t_name):
+        """
+        Insert a team to database
+        Input: self, session id and name of the new team
+        """
         id = self.get_max_team_id()
         new_team = teams(id=id, session_id=session_id, name=t_name)
         db.session.add(new_team)
         db.session.commit()
 
-    # Input: session id of the selected session
-    # Output: list of teams and their info. from the selected session
     def get_team_session_id(self, session_id):
+        """
+        Input: session id of the selected session
+        Output: list of teams and their info. from the selected session
+        """
         team = teams.query.filter_by(session_id=session_id).all()
         return team
 
-    # Remove a team and all the students from that team
-    # Input: name of the team and session id
     def remove_team(self, name, session_id):
+        """
+        Remove a team and all the students from that team
+        Input: name of the team and session id
+        """
         student = students()
         removed_student = removed_students()
         result = teams.query.filter(teams.name == name,
@@ -115,10 +130,12 @@ class teams(db.Model):
         db.session.commit()
         return True
 
-    # Return a lists of sessions from the database
-    # and a list of teams + students from a selected session
-    # Input: session id of the selected session
     def dashboard(self, session_id):
+        """
+        Return a lists of sessions from the database
+        and a list of teams + students from a selected session
+        Input: session id of the selected session
+        """
         student = students()
         session = capstone_session()
         tids = [row.id for row in self.get_team_session_id(session_id)]
@@ -174,11 +191,13 @@ class teams(db.Model):
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
 
-    # Check if the new added student already exits in the databse
-    # Input: id of the student and selected session id
-    # Output: return False if the student was already in
-    #         return True otherwise
     def check_dup_student(self, id, session_id):
+        """
+        Check if the new added student already exits in the databse
+        Input: id of the student and selected session id
+        Output: return False if the student was already in
+                return True otherwise
+        """
         try:
             result = students.query.filter_by(id=id, session_id=session_id).first()
         except exc.SQLAlchemyError:
@@ -187,11 +206,13 @@ class students(db.Model):
             return False
         return True
 
-    # Add new student
-    # Input: student name, student email address, student id, team name and id of the selected session
-    # Output: return False if student id already exists in the current session
-    #         add student to the database and return True otherwise
     def insert_student(self, name, email_address, id, session_id, t_name):
+        """
+        Add new student
+        Input: student name, student email address, student id, team name and id of the selected session
+        Output: return False if student id already exists in the current session
+                add student to the database and return True otherwise
+        """
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
         new_student = students(id=id,
@@ -206,10 +227,12 @@ class students(db.Model):
         db.session.commit()
         return True
 
-    # Get a list of students from a team in current session
-    # Input: team id, session id
-    # Output: list of student names
     def get_students(self, tid, session_id):
+        """
+        Get a list of students from a team in current session
+        Input: team id, session id
+        Output: list of student names
+        """
         result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
         return result
 
@@ -276,11 +299,13 @@ class students(db.Model):
             return None
         return result
 
-    # Remove a list of selected students
-    # Input: list of students, team name and session id
-    # Output: return False of the list of student is empty
-    #         otherwise, remove student from the team
     def remove_student(self, sts, t_name, session_id):
+        """
+        Remove a list of selected students
+        Input: list of students, team name and session id
+        Output: return False of the list of student is empty
+            otherwise, remove student from the team
+        """
         if t_name is None or sts is None:
             return False
         removed_student = removed_students()
@@ -297,8 +322,12 @@ class students(db.Model):
             db.session.commit()
         return True
 
-    # validate cas username with student id in the database
     def validate(self, id):
+        """
+        validate cas username with student id in the database
+        Input: student id
+        Output: object of found student
+        """
         try:
             result = students.query.filter_by(id=id).first()
         except exc.SQLAlchemyError:
@@ -323,10 +352,12 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
-    # Allows students to edit their name and email address
-    # Input: student's new email and name and current user id
-    # Output: apply new name and email to students in student table
     def edit_student(self, id, new_name, new_email):
+        """
+        Allows students to edit their name and email address
+        Input: student's new email and name and current user id
+        Output: apply new name and email to students in student table
+        """
         try:
             student = students.query.filter(students.id == id).all()
         except exc.SQLAlchemyError:
@@ -341,10 +372,12 @@ class students(db.Model):
             db.session.commit()
         return True
 
-    # Professor can set a lead for each team
-    # Input: self, chosen session id, team name and lead name
-    # Output: set 1 to team lead and 0 to the rest of students in the team
     def set_lead(self, session_id, team_name, lead):
+        """
+        Professor can set a lead for each team
+        Input: self, chosen session id, team name and lead name
+        Output: set 1 to team lead and 0 to the rest of students in the team
+        """
         if team_name is None or lead is None:
             return False
         try:
@@ -367,10 +400,12 @@ class students(db.Model):
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
 
-    # Calculate the next id for a newly added session
-    # if the table is empty, returns 1
-    # Otherwise, return the max id+1
     def get_max(self):
+        """
+        Calculate the next id for a newly added session
+        if the table is empty, returns 1
+        Otherwise, return the max id+1
+        """
         try:
             max_id = db.session.query(func.max(capstone_session.id)).scalar()
         except exc.SQLAlchemyError:
@@ -380,10 +415,12 @@ class capstone_session(db.Model):
         else:
             return max_id + 1
 
-    # Add a current session (only if it wasn't in the database)
-    # Input: starting term and year of the session
-    # Output: return id of the added session
     def insert_session(self, term, year, professor_id):
+        """
+        Add a current session (only if it wasn't in the database)
+        Input: starting term and year of the session
+        Output: return id of the added session
+        """
         term = term.strip().lower()
         year = year.strip().lower()
         e_term = None
@@ -424,10 +461,12 @@ class capstone_session(db.Model):
         except exc.SQLAlchemyError:
             return None
 
-    # Checks if the name of the term is valid
-    # Input: start term of new session
-    # Output: return True if valid, False otherwise
     def check_term_name(self, s_term):
+        """
+        Checks if the name of the term is valid
+        Input: start term of new session
+        Output: return True if valid, False otherwise
+        """
         s_term = s_term.strip().lower()
         terms = ["fall", "winter", "spring", "summer"]
         for i in range(len(terms)):
@@ -435,19 +474,23 @@ class capstone_session(db.Model):
                 return True
         return False
 
-    # Checks if the year of the term is valid
-    # Input: start year of new session
-    # Output: return False if invalid, True otherwise
     def check_term_year(self, s_year):
+        """
+        Checks if the year of the term is valid
+        Input: start year of new session
+        Output: return False if invalid, True otherwise
+        """
         check_year = s_year.isdigit()
         if not check_year:
             return False
         return True
 
-    # Check if the new session name already exists in the database
-    # Input: start term & year of the new session
-    # Output: return False if the team already exists, True otherwise
     def check_dup_session(self, s_term, s_year):
+        """
+        Check if the new session name already exists in the database
+        Input: start term & year of the new session
+        Output: return False if the team already exists, True otherwise
+        """
         try:
             s_term = s_term.strip().lower().capitalize()
             s_year = s_year.strip().lower().capitalize()
@@ -458,11 +501,13 @@ class capstone_session(db.Model):
             return False
         return True
 
-    # Get id of a selected session
-    # Input: term and year
-    # Output: if the term and year are not found, add them to the database and
-    #         return added session id. Otherwise, return the id of the session
     def get_session_id(self, term, year, prof):
+        """
+        Get id of a selected session
+        Input: term and year
+        Output: if the term and year are not found, add them to the database and
+             return added session id. Otherwise, return the id of the session
+        """
         prof_id = professors().prof_id(prof)
         try:
             id = capstone_session.query.filter(capstone_session.start_term == term,
@@ -476,8 +521,12 @@ class capstone_session(db.Model):
         else:
             return id.id
 
-    # Get a list of session to display on the drop downs
     def get_sessions(self):
+        """
+        Get a list of session to display on the drop downs
+        Input: only self
+        Output: list of sessions (includes start term, year and professor name)
+        """
         caps = capstone_session.query.all()
         lists = []
         for i in caps:
@@ -486,11 +535,13 @@ class capstone_session(db.Model):
             lists.append(temp)
         return lists
 
-    # Check if start and end dates are valid
-    # Input: start and end dates
-    # Output: Return 0 if valid, return 1 if start date is after the end date
-    #         Return 1 if either start or end date is empty
     def check_dates(self, start, end):
+        """
+        Check if start and end dates are valid
+        Input: start and end dates
+        Output: Return 0 if valid, return 1 if start date is after the end date
+            Return 1 if either start or end date is empty
+        """
         params = {'start': start, 'end': end}
         if params['start'] and params['end']:
             if int(params['start']) > int(params['end']):
@@ -501,8 +552,12 @@ class capstone_session(db.Model):
             return 0
         return 2
 
-    # Display msg error for inserting dates
     def date_error(self, params):
+        """
+        This method handles error message for inserting dates
+        Input: parameter of dates (start/end dates for midterm/final)
+        Output: error message
+        """
         error_msg = None
         for i in params:
             if params[i]:
@@ -522,9 +577,13 @@ class capstone_session(db.Model):
             return error_msg
         return error_msg
 
-    # Split dates into integer year, month and day
-    # to convert the string to datetime object
     def split_dates(self, params):
+        """
+        Split dates into integer year, month and day
+        to convert the string to datetime object
+        Input: parameter of dates
+        Outout: parameter of datetime objects
+        """
         for i in params:
             if params[i]:
                 params[i] = params[i].split('-')
@@ -533,10 +592,12 @@ class capstone_session(db.Model):
                 params[i] = None
         return params
 
-    # Insert a start and end date for midterm and final review
-    # Input: start and end date for midterm review and final reviews
-    # Output: update the dates in the database
     def insert_dates(self, midterm_start, midterm_end, final_start, final_end, session_id):
+        """
+        Insert a start and end date for midterm and final review
+        Input: start and end date for midterm review and final reviews
+        Output: update the dates in the database
+        """
         review_dates = {'midterm_start': midterm_start,
                         'midterm_end': midterm_end,
                         'final_start': final_start,
@@ -681,10 +742,12 @@ class reports(db.Model):
                                       reports.reviewee == reviewee_id).first()
         return result
 
-    # this method is for getting the reports of an entire team
-    # inputs: tid -- team id of reports to retrieve, is_final - if it's the second term
-    # outputs: result - all report objects for the team
     def get_team_reports(self, tid, is_final):
+        """
+        This method is for getting the reports of an entire team
+        Inputs: tid -- team id of reports to retrieve, is_final - if it's the second term
+        Outputs: result - all report objects for the team
+        """
         try:
             result = reports.query.filter(reports.tid == tid,
                                           reports.is_final == is_final).distinct()
@@ -793,11 +856,13 @@ class reports(db.Model):
 class removed_students(db.Model):
     __table__ = db.Model.metadata.tables['removed_students']
 
-    # Insert removed students into remocved_students table
-    # Input: student info
-    # Output: return False if the info is empty
-    #         Otherwise, add student to the list and return True
     def add_student(self, s):
+        """
+        Insert removed students into remocved_students table
+        Input: student info
+        Output: return False if the info is empty
+                Otherwise, add student to the list and return True
+        """
         if s is None:
             return False
         current_date = datetime.datetime.now()
