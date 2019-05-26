@@ -152,10 +152,10 @@ class ProfDashboard(MethodView):
             while not professor.check_professor(request.form['professor_id']):
                 error = "Enter a valid professor ID"
                 return render_template('addSession.html', error=error, session_id=session_id)
-            while not session.check_dup_session(
-                request.form['start_term'], request.form['start_year'], request.form['professor_id']):
+            while not session.check_dup_session(request.form['start_term'], 
+            request.form['start_year'], request.form['professor_id']):
                 error = "Session already exists"
-                    return render_template('addSession.html', error=error, session_id=session_id)
+                return render_template('addSession.html', error=error, session_id=session_id)
             start_term = request.form.get('start_term')
             start_year = request.form.get('start_year')
             start_term = start_term.replace("_", " ")
