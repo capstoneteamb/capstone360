@@ -187,6 +187,7 @@ class teams(db.Model):
             return None
         return result
 
+    # Return a tid.
     def get_team_from_name(self, team_name, ses_id):
         try:
             result = teams.query.filter(teams.name == team_name,
@@ -383,10 +384,13 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
-    # Get students from a session that do not have a team.
-    # Input: session id to grab students
-    # Output: Students who have no team.
+
     def get_unassigned_students(self, s_id):
+    """
+    Get students from a session that do not have a team.
+    Input: session id to grab students
+    Output: Students who have no team.
+    """
         try:
             tname = ""
             tid = teams.query.filter_by(name=tname, session_id=s_id).first()
