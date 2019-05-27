@@ -7,6 +7,7 @@ from extensions import db, cas
 
 import os
 
+
 def create_app(debug=False):
     app = Flask(__name__)
 
