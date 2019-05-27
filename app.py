@@ -5,24 +5,30 @@ from flask import Flask
 
 from extensions import db, cas
 
+import os
 
-def create_app():
+def create_app(debug=False):
     app = Flask(__name__)
+
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capstone360.db'
     app.config['SECRET_KEY'] = '06ca1f7f68edd3eb7209a5fca2cc6ca0'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+    app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
+    app.config['CAS_AFTER_LOGIN'] = 'dashboard'
+    app.config['CAS_AFTER_LOGOUT'] = 'logout'
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
+
+    if not debug:
+        os.environ['CAPSTONE_SETTINGS'] = '/etc/capstone.prod.cfg'
+        app.config.from_envvar('CAPSTONE_SETTINGS')
+
     app.app_context().push()
     db.init_app(app)
     db.Model.metadata.reflect(db.engine)
 
     # CAS LOGIN
     cas.init_app(app)
-    app.config['CAS_SERVER'] = 'https://auth.cecs.pdx.edu/cas/login'
-    app.config['CAS_AFTER_LOGIN'] = 'dashboard'
-    app.config['CAS_AFTER_LOGOUT'] = 'logout'
-
-    app.jinja_env.trim_blocks = True
-    app.jinja_env.lstrip_blocks = True
 
     register_routes(app)
     return app
@@ -105,5 +111,5 @@ def register_routes(app):
 
 
 if __name__ == '__main__':
-    app = create_app()
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app = create_app(debug=True)
+    app.run(host='0.0.0.0', port=8000)
