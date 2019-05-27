@@ -1,50 +1,48 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div class="add-container">
-            {% if message %}
-            <h3>
-                <div>{{message}}</div>
-                {% if not is_error %}
-                <div style="margin-top: 10px">
-                    <h3><a href="{{ url_for('studentDashboard') }}">Proceed to the Student Page</a></h3>
-                </div>
-                {% endif %}
-            </h3>
-            {% else %}
-            <div class="input-card date-card" style="width: 700px;">
-                <h3>Register for a Capstone Session</h3>
-                <hr>
-                <form action="{{url_for('registerStudent')}}" method="POST">
-                    <p class="heading">Name:</p>
-                        <input type="text" class="form-control" required="required" name="name">
-                    <p class="heading">Email Address:</p>
-                        <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email -->
-                        <input type="email" class="form-control" required="required" name="email_address">
-                    <p class="heading">Session:</p>
-                        <select name="session_id" style="width: 50%;">
-                            {% for session in sessions %}
-                            <option value="{{session['id']}}">{{session['descriptor']}}</option>
-                            {% endfor %}
-                        </select>
-                    <input class="my-btn" type="submit" value='Submit' style="
-                        width: 25%;
-                        background-color: #b7c229;
-                        color: white;
-                        margin: auto;
-                        margin-top: 20px;
-                        margin-left: 0px;
-                    ">
-                    <a href="{{ url_for('index') }}" class="my-btn" style="
-                        text-align: center;
-                        margin: auto;
-                        margin-top: 20px;
-                        margin-right: 0px;">
-                        Cancel
-                    </a>
-                </form>
-                {% endif %}
-                </div>
-            </div>
-	</div>
-
+<div class="add-container">
+    {% if message %}
+    <h3>
+        <div>{{message}}</div>
+        {% if not is_error %}
+        <div style="margin-top: 10px">
+            <h3><a href="{{ url_for('studentDashboard') }}">Proceed to the Student Page</a></h3>
+        </div>
+        {% endif %}
+    </h3>
+    {% else %}
+    <div class="input-card date-card" style="width: 700px;">
+        <h3>Register for a Capstone Session</h3>
+        <hr>
+        <form action="{{url_for('registerStudent')}}" method="POST">
+            <p class="heading">Name:</p>
+                <input type="text" class="form-control" required="required" name="name">
+            <p class="heading">Email Address:</p>
+                <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email -->
+                <input type="email" class="form-control" required="required" name="email_address">
+            <p class="heading">Session:</p>
+                <select name="session_id" style="width: 50%;">
+                    {% for session in sessions %}
+                    <option value="{{session['id']}}">{{session['descriptor']}}</option>
+                    {% endfor %}
+                </select>
+            <input class="my-btn" type="submit" value='Submit' style="
+                width: 25%;
+                background-color: #b7c229;
+                color: white;
+                margin: auto;
+                margin-top: 20px;
+                margin-left: 0px;
+            ">
+            <a href="{{ url_for('index') }}" class="my-btn" style="
+                text-align: center;
+                margin: auto;
+                margin-top: 20px;
+                margin-right: 0px;">
+                Cancel
+            </a>
+        </form>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

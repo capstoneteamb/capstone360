@@ -101,8 +101,11 @@ class teams(db.Model):
         Input: session id of the selected session
         Output: list of teams and their info. from the selected session
         """
-        team = teams.query.filter_by(session_id=session_id).all()
-        return team
+        try:
+            team = teams.query.filter_by(session_id=session_id).all()
+            return team
+        except exc.SQLAlchemyError:
+            return None
 
     def remove_team(self, name, session_id):
         """
