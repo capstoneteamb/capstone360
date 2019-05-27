@@ -1,1 +1,4 @@
 flask
+flask_cas
+flask_sqlalchemy
+psycopg2
