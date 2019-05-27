@@ -30,6 +30,7 @@ def create_app():
 
 def register_routes(app):
     from index import Index
+    from form import review
     from prof_dashboard import ProfDashboard
     from prof_dashboard import AddTeam
     from prof_dashboard import AddStudent
@@ -38,10 +39,10 @@ def register_routes(app):
     from prof_dashboard import AddSession
     from student_dashboard import StudentDashboard
     from student_dashboard import EditStudent
+    from student_register import StudentRegister
     from report import GeneratedProfessorReportView, GeneratedAnonymousReportView
     from view_student import ViewStudent
     from view_review import ViewReview
-    from form import review
 
     app.add_url_rule('/',
                      view_func=Index.as_view('index'))
@@ -89,6 +90,10 @@ def register_routes(app):
     app.add_url_rule('/studentReport/',
                      view_func=GeneratedAnonymousReportView.as_view('studentReport'),
                      methods=['GET'])
+
+    app.add_url_rule('/register/',
+                     view_func=StudentRegister.as_view('registerStudent'),
+                     methods=['GET', 'POST'])
 
     app.add_url_rule('/viewStudent/',
                      view_func=ViewStudent.as_view('viewStudent'),

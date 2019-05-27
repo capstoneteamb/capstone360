@@ -270,19 +270,36 @@ class review(MethodView):
             return render_template('index.html')
         else:
             user_id = validate_student().id
-        test_user = self.confirm_user(user_id, capstone_id)
 
+        # get user's team id
+        tid = self.get_tid(user_id, capstone_id)
+
+        # check if the user is not on the empty team (a.k.a: if the user is not on a team)
+        try:
+            empty_team = gbmodel.teams().get_team_from_name("", capstone_id)
+            if empty_team is not None and tid == empty_team.id:
+                return render_template('review.html',
+                                       mems=None,
+                                       state=None,
+                                       input_error=None,
+                                       fatal_error="You aren't assigned to a team yet")
+        except SQLAlchemyError:
+            return render_template('review.html',
+                                   mems=None,
+                                   state=None,
+                                   input_error=None,
+                                   fatal_error='There was an error verifying you are on a team')
+
+        test_user = self.confirm_user(user_id, capstone_id)
         if test_user is False:
             return render_template('review.html',
                                    mems=None,
                                    state=None,
                                    input_error=None,
                                    fatal_error='You have no open reviews.')
+
         # get user name
         user_name = self.get_self_name(user_id, capstone_id)
-
-        # get user's team id
-        tid = self.get_tid(user_id, capstone_id)
 
         # get user's team members
         try:
