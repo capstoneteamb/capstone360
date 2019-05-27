@@ -95,8 +95,9 @@ def register_routes(app):
                      methods=['POST'])
 
     app.add_url_rule('/viewReview/',
-                 view_func=ViewReview.as_view('viewReview'),
-                 methods=['POST'])
+                     view_func=ViewReview.as_view('viewReview'),
+                     methods=['POST'])
+
 
 if __name__ == '__main__':
     app = create_app()
