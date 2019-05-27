@@ -208,7 +208,6 @@ class ProfDashboard(MethodView):
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
-        # If SET DATE for reviews was submitted (setDate)
         elif 'midterm_start' in request.form:
             # Add midterm/final start/end dates for review form
             # Request start and end dates for midterm and final from setDate.html
