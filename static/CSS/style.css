@@ -55,6 +55,15 @@ h3 {
     display: none;
 }
 
+.lead-card{
+    display: none;
+}
+
+.lead-check{
+    position: absolute;
+    right: 25px;
+} 
+
 .edit-btn{
     cursor: pointer;
 }
@@ -108,7 +117,7 @@ input {
     margin-top: 100px;
 }
 
-.student-card:nth-child(-n+2){
+.student-card:nth-child(-n+3){
     margin-top: 250px !important;
 }
 

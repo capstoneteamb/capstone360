@@ -4,9 +4,9 @@
     <div class="row nav">
         <div class="col-sm" method='POST'>Sessions 
             <form style="display: inline;">{{session_id}}
-                <select name="selected_session" onchange="this.form.submit()">
+                <select class="selected_session" name="selected_session" onchange="this.form.submit()">
                     {% for i in sessions %}
-                    <option value="{{i}}">{{i}}</option>
+                    <option value="{{i}}" name="sessions" data-count="{{loop.index}}">{{i}}</option>
                     {% endfor %}
                     <option selected disabled hidden>Select Term</option>
                 </select>
@@ -32,6 +32,9 @@
     <div class="row button sub-buttons">
         <div class="col-sm"></div>
         <div class="col-sm">
+            <a href="{{ url_for('addSession', session_id=session_id)}}"><button class="my-btn">Add Session</button></a>
+        </div>
+        <div class="col-sm">
             <a href="{{ url_for('addTeam', session_id=session_id)}}"><button class="my-btn">Add Team</button></a>
         </div>
         <div class="col-sm">
@@ -42,6 +45,9 @@
         </div>
         <div class="col-sm">
 		    <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Review Start/End Dates</button></a>
+        </div>
+        <div class="col-sm">
+            <button class="my-btn lead-btn">Set Lead</button>
         </div>
         <div class="col-sm">
             <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>

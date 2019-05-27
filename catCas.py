@@ -31,4 +31,4 @@ def validate_professor():
     found_professors = professors.get_professors(username)
     if not found_professors:
         return False
-    return True
+    return found_professors

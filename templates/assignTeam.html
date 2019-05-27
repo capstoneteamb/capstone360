@@ -3,6 +3,9 @@
 
 <div class="container assign_team-container">
   <div class="student-card display-card">
+  {% if error %}
+    <p><strong>Error:</strong> {{ error }}
+  {% endif %}
   <form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 	{% for student in lists %}
     <p style="padding-top: 25px;">{{student['name']}}</p>
