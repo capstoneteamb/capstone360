@@ -31,7 +31,6 @@ def create_app():
 def register_routes(app):
     from index import Index
     from prof_dashboard import ProfDashboard
-    from prof_dashboard import Dashboard
     from prof_dashboard import AddTeam
     from prof_dashboard import AddStudent
     from prof_dashboard import RemoveTeam
@@ -99,3 +98,6 @@ def register_routes(app):
                  view_func=ViewReview.as_view('viewReview'),
                  methods=['POST'])
 
+if __name__ == '__main__':
+    app = create_app()
+    app.run(host='0.0.0.0', port=8000, debug=True)
