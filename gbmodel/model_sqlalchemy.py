@@ -384,13 +384,12 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
-
     def get_unassigned_students(self, s_id):
-    """
-    Get students from a session that do not have a team.
-    Input: session id to grab students
-    Output: Students who have no team.
-    """
+        """
+        Get students from a session that do not have a team.
+        Input: session id to grab students
+        Output: Students who have no team.
+        """
         try:
             tname = ""
             tid = teams.query.filter_by(name=tname, session_id=s_id).first()
