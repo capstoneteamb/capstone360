@@ -16,17 +16,14 @@
         <a class="col-sm edit-btn">
             <div>Edit</div>
         </a>
-        <div class="col-sm">
-            <div>Generate Reports</div>
+        <div class="col-sm">Generate Reports
             <!-- https://stackoverflow.com/questions/12287672/links-in-select-dropdown-options -->
             <!-- I got some info from here too: https://stackoverflow.com/questions/647282/is-there-an-onselect-event-or-equivalent-for-html-select -->
-            <div>
-                <select onChange="reportLink=this.value; this.selectedIndex=0; window.location.href=reportLink;">
-                    <option selected disabled hidden>Select Report Type</option>
-                    <option value="{{ url_for('studentReport', session_id=session_id, is_final=False) }}">Midterm</option>
-                    <option value="{{ url_for('studentReport', session_id=session_id, is_final=True) }}">Final</option>
-                </select>
-            </div>
+            <select onChange="reportLink=this.value; this.selectedIndex=0; window.location.href=reportLink;">
+                <option selected disabled hidden>Select Report Type</option>
+                <option value="{{ url_for('studentReport', session_id=session_id, is_final=False) }}">Midterm</option>
+                <option value="{{ url_for('studentReport', session_id=session_id, is_final=True) }}">Final</option>
+            </select>
         </div>
         <a class="col-sm" href="{{ url_for('cas.logout')}}">
             <div>Logout</div>

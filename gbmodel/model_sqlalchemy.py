@@ -222,7 +222,7 @@ class students(db.Model):
             return False
         return True
 
-    def insert_student(self, name, email_address, id, session_id, t_name=None):
+    def insert_student(self, name, email_address, id, session_id, t_name):
         """
         Add new student
         Input: student name, student email address, student id, team name and id of the selected session
@@ -231,8 +231,6 @@ class students(db.Model):
         """
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
-
-        # Add student to table
         new_student = students(id=id,
                                tid=tid,
                                session_id=session_id,
