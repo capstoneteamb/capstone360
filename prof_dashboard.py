@@ -344,7 +344,7 @@ class assignTeam(MethodView):
         unassigned_students = students_table.get_unassigned_students(s_id)
         if unassigned_students is None:
             error = "No students unassigned to a team."
-            return render_template('errorMsg.html', msg=error)
+            return render_template('errorPage.html', msg=error)
         sessions = team_table.dashboard(s_id)
         return render_template('assignTeam.html',
                                lists=unassigned_students,
