@@ -6,7 +6,7 @@
 		{% if error %}
 			<p><strong>Error:</strong> {{ error }}
 		{% endif %}
-		<form action="{{ url_for('dashboard', session_id=session_id) }}" method=POST>
+		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 			<p class="heading">Student Name: <input type=text required='required' name=student_name></p>
 			<p class="heading">Student ID: <input type=text required='required' name=student_id></p>
 			<p class="heading">Student Email Address: <input type=text name=student_email></p>
@@ -22,7 +22,7 @@
 					padding: 10px 20px;
 					cursor: pointer;"></p>	
 		</form>
-		<a href="{{ url_for('dashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+		<a href="{{ url_for('profDashboard', session_id=session_id) }}" ><button class="my-cancel-btn" style="margin-top: 6px;">Cancel</button></a>
 	</div>
 	</div>
 

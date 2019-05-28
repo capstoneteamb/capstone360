@@ -29,6 +29,7 @@
 <section class="content">
     <form method="post">
         <div class="table-responsive" style="width: 100%; overflow-x:auto; overflow-y:auto">
+            <input type="hidden" value={{user_id}} name=user_id>
             <table class="table table-striped" style="font-size: 12px">
                 {% for i in range(15)%}
                 <tr>
@@ -51,7 +52,16 @@
                                     <div class="custom-control custom-radio">
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
                                             name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
-                                            value="{{5-j}}" required>
+                                            value="{{5-j}}"
+                                            {% for k in data %}
+                                                {% set test = code_fields[i]~'_'~mem['id'] %}
+                                                {% if k[test] is defined %}
+                                                    {%if k[test] == 5-j %}
+                                                        checked
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            required>
                                         <label class="custom-control-label"
                                             for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
                                     </div>
@@ -75,7 +85,16 @@
                                     <div class="custom-control custom-radio">
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
                                             name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
-                                            value="{{5-j}}" required>
+                                            value="{{5-j}}" 
+                                            {% for k in data %}
+                                                {% set test = code_fields[i]~'_'~mem['id'] %}
+                                                {% if k[test] is defined %}
+                                                    {%if k[test] == 5-j %}
+                                                        checked
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            required>
                                         <label class="custom-control-label"
                                             for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
                                     </div>
@@ -87,29 +106,63 @@
                     </td>
                     {% elif i < 12 %}
                     <td>
-                        <input type="text" placeholder="0" class="form-control" name="{{code_fields[i]}}_{{mem['id']}}"
-                            id="{{code_fields[i]}}_{{mem['id']}}" required>
+                        <input type="text" placeholder="Enter Value 0-100" class="form-control" name="{{code_fields[i]}}_{{mem['id']}}"
+                            id="{{code_fields[i]}}_{{mem['id']}}" 
+                            {% for k in data %}
+                                {% set test = code_fields[i]~'_'~mem['id'] %}
+                                {% if k[test] is defined %}
+                                    value="{{k[test]}}"
+                                {% endif %}
+                            {% endfor %}
+                            required>
                     </td>
                     {% else %}
                     <td>
+                        {% if is_done == 1 -%}
+                        {% set test = code_fields[i]~'_'~mem['id'] %}
+                        <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
+                            name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
+                            required>
+                        {% for k in data -%}
+                        {% if k[test] is defined -%}{{k[test]}}{%- endif %}
+                        {%- endfor %}
+                        </textarea>
+                        {% else %}
                         <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
                             name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
                             required></textarea>
+                        {%- endif %}
                     </td>
-                    {% endif %}
-                    {% endfor %}
+                    {%- endif %}
+                    {%- endfor %}
                 </tr>
                 {% endfor %}
             </table>
         </div>
         <br>
         <label for="learned">What you learned</label>
+        {% if is_done == 1 -%}
+        <textarea placeholder="What did you learn?" class="form-control" name="learned" id="learned" required>
+        {% for k in data -%}
+        {% if k['learned'] is defined -%}{{k['learned']}}{% else %}{%- endif %}
+        {% endfor -%}
+        </textarea>
+        {% else %}
         <textarea placeholder="What did you learn?" class="form-control" name="learned" id="learned" required></textarea>
-        {% if state == 'final' %}
+        {%- endif %}
+        {% if state == 'final' -%}
         <br>
+        {% if is_done == 1 -%}
         <label for="proud">Are you proud of your accomplishment for this project?</label>
+        <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required>
+        {% for k in data -%}
+        {% if k['proud'] is defined -%}{{k['proud']}}{%- endif %}
+        {%- endfor %}
+        </textarea>
+        {% else %}
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required></textarea>
-        {% endif %}
+        {%- endif %}
+        {%- endif %}
         <br>
         <input type="submit" value="Submit">
     </form>

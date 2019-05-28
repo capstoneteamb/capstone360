@@ -1,2 +1,8 @@
 flask
+<<<<<<< HEAD
 cryptography
+=======
+flask_cas
+flask_sqlalchemy
+psycopg2
+>>>>>>> c2445b77006c13507a42ed3350ed514b50f9b375

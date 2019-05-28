@@ -4,9 +4,9 @@
     <div class="row nav">
         <div class="col-sm" method='POST'>Sessions 
             <form style="display: inline;">{{session_id}}
-                <select name="selected_session" onchange="this.form.submit()">
+                <select class="selected_session" name="selected_session" onchange="this.form.submit()">
                     {% for i in sessions %}
-                    <option value="{{i}}">{{i}}</option>
+                    <option value="{{i}}" name="sessions" data-count="{{loop.index}}">{{i}}</option>
                     {% endfor %}
                     <option selected disabled hidden>Select Term</option>
                 </select>
@@ -17,10 +17,12 @@
             <div>Edit</div>
         </a>
         <div class="col-sm">Generate Reports
-            <select name="report_team">
-                {% for t in teams %}
-                    <option value= "reportList/{{t[0]}}">{{t[1]}}</option>
-                {% endfor %}
+            <!-- https://stackoverflow.com/questions/12287672/links-in-select-dropdown-options -->
+            <!-- I got some info from here too: https://stackoverflow.com/questions/647282/is-there-an-onselect-event-or-equivalent-for-html-select -->
+            <select onChange="reportLink=this.value; this.selectedIndex=0; window.location.href=reportLink;">
+                <option selected disabled hidden>Select Report Type</option>
+                <option value="{{ url_for('studentReport', session_id=session_id, is_final=False) }}">Midterm</option>
+                <option value="{{ url_for('studentReport', session_id=session_id, is_final=True) }}">Final</option>
             </select>
         </div>
         <a class="col-sm" href="{{ url_for('cas.logout')}}">
@@ -30,7 +32,16 @@
     <div class="row button sub-buttons">
         <div class="col-sm"></div>
         <div class="col-sm">
+            <a href="{{ url_for('addSession', session_id=session_id)}}"><button class="my-btn">Add Session</button></a>
+        </div>
+        <div class="col-sm">
+            <a href="{{ url_for('removeSession', session_id=session_id)}}"><button class="my-btn">Remove Session</button></a>
+        </div>
+        <div class="col-sm">
             <a href="{{ url_for('addTeam', session_id=session_id)}}"><button class="my-btn">Add Team</button></a>
+        </div>
+        <div class="col-sm">
+            <a href="{{ url_for('assignTeam', session_id=session_id)}}"><button class="my-btn">Assign Team</button></a>
         </div>
         <div class="col-sm">
             <button class="my-btn remove-btn" style="background-color: #ff9e16">Remove</button>
@@ -39,7 +50,10 @@
 		    <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Review Start/End Dates</button></a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('dashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+            <button class="my-btn lead-btn">Set Lead</button>
+        </div>
+        <div class="col-sm">
+            <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
         </div>
         <div class="col-sm"></div>
     </div>
