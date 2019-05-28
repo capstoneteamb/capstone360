@@ -32,6 +32,7 @@
                     <p>
                         {% if review_for_student['completed'][i] %}
                         <form action="{{url_for('viewReview')}}" method="POST">
+                            <input type="hidden" name="session_id" value="{{session_id}}">
                             <input type="hidden" name="reviewer_id" value="{{student['id']}}">
                             <input type="hidden" name="reviewee_id" value="{{review_for_student['reviewee_id']}}">
                             <input type="hidden" name="is_final" value="{{i}}">

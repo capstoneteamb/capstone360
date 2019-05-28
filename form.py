@@ -276,8 +276,8 @@ class review(MethodView):
 
         # check if the user is not on the empty team (a.k.a: if the user is not on a team)
         try:
-            empty_team = gbmodel.teams().get_team_from_name("", capstone_id)
-            if empty_team is not None and tid == empty_team.id:
+            empty_team = gbmodel.teams().get_tid_from_name("", capstone_id)
+            if tid == empty_team:
                 return render_template('review.html',
                                        mems=None,
                                        state=None,
