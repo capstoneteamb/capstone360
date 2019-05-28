@@ -30,32 +30,30 @@
         </a>
     </div>
     <div class="row button sub-buttons">
-        <div class="col-sm"></div>
         <div class="col-sm">
-            <a href="{{ url_for('addSession', session_id=session_id)}}"><button class="my-btn">Add Session</button></a>
+            <a href="{{ url_for('addSession', session_id=session_id)}}">Add Session</a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('removeSession', session_id=session_id)}}"><button class="my-btn">Remove Session</button></a>
+            <a href="{{ url_for('removeSession', session_id=session_id)}}">Remove Session</a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('addTeam', session_id=session_id)}}"><button class="my-btn">Add Team</button></a>
+            <a href="{{ url_for('addTeam', session_id=session_id)}}">Add Team</a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('assignTeam', session_id=session_id)}}"><button class="my-btn">Assign Team</button></a>
+            <a href="{{ url_for('assignTeam', session_id=session_id)}}">Assign Team</a>
         </div>
         <div class="col-sm">
-            <button class="my-btn remove-btn" style="background-color: #ff9e16">Remove</button>
+            <a href="javascript:void(0)" class="remove-btn">Remove</a>
         </div>
         <div class="col-sm">
-		    <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Review Start/End Dates</button></a>
+		    <a href="{{ url_for('setDate', session_id=session_id)}}">Set Review Dates</a>
         </div>
         <div class="col-sm">
-            <button class="my-btn lead-btn">Set Lead</button>
+            <a href="javascript:void(0)" class="lead-btn">Set Lead</a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+            <a href="{{ url_for('profDashboard', session_id=session_id) }}">Cancel</a>
         </div>
-        <div class="col-sm"></div>
     </div>
 </div>
 {% endblock %}
