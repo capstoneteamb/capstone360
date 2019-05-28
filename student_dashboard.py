@@ -34,7 +34,7 @@ class StudentDashboard(MethodView):
         """
         if validate_student() is False:
             msg = "Student not found"
-            return render_template('errorMsg.html', msg=msg)
+            return render_template('errorMsg.html', msg=msg, student_register=True)
         else:
             student_name = validate_student().name
             user_name = validate_student().id

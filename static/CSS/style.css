@@ -235,6 +235,31 @@ input {
     transform: translateX(-50%);
 }
 
+.login-error-hero{
+    width: 100%;
+    height: 450px;
+    background-color: #313036;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+}
+
+.login-error-h3{
+    margin-top: 70px;
+    margin-bottom: 30px;
+}
+
+.login-error-link{
+    width: 50%;
+    margin-left: 25%;
+    color: white;
+    margin-top: 30px;
+    background-color: #b7c229;
+    color: white;
+    padding: 5px 22px;
+    border-radius: 5px;
+}
+
 .student-login-btn{
     color: white;
     position: absolute;

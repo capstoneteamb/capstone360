@@ -133,6 +133,10 @@ class ProfDashboard(MethodView):
             # Remove a team in a session
             # Get team name in current session from profDashboard.html
             team_name = request.form.get('removed_team')
+            # There was a problem removing teams with blank names, so (in remove team requests) a '_'
+            # character was added to the beginning of the name. We will want to remove it before we continue
+            # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
+            team_name = team_name[1:]
             team_name = team_name.replace("_", " ")
             # Remove team and students in the team from database
             team.remove_team(team_name, session_id)
@@ -168,6 +172,10 @@ class ProfDashboard(MethodView):
                 'profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
         # If REMOVE SESSION was submitted (removed_session)
         elif 'removed_session' in request.form:
+            while not session.check_session_id_valid(request.form['removed_session']):
+                error = "Invalid session ID"
+                return render_template('profDashboard.html',
+                                       lists=lists, sessions=sessions, session_id=session_id)
             remove_session = request.form.get('removed_session')
             remove_session = remove_session.replace("_", " ")
             session.remove_session(session_id)
@@ -271,9 +279,17 @@ class AddSession(MethodView):
 
 
 class RemoveSession(MethodView):
+    """
+    This class handles get requests for removeSession.html
+    """
     @login_required
     def get(self):
-        # Get session id from dashboard
+        """
+        This method handles get requests go removeSession.html
+        Input: only self
+        Output: rendering the removeSession.html template with session id
+                from profDasboard.html
+        """
         session_id = request.args.get('session_id')
         return render_template('removeSession.html', error=None, session_id=session_id)
 

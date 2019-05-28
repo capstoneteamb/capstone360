@@ -1,7 +1,7 @@
 import os
 import sys
 import datetime
-from app import db, engine # noqa
+from extensions import db
 from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
@@ -101,8 +101,11 @@ class teams(db.Model):
         Input: session id of the selected session
         Output: list of teams and their info. from the selected session
         """
-        team = teams.query.filter_by(session_id=session_id).all()
-        return team
+        try:
+            team = teams.query.filter_by(session_id=session_id).all()
+            return team
+        except exc.SQLAlchemyError:
+            return None
 
     def remove_team(self, name, session_id):
         """
@@ -183,6 +186,19 @@ class teams(db.Model):
         """
         try:
             result = teams.query.filter(teams.id == team_id).first()
+        except exc.SQLAlchemyError:
+            return None
+        return result
+
+    def get_team_from_name(self, team_name, ses_id):
+        """
+        Get the team with the given name in the session identified by the given session id
+        Input: self, team_name, session_id
+        Output: the team, if we found it
+        """
+        try:
+            result = teams.query.filter(teams.name == team_name,
+                                        teams.session_id == ses_id).first()
         except exc.SQLAlchemyError:
             return None
         return result
@@ -448,22 +464,24 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
-    # Removes an entire session with all the teams and students
-    # Input: session id
     def remove_session(self, session_id):
-        team = teams()
-        session_teams = team.query.filter_by(session_id=session_id).all()
-        del_session = capstone_session.query.filter(capstone_session.id == session_id).first()
-        for t in session_teams:
-            team_name = t.name
-            team.remove_team(team_name, session_id)
-        db.session.delete(del_session)
-        db.session.commit()
+        """
+        Removes an entire session with all the teams and students
+        Input: session id
+        """
+        try:
+            team = teams()
+            session_teams = team.query.filter_by(session_id=session_id).all()
+            del_session = capstone_session.query.filter(capstone_session.id == session_id).first()
+            for t in session_teams:
+                team_name = t.name
+                team.remove_team(team_name, session_id)
+            db.session.delete(del_session)
+            db.session.commit()
+        except exc.SQLAlchemyError:
+            return None
         return True
 
-    # Checks if the name of the term is valid
-    # Input: start term of new session
-    # Output: return True if valid, False otherwise
     def get_sess_by_id(self, id):
         """
         this method is for getting a specific capstone session object
@@ -498,6 +516,16 @@ class capstone_session(db.Model):
         """
         check_year = s_year.isdigit()
         if not check_year:
+            return False
+        return True
+    
+    def check_session_id_valid(self, v_id):
+        """
+        Checks if the returned session ID is greater than
+        or equal to 0
+        """
+        check_id = v_id.isdigit()
+        if check_id < 0:
             return False
         return True
 
@@ -553,12 +581,61 @@ class capstone_session(db.Model):
             lists.append(temp)
         return lists
 
+    def get_active_sessions(self):
+        """
+        Get a list of active capstone sessions
+        Input: self
+        Output: the list of currently active capstone sessions
+        """
+        # Calculate the start term and year of the sessions we expect to be active
+        currentDate = datetime.datetime.now()
+        month = int(currentDate.month)
+        if month in range(1, 3):
+            # Fall term of last year
+            start_term_1 = "Fall"
+            start_year_1 = currentDate.year - 1
+
+            # Winter term of current year
+            start_term_2 = "Winter"
+            start_year_2 = currentDate.year
+        else:
+            # Both terms will start in the same year
+            start_year_1 = currentDate.year
+            start_year_2 = currentDate.year
+
+            # Winter and Spring terms
+            if month in range(3, 6):
+                start_term_1 = "Winter"
+                start_term_2 = "Spring"
+            # Spring and Summer terms
+            elif month in range(6, 9):
+                start_term_1 = "Spring"
+                start_term_2 = "Summer"
+            # Summer and Fall terms
+            else:
+                start_term_1 = "Summer"
+                start_term_2 = "Fall"
+
+        # Query the db for active sessions using the start term and year information we calculated above
+        try:
+            # https://stackoverflow.com/questions/7942547/using-or-in-sqlalchemy
+            # Algorithm: SELECT * FROM CAPSTONE_SESSION WHERE
+            #               (start_term = start_term_1 AND start_year = start_year_1)
+            #                 OR
+            #               (start_term = start_term_2 AND start_year = start_year_2)
+            return capstone_session.query.filter(((capstone_session.start_year == start_year_1) &
+                                                  (capstone_session.start_term == start_term_1)) |
+                                                 ((capstone_session.start_year == start_year_2) &
+                                                  (capstone_session.start_term == start_term_2))).all()
+        except exc.SQLAlchemyError:
+            return None
+
     def check_dates(self, start, end):
         """
         Check if start and end dates are valid
         Input: start and end dates
         Output: Return 0 if valid, return 1 if start date is after the end date
-            Return 1 if either start or end date is empty
+                Return 1 if either start or end date is empty
         """
         params = {'start': start, 'end': end}
         if params['start'] and params['end']:
