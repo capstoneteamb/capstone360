@@ -156,7 +156,8 @@ class ProfDashboard(MethodView):
             while not professor.check_professor(request.form['professor_id']):
                 error = "Enter a valid professor ID"
                 return render_template('addSession.html', error=error, session_id=session_id)
-            while not session.check_dup_session(request.form['start_term'], request.form['start_year']):
+            while not session.check_dup_session(request.form['start_term'], request.form['start_year'],
+                                                request.form['professor_id']):
                 error = "Session already exists"
                 return render_template('addSession.html', error=error, session_id=session_id)
             start_term = request.form.get('start_term')
@@ -169,6 +170,22 @@ class ProfDashboard(MethodView):
             lists, sessions = team.dashboard(session_id)
             return render_template(
                 'profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+        # If REMOVE SESSION was submitted (removed_session)
+        elif 'removed_session' in request.form:
+            while not session.check_session_id_valid(request.form['removed_session']):
+                error = "Invalid session ID"
+                return render_template('profDashboard.html',
+                                       lists=lists, sessions=sessions, session_id=session_id)
+            remove_session = request.form.get('removed_session')
+            remove_session = remove_session.replace("_", " ")
+            session.remove_session(session_id)
+            session_id = session.get_max() - 1
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        # If ADD TEAM was submitted (addTeam)
         elif 'team_name' in request.form:
             # Add a new team to a current session
             # Request new team name from addTeam.html
@@ -259,6 +276,22 @@ class AddSession(MethodView):
         """
         session_id = request.args.get('session_id')
         return render_template('addSession.html', error=None, session_id=session_id)
+
+
+class RemoveSession(MethodView):
+    """
+    This class handles get requests for removeSession.html
+    """
+    @login_required
+    def get(self):
+        """
+        This method handles get requests go removeSession.html
+        Input: only self
+        Output: rendering the removeSession.html template with session id
+                from profDasboard.html
+        """
+        session_id = request.args.get('session_id')
+        return render_template('removeSession.html', error=None, session_id=session_id)
 
 
 class AddTeam(MethodView):
