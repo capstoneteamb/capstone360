@@ -33,7 +33,13 @@ h3 {
 
 .row.nav{
     background-color: #6a6a6d;
+    display: flex;
+    align-items: center;
 }
+
+/* .remove-student-btn{
+    display: none;
+} */
 
 .nav{
     text-align: center;
@@ -49,7 +55,36 @@ h3 {
 }
 
 .sub-buttons, .add-student-btn{
-    visibility: hidden;
+    display:none;
+}
+
+.sub-buttons{
+    height: 50px;
+    color: #fff;
+    background-color: #e0ee2a;
+    font-size: 16px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 1000px){
+    .sub-buttons{
+        font-size: 11px;
+    }
+}
+
+.sub-buttons a{
+    color: grey;
+}
+
+.sub-buttons .col-sm-2{
+    display: inline-block;
+    width: 24%;
+}
+
+.sub-buttons .col-sm:nth-child(-n+7){
+    border-right: 1px solid rgba(0,0,0, 0.3);
 }
 .remove-card{
     display: none;
@@ -161,9 +196,6 @@ input {
     color: grey;
     border: none;
     border-radius:5px;
-    /* padding: 10px 20px;
-    margin-top: 25px;
-    margin-right: 200px; */
     font-size: 12px;
     cursor: pointer;
     float: left;
@@ -233,31 +265,6 @@ input {
     left:50%;
     top: 70px;
     transform: translateX(-50%);
-}
-
-.login-error-hero{
-    width: 100%;
-    height: 450px;
-    background-color: #313036;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-}
-
-.login-error-h3{
-    margin-top: 70px;
-    margin-bottom: 30px;
-}
-
-.login-error-link{
-    width: 50%;
-    margin-left: 25%;
-    color: white;
-    margin-top: 30px;
-    background-color: #b7c229;
-    color: white;
-    padding: 5px 22px;
-    border-radius: 5px;
 }
 
 .student-login-btn{
