@@ -80,7 +80,7 @@ def register_routes(app):
                      methods=['GET', 'POST'])
 
     app.add_url_rule('/removeSession/',
-                     iview_func=RemoveSession.as_view('removeSession'),
+                     view_func=RemoveSession.as_view('removeSession'),
                      methods=['GET', 'POST'])
 
     app.add_url_rule('/addTeam/',
