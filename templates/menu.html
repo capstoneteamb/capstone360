@@ -4,9 +4,9 @@
     <div class="row nav">
         <div class="col-sm" method='POST'>Sessions 
             <form style="display: inline;">{{session_id}}
-                <select name="selected_session" onchange="this.form.submit()">
+                <select class="selected_session" name="selected_session" onchange="this.form.submit()">
                     {% for i in sessions %}
-                    <option value="{{i}}">{{i}}</option>
+                    <option value="{{i}}" name="sessions" data-count="{{loop.index}}">{{i}}</option>
                     {% endfor %}
                     <option selected disabled hidden>Select Term</option>
                 </select>
@@ -30,23 +30,33 @@
         </a>
     </div>
     <div class="row button sub-buttons">
-        <div class="col-sm"></div>
         <div class="col-sm">
-            <a href="{{ url_for('addTeam', session_id=session_id)}}"><button class="my-btn">Add Team</button></a>
-        </div>
-        <div class="col-sm"> <!-- Next 3 lines are cclevinger's -->
-            <a href="{{ url_for('addTeamCSV', session_id=session_id)}}"><button class="my-btn">Import Students</button></a>
+            <a href="{{ url_for('addSession', session_id=session_id)}}">Add Session</a>
         </div>
         <div class="col-sm">
-            <button class="my-btn remove-btn" style="background-color: #ff9e16">Remove</button>
+            <a href="{{ url_for('addTeamCSV', session_id=session_id)}}">Import Students</a>
         </div>
         <div class="col-sm">
-		    <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Review Start/End Dates</button></a>
+            <a href="{{ url_for('removeSession', session_id=session_id)}}">Remove Session</a>
         </div>
         <div class="col-sm">
-            <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+            <a href="{{ url_for('addTeam', session_id=session_id)}}">Add Team</a>
         </div>
-        <div class="col-sm"></div>
+        <div class="col-sm">
+            <a href="{{ url_for('assignTeam', session_id=session_id)}}">Assign Team</a>
+        </div>
+        <div class="col-sm">
+            <a href="javascript:void(0)" class="remove-btn">Remove</a>
+        </div>
+        <div class="col-sm">
+		    <a href="{{ url_for('setDate', session_id=session_id)}}">Set Review Dates</a>
+        </div>
+        <div class="col-sm">
+            <a href="javascript:void(0)" class="lead-btn">Set Lead</a>
+        </div>
+        <div class="col-sm">
+            <a href="{{ url_for('profDashboard', session_id=session_id) }}">Cancel</a>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+
+	<h3>Add Session</h3>
+	<div class="add-container">
+	<div class="input-card">
+		{% if error %}
+			<p><strong>Error:</strong> {{ error }}
+		{% endif %}
+		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
+			<p class="heading">Start Term: <input type=text required='required' name=start_term></p>
+			<p class="heading">Start Year: <input type=text required='required' name=start_year></p>
+			<p class="heading">Assign to professor ID: <input type=text required='required' name=professor_id></p>
+			<input type="hidden" value={{session_id}} name=session_id>
+			<p><input class="my-btn" type=submit value='Add Session' style="
+				background-color: #b7c229;
+				color: white;
+				border: none;
+				border-radius:5px;
+				padding: 10px 20px;
+				cursor: pointer;
+				margin-right: 30px;"></p>	
+				<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+		</form>
+		
+		
+	</div>
+	</div>
+
+{% endblock %}

@@ -33,7 +33,13 @@ h3 {
 
 .row.nav{
     background-color: #6a6a6d;
+    display: flex;
+    align-items: center;
 }
+
+/* .remove-student-btn{
+    display: none;
+} */
 
 .nav{
     text-align: center;
@@ -49,11 +55,49 @@ h3 {
 }
 
 .sub-buttons, .add-student-btn{
-    visibility: hidden;
+    display:none;
+}
+
+.sub-buttons{
+    height: 50px;
+    color: #fff;
+    background-color: #e0ee2a;
+    font-size: 16px;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 1000px){
+    .sub-buttons{
+        font-size: 11px;
+    }
+}
+
+.sub-buttons a{
+    color: grey;
+}
+
+.sub-buttons .col-sm-2{
+    display: inline-block;
+    width: 24%;
+}
+
+.sub-buttons .col-sm:nth-child(-n+7){
+    border-right: 1px solid rgba(0,0,0, 0.3);
 }
 .remove-card{
     display: none;
 }
+
+.lead-card{
+    display: none;
+}
+
+.lead-check{
+    position: absolute;
+    right: 25px;
+} 
 
 .edit-btn{
     cursor: pointer;
@@ -108,7 +152,7 @@ input {
     margin-top: 100px;
 }
 
-.student-card:nth-child(-n+2){
+.student-card:nth-child(-n+3){
     margin-top: 250px !important;
 }
 
@@ -152,9 +196,6 @@ input {
     color: grey;
     border: none;
     border-radius:5px;
-    /* padding: 10px 20px;
-    margin-top: 25px;
-    margin-right: 200px; */
     font-size: 12px;
     cursor: pointer;
     float: left;
