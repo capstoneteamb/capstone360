@@ -204,6 +204,31 @@ class ProfDashboard(MethodView):
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
+        # if ASSIGNED TEAMS for to place new students on teams was submitted
+        elif 'assigned_teams' in request.form:
+            size = request.form.get('size')
+            size = int(size)
+            unassigned_students = student.get_unassigned_students(session_id)
+            team_names = []
+            i = 1
+            while i <= size:
+                team_name = (request.form.get('assigned_team'+str(i)))
+                if team.check_dup_team(team_name, session_id) is False:
+                    t_id = team.get_tid_from_name(team_name, session_id)
+                    student.update_team(unassigned_students[i-1].name,
+                                        session_id, t_id)
+                else:
+                    team.insert_team(session_id, team_name)
+                    t_id = team.get_tid_from_name(team_name, session_id)
+                    student.update_team(unassigned_students[i-1].name,
+                                        session_id, t_id)
+                team_names.append(team_name)
+                i += 1
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
         elif 'midterm_start' in request.form:
             # Add midterm/final start/end dates for review form
             # Request start and end dates for midterm and final from setDate.html
@@ -342,3 +367,24 @@ class SetDate(MethodView):
         """
         session_id = request.args.get('session_id')
         return render_template('setDate.html', error=None, session_id=session_id)
+
+
+class AssignTeam(MethodView):
+    @login_required
+    def get(self):
+        s_id = request.args.get('session_id')
+        if validate_professor is False:
+            msg = "Professor not found"
+            return render_template('errorMsg.html', msg=msg)
+        students_table = gbmodel.students()
+        team_table = gbmodel.teams()
+        unassigned_students = students_table.get_unassigned_students(s_id)
+        if unassigned_students is None:
+            error = "No students unassigned to a team."
+            return render_template('errorPage.html', msg=error)
+        sessions = team_table.dashboard(s_id)
+        return render_template('assignTeam.html',
+                               lists=unassigned_students,
+                               sessions=sessions,
+                               session_id=s_id,
+                               error=None)

@@ -190,7 +190,8 @@ class teams(db.Model):
             return None
         return result
 
-    def get_team_from_name(self, team_name, ses_id):
+    # Return a tid.
+    def get_tid_from_name(self, team_name, ses_id):
         """
         Get the team with the given name in the session identified by the given session id
         Input: self, team_name, session_id
@@ -201,7 +202,7 @@ class teams(db.Model):
                                         teams.session_id == ses_id).first()
         except exc.SQLAlchemyError:
             return None
-        return result
+        return result.id
 
 
 class students(db.Model):
@@ -353,6 +354,29 @@ class students(db.Model):
         else:
             return result
 
+    # Get the single student matching the id passed in
+    # input: student id of the student to retrieve
+    # output: the student's capstone session id value
+    def get_student(self, s_id):
+        try:
+            student = students.query.filter_by(id=s_id).first()
+        except exc.SQLAlchemyError:
+            return None
+        return student
+
+    def update_team(self, name, s_id, t_id):
+        try:
+            students.query.filter_by(name=name,
+                                     session_id=s_id).\
+                                     update(dict(tid=t_id))
+            db.session.commit()
+            return True
+        except exc.SQLAlchemyError:
+            return False
+
+    # Check if the student passed in by id is the team lead
+    # Input: student id of the student to check
+    # Output: True if the student is a team lead, False otherwise
     def check_team_lead(self, s_id, sess_id):
         """
         Check if the student passed in by id is the team lead
@@ -368,6 +392,29 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
+    def get_unassigned_students(self, s_id):
+        """
+        Get students from a session that do not have a team.
+        Input: session id to grab students
+        Output: Students who have no team.
+        """
+        try:
+            tname = ""
+            tid = teams.query.filter_by(name=tname, session_id=s_id).first()
+            tid = tid.id
+            unassigned_students = students.query.filter_by(session_id=s_id,
+                                                           tid=tid).all()
+        except exc.SQLAlchemyError:
+            unassigned_students = None
+            return unassigned_students
+        except AttributeError:
+            unassigned_students = None
+            return unassigned_students
+        return unassigned_students
+
+    # Allows students to edit their name and email address
+    # Input: student's new email and name and current user id
+    # Output: apply new name and email to students in student table
     def edit_student(self, id, new_name, new_email):
         """
         Allows students to edit their name and email address

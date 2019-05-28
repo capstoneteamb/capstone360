@@ -44,6 +44,7 @@ def register_routes(app):
     from prof_dashboard import RemoveTeam
     from prof_dashboard import SetDate
     from prof_dashboard import AddSession
+    from prof_dashboard import AssignTeam
     from prof_dashboard import RemoveSession
     from student_dashboard import StudentDashboard
     from student_dashboard import EditStudent
@@ -73,6 +74,10 @@ def register_routes(app):
 
     app.add_url_rule('/addStudent/',
                      view_func=AddStudent.as_view('addStudent'),
+                     methods=['GET', 'POST'])
+
+    app.add_url_rule('/assignTeam/',
+                     view_func=AssignTeam.as_view('assignTeam'),
                      methods=['GET', 'POST'])
 
     app.add_url_rule('/addSession/',
