@@ -92,7 +92,7 @@ class StudentRegister(MethodView):
             # The student won't be on a team when they first sign up, so we have to assign them to the
             # empty team for the target session. We start by checking if the empty team exists. If the
             # target session doesn't have one yet, we create it
-            if teams.get_team_from_name("", session_id) is None:
+            if teams.get_tid_from_name("", session_id) is None:
                 teams.insert_team(session_id, "")
 
             # Insert the student into the database (as a part of the empty team)

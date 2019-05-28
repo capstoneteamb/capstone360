@@ -202,7 +202,11 @@ class teams(db.Model):
                                         teams.session_id == ses_id).first()
         except exc.SQLAlchemyError:
             return None
-        return result.id
+
+        if result is not None:
+            return result.id
+        else:
+            return None
 
 
 class students(db.Model):
