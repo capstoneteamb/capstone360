@@ -518,7 +518,7 @@ class capstone_session(db.Model):
         if not check_year:
             return False
         return True
-    
+
     def check_session_id_valid(self, v_id):
         """
         Checks if the returned session ID is greater than
