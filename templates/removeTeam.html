@@ -6,7 +6,7 @@
 	<div class="input-card">
 		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 			<p class="heading" style="display: inline-block;">Team Name: {{team_name}}</p> 
-			<input type="hidden" value={{team_name}} name=removed_team>
+			<input type="hidden" value={{"_" + team_name}} name=removed_team>
 			<input type="hidden" value={{session_id}} name=session_id>	
 			<p><input class="my-btn" type=submit value='Remove Team' style="
 				background-color: #ff9e16";

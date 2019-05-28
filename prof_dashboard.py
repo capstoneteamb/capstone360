@@ -133,6 +133,10 @@ class ProfDashboard(MethodView):
             # Remove a team in a session
             # Get team name in current session from profDashboard.html
             team_name = request.form.get('removed_team')
+            # There was a problem removing teams with blank names, so (in remove team requests) a '_'
+            # character was added to the beginning of the name. We will want to remove it before we continue
+            # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
+            team_name = team_name[1:]
             team_name = team_name.replace("_", " ")
             # Remove team and students in the team from database
             team.remove_team(team_name, session_id)
@@ -193,12 +197,12 @@ class ProfDashboard(MethodView):
             while i <= size:
                 team_name = (request.form.get('assigned_team'+str(i)))
                 if team.check_dup_team(team_name, session_id) is False:
-                    t_id = team.get_team_from_name(team_name, session_id)
+                    t_id = team.get_tid_from_name(team_name, session_id)
                     student.update_team(unassigned_students[i-1].name,
                                         session_id, t_id)
                 else:
                     team.insert_team(session_id, team_name)
-                    t_id = team.get_team_from_name(team_name, session_id)
+                    t_id = team.get_tid_from_name(team_name, session_id)
                     student.update_team(unassigned_students[i-1].name,
                                         session_id, t_id)
                 team_names.append(team_name)
@@ -332,7 +336,7 @@ class SetDate(MethodView):
         return render_template('setDate.html', error=None, session_id=session_id)
 
 
-class assignTeam(MethodView):
+class AssignTeam(MethodView):
     @login_required
     def get(self):
         s_id = request.args.get('session_id')
