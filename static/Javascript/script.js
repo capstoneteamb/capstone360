@@ -3,12 +3,12 @@ $(document).ready(function () {
     $('.edit-btn').on('click', function () {
         $this = $('.sub-buttons')
         $add = $('.add-student-btn')
-        if ($this.css('visibility') == "hidden") {
-            $this.css('visibility', 'visible');
-            $add.css('visibility', 'visible');
+        if (($this).is(":hidden")) {
+            $this.slideDown('slow', function () {
+                $this.css('display','flex')
+            });
         } else {
-            $this.css('visibility', 'hidden');
-            $add.css('visibility', 'hidden');
+            $this.slideUp('slow');
         }
     })
     // Remove dashboard
