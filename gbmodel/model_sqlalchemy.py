@@ -511,6 +511,24 @@ class capstone_session(db.Model):
         db.session.commit()
         return id
 
+    def remove_session(self, session_id):
+        """
+        Removes an entire session with all the teams and students
+        Input: session id
+        """
+        try:
+            team = teams()
+            session_teams = team.query.filter_by(session_id=session_id).all()
+            del_session = capstone_session.query.filter(capstone_session.id == session_id).first()
+            for t in session_teams:
+                team_name = t.name
+                team.remove_team(team_name, session_id)
+            db.session.delete(del_session)
+            db.session.commit()
+        except exc.SQLAlchemyError:
+            return None
+        return True
+
     def get_sess_by_id(self, id):
         """
         this method is for getting a specific capstone session object
@@ -548,7 +566,17 @@ class capstone_session(db.Model):
             return False
         return True
 
-    def check_dup_session(self, s_term, s_year):
+    def check_session_id_valid(self, v_id):
+        """
+        Checks if the returned session ID is greater than
+        or equal to 0
+        """
+        check_id = v_id.isdigit()
+        if check_id < 0:
+            return False
+        return True
+
+    def check_dup_session(self, s_term, s_year, p_id):
         """
         Check if the new session name already exists in the database
         Input: start term & year of the new session
@@ -557,7 +585,9 @@ class capstone_session(db.Model):
         try:
             s_term = s_term.strip().lower().capitalize()
             s_year = s_year.strip().lower().capitalize()
-            result = capstone_session().query.filter_by(start_term=s_term, start_year=s_year).first()
+            p_id = p_id.strip().lower()
+            result = capstone_session().query.filter_by(
+                start_term=s_term, start_year=s_year, professor_id=p_id).first()
         except exc.SQLAlchemyError:
             result = None
         if result is not None:
