@@ -249,9 +249,18 @@ class ProfDashboard(MethodView):
             csv_reader = csv.reader(stream, delimiter=',')
             uninserted_students = []
             for row in csv_reader:
-                student_name = row[0]
-                student_id = row[1]
-                team_name = row[2]
+                if len(row) > 3:
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Incorrect csv Format")
+                try:
+                    student_name = row[0]
+                    student_id = row[1]
+                    team_name = row[2]
+                except IndexError:
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Incorrect csv Format")
 
                 # Create team if it doesn't exist, then create the student.
                 try:
@@ -264,7 +273,7 @@ class ProfDashboard(MethodView):
                                            session_id=session_id,
                                            error="Something went wrong")
                 try:
-                    if students_table.get_student_in_session(student_id, session_id) is None:
+                    if students_table.check_dup_student(student_id, session_id) is True:
                         students_table.insert_student(student_name, "", student_id, session_id, team_name)
                     else:
                         # Keep track of what students weren't added to the database (and make a note it)
@@ -278,7 +287,7 @@ class ProfDashboard(MethodView):
                                            error="Something went wrong")
 
             # If everything went well, reload the professor dashboard
-            if uninserted_students is None:
+            if len(uninserted_students) == 0:
                 logging.info("CSV Add Students/Team - added student data from uploaded csv file")
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
@@ -287,6 +296,7 @@ class ProfDashboard(MethodView):
                                        session_id=session_id)
             # If there were some problems, let the user know
             else:
+                print(uninserted_students)
                 error_str = "There was a problem inserting the following students into the database: "
                 error_str = error_str + ", ".join(uninserted_students)
                 error_str = error_str + ". They are already in this session."
@@ -404,9 +414,12 @@ class AddTeam(MethodView):
 # Create a webpage for professors to import students
 # via csv file.
 class AddTeamCSV(MethodView):
-    # Display webpage
     @login_required
+    # Display webpage
     def get(self):
+        if validate_professor() is False:
+            msg = "Professor not found"
+            return render_template('errorMsg.html', msg=msg)
         session_id = request.args.get('session_id')
         return render_template('csvAddTeam.html', session_id=session_id)
 
