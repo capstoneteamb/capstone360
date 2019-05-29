@@ -8,6 +8,10 @@ import gbmodel
 import datetime
 from catCas import validate_professor
 from flask_cas import login_required
+import logging
+from sqlalchemy.exc import SQLAlchemyError
+import csv
+import io
 import re
 
 
@@ -229,6 +233,78 @@ class ProfDashboard(MethodView):
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
+        # If IMPORT STUDENTS was submitted (addTeamCSV)
+        elif 'student_data_csv' in request.files:
+            session_id = int(request.form['session_id'])
+            teams_table = gbmodel.teams()  # Accessor to the teams table
+            students_table = gbmodel.students()  # Accessor to the students table
+            file = request.files['student_data_csv']
+            # If 'Create from File' was selected with no file
+            # return back to import student page.
+            if(file.filename == ''):
+                return render_template('csvAddTeam.html',
+                                       session_id=session_id,
+                                       error="Please select a file to upload")
+            stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+            csv_reader = csv.reader(stream, delimiter=',')
+            uninserted_students = []
+            for row in csv_reader:
+                if len(row) > 3:
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Incorrect csv Format")
+                try:
+                    student_name = row[0]
+                    student_id = row[1]
+                    team_name = row[2]
+                except IndexError:
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Incorrect csv Format")
+
+                # Create team if it doesn't exist, then create the student.
+                try:
+                    if teams_table.check_dup_team(team_name, session_id) is True:
+                        teams_table.insert_team(session_id, team_name)
+                except SQLAlchemyError:
+                    logging.error(('CSV Add Students/Team - Error checking for existing team and/or'
+                                   ' inserting a new one'))
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Something went wrong")
+                try:
+                    if students_table.check_dup_student(student_id, session_id) is True:
+                        students_table.insert_student(student_name, "", student_id, session_id, team_name)
+                    else:
+                        # Keep track of what students weren't added to the database (and make a note it)
+                        logging.warning("CSV Add Students/Team - Error inserting student into the database")
+                        uninserted_students.append(student_name)
+                except SQLAlchemyError:
+                    logging.error(('CSV Add Students/Team -'
+                                   ' Error inserting students or checking if they exist in the database'))
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Something went wrong")
+
+            # If everything went well, reload the professor dashboard
+            if len(uninserted_students) == 0:
+                logging.info("CSV Add Students/Team - added student data from uploaded csv file")
+                lists, sessions = team.dashboard(session_id)
+                return render_template('profDashboard.html',
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+            # If there were some problems, let the user know
+            else:
+                print(uninserted_students)
+                error_str = "There was a problem inserting the following students into the database: "
+                error_str = error_str + ", ".join(uninserted_students)
+                error_str = error_str + ". They are already in this session."
+                return render_template('csvAddTeam.html',
+                                       session_id=session_id,
+                                       error=error_str)
+
+        # If SET DATE for reviews was submitted (setDate)
         elif 'midterm_start' in request.form:
             # Add midterm/final start/end dates for review form
             # Request start and end dates for midterm and final from setDate.html
@@ -333,6 +409,19 @@ class AddTeam(MethodView):
         """
         session_id = request.args.get('session_id')
         return render_template('addTeam.html', error=None, session_id=session_id)
+
+
+# Create a webpage for professors to import students
+# via csv file.
+class AddTeamCSV(MethodView):
+    @login_required
+    # Display webpage
+    def get(self):
+        if validate_professor() is False:
+            msg = "Professor not found"
+            return render_template('errorMsg.html', msg=msg)
+        session_id = request.args.get('session_id')
+        return render_template('csvAddTeam.html', session_id=session_id)
 
 
 class RemoveTeam(MethodView):
