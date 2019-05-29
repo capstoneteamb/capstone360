@@ -404,8 +404,8 @@ class AddTeam(MethodView):
 # Create a webpage for professors to import students
 # via csv file.
 class AddTeamCSV(MethodView):
-    @login_required
     # Display webpage
+    @login_required
     def get(self):
         session_id = request.args.get('session_id')
         return render_template('csvAddTeam.html', session_id=session_id)
