@@ -7,8 +7,10 @@ $(document).ready(function () {
             $this.slideDown('slow', function () {
                 $this.css('display','flex')
             });
+            $add.css('display','block');
         } else {
             $this.slideUp('slow');
+            $add.css('display','none');
         }
     })
     // Remove dashboard
