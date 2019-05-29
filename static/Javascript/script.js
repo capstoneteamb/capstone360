@@ -4,12 +4,12 @@ $(document).ready(function () {
         $this = $('.sub-buttons')
         $add = $('.add-student-btn')
         if (($this).is(":hidden")) {
-            $this.slideDown('slow', function () {
+            $this.slideDown('fast', function () {
                 $this.css('display','flex')
             });
             $add.css('display','block');
         } else {
-            $this.slideUp('slow');
+            $this.slideUp('fast');
             $add.css('display','none');
         }
     })
