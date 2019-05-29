@@ -9,14 +9,12 @@
 		{% for student in data[1:] %}
                 <form method="post" action={{url_for('viewStudent')}}>
                     <p class="entry">
-                        <span class="name" style="display: inline-block;">
                             <img class="user-icon" style="display: inline-block;"
                                 src="{{ url_for('static', filename='Assets/user.png')}}">
 
                             <input type="hidden" name="student_id" value="{{student['id']}}">
                             <input type="hidden" name="session_id" value="{{session_id}}">
 							<input class="text-look-alike-button" style="display: inline-block; margin-left: 10px;" type="submit" value="{{student['name']}}  ({{student['min_points']}} - {{student['max_points']}})">
-                        </span>
                     </p>
                 </form>
 		{% endfor %}
@@ -39,11 +37,14 @@
 				</input>				
 			</p>
 			{% endfor %}
-			<p><input class="my-cancel-btn" type=submit value='Remove Student' style="
+			{% if data[1:]|length %}
+			<p><input class="my-cancel-btn remove-student-btn" type=submit value='Remove Student' style="
 						background-color: #BCBCBC;
 						color: white;
 						width: 130px;
-						margin-top: -3px;"></p>
+						margin-top: -3px;">
+			</p>
+			{% endif %}
 		
 		</form>
 	 	<a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"
@@ -57,7 +58,8 @@
 			<p class=entry>
 				<img class="user-icon" style="display: inline-block;"
 					src="{{ url_for('static', filename='Assets/user.png')}}">
-				<span class="name" style="display: inline-block;"> {{ student['name'] }}</span>
+				<span class="name" style="display: inline-block;"> {{ student['name'] }} {{student['lead']}}
+				</span>
 				<input id="lead" class="lead-check" type="checkbox" style="display: inline-block;" name="is_lead"
 					value="{{ student['name'] }}" data-lead="{{student['lead']}}"> 
 					<input type="hidden" name="lead_value" value="{{student['lead']}}">
@@ -77,5 +79,6 @@
 	</div>
 	{% endfor %}
 </div>
+<a href="{{ url_for('index')}}"><button class="my-btn">Back</button></a>
 
 {% endblock %}
