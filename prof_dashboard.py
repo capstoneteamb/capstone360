@@ -291,8 +291,8 @@ class ProfDashboard(MethodView):
                 error_str = error_str + ", ".join(uninserted_students)
                 error_str = error_str + ". They are already in this session."
                 return render_template('csvAddTeam.html',
-                                        session_id=session_id,
-                                        error=error_str)
+                                       session_id=session_id,
+                                       error=error_str)
 
         # If SET DATE for reviews was submitted (setDate)
         elif 'midterm_start' in request.form:
@@ -400,6 +400,7 @@ class AddTeam(MethodView):
         session_id = request.args.get('session_id')
         return render_template('addTeam.html', error=None, session_id=session_id)
 
+
 # Create a webpage for professors to import students
 # via csv file.
 class AddTeamCSV(MethodView):
@@ -408,6 +409,7 @@ class AddTeamCSV(MethodView):
     def get(self):
         session_id = request.args.get('session_id')
         return render_template('csvAddTeam.html', session_id=session_id)
+
 
 class RemoveTeam(MethodView):
     """
