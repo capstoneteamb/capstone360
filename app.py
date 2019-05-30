@@ -41,6 +41,7 @@ def register_routes(app):
     from prof_dashboard import ProfDashboard
     from prof_dashboard import AddTeam
     from prof_dashboard import AddStudent
+    from prof_dashboard import AddTeamCSV
     from prof_dashboard import RemoveTeam
     from prof_dashboard import SetDate
     from prof_dashboard import AddSession
@@ -74,6 +75,10 @@ def register_routes(app):
 
     app.add_url_rule('/addStudent/',
                      view_func=AddStudent.as_view('addStudent'),
+                     methods=['GET', 'POST'])
+
+    app.add_url_rule('/addTeamCSV/',
+                     view_func=AddTeamCSV.as_view('addTeamCSV'),
                      methods=['GET', 'POST'])
 
     app.add_url_rule('/assignTeam/',

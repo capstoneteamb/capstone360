@@ -152,8 +152,8 @@
         {%- endif %}
         {% if state == 'final' -%}
         <br>
+	<label for="proud">Are you proud of your accomplishment for this project?</label>
         {% if is_done == 1 -%}
-        <label for="proud">Are you proud of your accomplishment for this project?</label>
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required>
         {% for k in data -%}
         {% if k['proud'] is defined -%}{{k['proud']}}{%- endif %}

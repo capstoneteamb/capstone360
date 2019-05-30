@@ -18,10 +18,11 @@
 				border: none;
 				border-radius:5px;
 				padding: 10px 20px;
-				cursor: pointer;"></p>	
+				cursor: pointer;
+				margin-right: 30px;"></p>	
+				<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
 		</form>
 		
-		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
 		
 	</div>
 	</div>
