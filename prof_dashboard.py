@@ -156,21 +156,21 @@ class ProfDashboard(MethodView):
             prof_list = professors.get_all_professors()
             while not session.check_term_name(request.form['start_term']):
                 error = "Enter a valid term (Example: Summer)"
-                return render_template('addSession.html', error=error, session_id=session_id,
-                                        prof_list=prof_list)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             while not session.check_term_year(request.form['start_year']):
                 error = "Enter a valid year (Example: 2019)"
-                return render_template('addSession.html', error=error, session_id=session_id,
-                                        prof_list=prof_list)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             while not professor.check_professor(request.form['professor_id']):
                 error = "Enter a valid professor ID"
-                return render_template('addSession.html', error=error, session_id=session_id,
-                                        prof_list=prof_list)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             while not session.check_dup_session(request.form['start_term'], request.form['start_year'],
                                                 request.form['professor_id']):
                 error = "Session already exists"
-                return render_template('addSession.html', error=error, session_id=session_id,
-                                        prof_list=prof_list)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             start_term = request.form.get('start_term')
             start_year = request.form.get('start_year')
             start_term = start_term.replace("_", " ")

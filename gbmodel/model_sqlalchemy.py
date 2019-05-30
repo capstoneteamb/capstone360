@@ -23,7 +23,7 @@ class professors(db.Model):
         if result is None:
             return False
         return result
-    
+
     def get_all_professors(self):
         """
         gets a list of all professors
@@ -33,7 +33,7 @@ class professors(db.Model):
             profs = professors().query.all()
             lists = []
             for i in profs:
-                temp =  str(i.id)
+                temp = str(i.id)
                 lists.append(temp)
         except exc.SQLAlchemyError:
             profs = None
