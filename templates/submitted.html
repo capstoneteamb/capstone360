@@ -1,10 +1,14 @@
 {% extends "layout.html" %}
-
 {% block content %}
-    <!--better solution later-->
-    <br>
-    <br>
-    <br>
-    <br>
-    <p>Your reviews have been submitted</p>
+<div class="body">
+    <div class="row">
+        <div class="login-container">
+            <div class="login-hero">
+                <h3>Your reviews have been submitted</h3>
+                <a href="{{ url_for('cas.logout')}}"><div class="student-login-btn" style="bottom: 40%;">Logout </div></a>
+                <a href="/studentDashboard"><div class="student-login-btn" style="bottom: 20%;">Homepage</div></a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

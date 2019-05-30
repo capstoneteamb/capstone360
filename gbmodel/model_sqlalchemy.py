@@ -112,6 +112,7 @@ class teams(db.Model):
         new_team = teams(id=id, session_id=session_id, name=t_name)
         db.session.add(new_team)
         db.session.commit()
+        return id
 
     def get_team_session_id(self, session_id):
         """
@@ -124,7 +125,7 @@ class teams(db.Model):
         except exc.SQLAlchemyError:
             return None
 
-    def remove_team(self, name, session_id):
+    def remove_team_from_session(self, name, session_id):
         """
         Remove a team and all the students from that team
         Input: name of the team and session id
@@ -147,6 +148,29 @@ class teams(db.Model):
             db.session.commit()
         team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
         db.session.delete(team)
+        db.session.commit()
+        return True
+
+    def remove_team(self, name, session_id):
+        """
+        Remove a team and all the students from that team
+        Input: name of the team and session id
+        Output: delete a team
+                move all student in the team to unassigned student
+        """
+        team = teams()
+        result = teams.query.filter(teams.name == name,
+                                    teams.session_id == session_id).first()
+        tid = result.id
+        team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
+        db.session.delete(team)
+        db.session.commit()
+        student_list = students.query.filter(students.tid == tid, students.session_id == session_id).all()
+        tid = team.get_tid_from_name("", session_id)
+        if tid is None:
+            tid = team.insert_team(session_id, "")
+        for i in student_list:
+            i.tid = tid
         db.session.commit()
         return True
 
@@ -395,9 +419,6 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return False
 
-    # Check if the student passed in by id is the team lead
-    # Input: student id of the student to check
-    # Output: True if the student is a team lead, False otherwise
     def check_team_lead(self, s_id, sess_id):
         """
         Check if the student passed in by id is the team lead
@@ -433,9 +454,6 @@ class students(db.Model):
             return unassigned_students
         return unassigned_students
 
-    # Allows students to edit their name and email address
-    # Input: student's new email and name and current user id
-    # Output: apply new name and email to students in student table
     def edit_student(self, id, new_name, new_email):
         """
         Allows students to edit their name and email address
@@ -543,7 +561,7 @@ class capstone_session(db.Model):
             del_session = capstone_session.query.filter(capstone_session.id == session_id).first()
             for t in session_teams:
                 team_name = t.name
-                team.remove_team(team_name, session_id)
+                team.remove_team_from_session(team_name, session_id)
             db.session.delete(del_session)
             db.session.commit()
         except exc.SQLAlchemyError:

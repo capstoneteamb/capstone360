@@ -1,13 +1,27 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<a href="{{ url_for('cas.logout')}}">
+	<div class="student-login-btn"
+    style=
+    "width: 150px;
+    left: 93%;
+    background-color: #ff9e16;
+    position: absolute;
+    top: 28px;
+    z-index: 10000;
+    text-align: center;
+    height: 40px;">Logout </div>
+</a>
 <!--better solution later-->
 <br>
 <br>
 <br>
 <br>
+
 {% if fatal_error %}
 {{ fatal_error }}
+<a href="/studentDashboard"><div class="student-login-btn" style="bottom: unset; top: 17%; left: 5%;">Back</div></a>
 {% else %}
 <h3>Welcome to your Capstone 360 Review. Please fill out the review form below, {{name}}</h3>
 {% if input_error %}
@@ -164,7 +178,15 @@
         {%- endif %}
         {%- endif %}
         <br>
-        <input type="submit" value="Submit">
+        <input class="my-btn" type="submit" value='Submit' style="
+                background-color: #b7c229;
+                color: white;
+                font-size: 18px;
+                font-weight: 500;
+                margin: auto;
+                float:none;
+                margin-bottom: 20px;
+                left: 50%">
     </form>
 </section>
 {% endif %}
