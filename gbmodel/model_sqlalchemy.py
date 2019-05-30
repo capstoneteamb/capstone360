@@ -509,6 +509,7 @@ class students(db.Model):
         """
         try:
             student = students.query.filter(students.session_id == session_id).all()
+            # check option, set accordingly
             if option == "open":
                 for i in student:
                     i.active = 'open'
@@ -518,11 +519,14 @@ class students(db.Model):
                     i.active = 'close'
                     db.session.commit()
             else:
+                # mismatch, return false
                 return False
 
+            # success, so return true
             return True
         except exc.SQLAlchemyError:
             return False
+
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']

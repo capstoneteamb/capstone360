@@ -483,6 +483,7 @@ class SetDate(MethodView):
         session_id = request.args.get('session_id')
         return render_template('setDate.html', error=None, session_id=session_id)
 
+
 class SetAvailable(MethodView):
     """
     This class handles get requests for setAvailable.html
@@ -496,6 +497,7 @@ class SetAvailable(MethodView):
         """
         session_id = request.args.get('session_id')
         return render_template('setAvailable.html', error=None, session_id=session_id)
+
 
 class AssignTeam(MethodView):
     @login_required

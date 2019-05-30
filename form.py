@@ -173,11 +173,11 @@ class review(MethodView):
         except SQLAlchemyError:
             return None
 
-
     def check_available(self, user_id, capstone_id):
         """
         This method checks if a student's reviews are open or clocked
-        Inputs: user_id -- the student's id in the database, capstone_id -- the capstone session the student belongs to
+        Inputs: user_id -- the student's id in the database, capstone_id -- the capstone 
+        session the student belongs to
         Outputs: True -- the student can proceed with reviews.
         False -- The student cannot proceed with reviews.
         """
