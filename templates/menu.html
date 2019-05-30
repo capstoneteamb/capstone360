@@ -3,7 +3,7 @@
 <div class="container nav-container">
     <div class="row nav">
         <div class="col-sm" method='POST'>Sessions 
-            <form style="display: inline;">{{session_id}}
+            <form style="display: inline;">
                 <select class="selected_session" name="selected_session" onchange="this.form.submit()">
                     {% for i in sessions %}
                     <option value="{{i}}" name="sessions" data-count="{{loop.index}}">{{i}}</option>

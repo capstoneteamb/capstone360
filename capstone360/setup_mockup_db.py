@@ -187,7 +187,7 @@ def generate_tables(cursor):
                     'midterm_done BOOLEAN NOT NULL, '
                     'final_done BOOLEAN NOT NULL, '
                     'removed_date DATETIME NOT NULL, '
-                    'PRIMARY KEY (id, session_id) );'))
+                    'PRIMARY KEY (id, session_id, removed_date) );'))
 
 
 def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
