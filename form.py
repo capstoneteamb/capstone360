@@ -173,6 +173,28 @@ class review(MethodView):
         except SQLAlchemyError:
             return None
 
+
+    def check_available(self, user_id, capstone_id):
+        """
+        This method checks if a student's reviews are open or clocked
+        Inputs: user_id -- the student's id in the database, capstone_id -- the capstone session the student belongs to
+        Outputs: True -- the student can proceed with reviews.
+        False -- The student cannot proceed with reviews.
+        """
+        try:
+            # get student
+            student = gbmodel.students().get_student_in_session(user_id, capstone_id)
+            if student is None:
+                return False
+
+            # check if reviews are 'open'
+            if student.active == 'open':
+                return True
+            else:
+                return False
+        except SQLAlchemyError:
+            return False
+
     def confirm_user(self, user_id, capstone_id):
         """
         This method checks to ensure that the user trying to access
@@ -184,6 +206,11 @@ class review(MethodView):
         # check if the current user is found in the database
         student = gbmodel.students().get_student_in_session(user_id, capstone_id)
         if student is None:
+            return False
+
+        # check review availability
+        available = self.check_available(user_id, capstone_id)
+        if available == False:
             return False
 
         # check the user's active reports
