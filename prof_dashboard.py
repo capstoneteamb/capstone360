@@ -354,7 +354,6 @@ class ProfDashboard(MethodView):
                                    session_id=session_id)
         elif 'set_review_available' in request.form:
             # update students' review availability
-            print('setting')
             setting = request.form.get('set_review_available')
             result = student.set_active(session_id, setting)
             if result is True:
