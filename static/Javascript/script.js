@@ -4,12 +4,16 @@ $(document).ready(function () {
         $this = $('.sub-buttons')
         $add = $('.add-student-btn')
         if (($this).is(":hidden")) {
-            $this.slideDown('slow', function () {
+            $this.slideDown('fast', function () {
                 $this.css('display','flex')
             });
+            $add.css('display','block');
         } else {
-            $this.slideUp('slow');
+            $this.slideUp('fast');
+            $add.css('display','none');
         }
+        edit_remove_reset();
+        edit_lead_reset();
     })
     // Remove dashboard
     $('.remove-btn').on('click', function () {
@@ -26,6 +30,16 @@ $(document).ready(function () {
         }
     })
 
+    // hides remove editing when edit is clicked again
+    function edit_remove_reset(){
+        $remove = $('.remove-card')
+        $display = $('.display-card')
+        if ($remove.css('display') == "block") {
+            $remove.css('display', 'none');
+            $display.css('display', 'block')
+        }
+    }
+
     // Lead dashboard
     $('.lead-btn').on('click', function () {
         $lead = $('.lead-card')
@@ -40,6 +54,16 @@ $(document).ready(function () {
             $display.css('display', 'block')
         }
     })
+
+    // hides lead editing when edit is clicked
+    function edit_lead_reset(){
+        $lead = $('.lead-card')
+        $display = $('.display-card')
+        if ($lead.css('display') == "block") {
+            $lead.css('display', 'none');
+            $display.css('display', 'block');
+        }
+    }
 
 
     // session dropdowns
