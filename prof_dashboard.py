@@ -151,6 +151,7 @@ class ProfDashboard(MethodView):
                                    session_id=session_id)
         elif 'start_term' in request.form:
             # Add a new session to the profDashboard
+            # Gets all professors in DB and stores into prof_list
             professors = gbmodel.professors()
             prof_list = professors.get_all_professors()
             while not session.check_term_name(request.form['start_term']):
