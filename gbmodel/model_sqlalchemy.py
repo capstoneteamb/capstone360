@@ -284,7 +284,8 @@ class students(db.Model):
                                email_address=email_address,
                                is_lead=0,
                                midterm_done=0,
-                               final_done=0)
+                               final_done=0,
+                               active="open")
         db.session.add(new_student)
         db.session.commit()
         return True
