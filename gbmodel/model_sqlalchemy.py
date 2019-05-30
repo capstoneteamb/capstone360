@@ -690,7 +690,7 @@ class capstone_session(db.Model):
             prof = professors.query.filter(professors.id == i.professor_id).first()
             if prof is not None:
                 temp = str(i.start_term) + " - " + str(i.start_year) + " (" + str(prof.name) + ")"
-                lists.append(temp)
+            lists.append(temp)
         return lists
 
     def get_active_sessions(self):
