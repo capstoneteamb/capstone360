@@ -10,7 +10,12 @@
 		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
 			<p class="heading">Start Term: <input type=text required='required' name=start_term></p>
 			<p class="heading">Start Year: <input type=text required='required' name=start_year></p>
-			<p class="heading">Assign to professor ID: <input type=text required='required' name=professor_id></p>
+			<p class="heading">Assign to professor:</p> <!--<input type=text required='required' name=professor_id></p>-->
+			<select class="selected_professor" name="professor_id">
+				{% for i in prof_list %}
+				<option value="{{i}}" name="professors">{{i}}</option>
+				{% endfor %}
+			</select> 
 			<input type="hidden" value={{session_id}} name=session_id>
 			<p><input class="my-btn" type=submit value='Add Session' style="
 				background-color: #b7c229;
@@ -20,8 +25,8 @@
 				padding: 10px 20px;
 				cursor: pointer;
 				margin-right: 30px;"></p>	
-				<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
 		</form>
+			<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
 		
 		
 	</div>

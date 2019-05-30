@@ -23,6 +23,23 @@ class professors(db.Model):
         if result is None:
             return False
         return result
+    
+    def get_all_professors(self):
+        """
+        gets a list of all professors
+        in the database (by id)
+        """
+        try:
+            profs = professors().query.all()
+            lists = []
+            for i in profs:
+                temp =  str(i.id)
+                lists.append(temp)
+        except exc.SQLAlchemyError:
+            profs = None
+        if profs is None:
+            return False
+        return lists
 
     def check_professor(self, prof_id):
         """
