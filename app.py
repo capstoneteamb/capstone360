@@ -129,8 +129,8 @@ def register_routes(app):
                      methods=['POST'])
 
     app.add_url_rule('/setAvailable/',
-                    view_func=SetAvailable.as_view('setAvailable'),
-                    methods=['GET', 'POST'])
+                     view_func=SetAvailable.as_view('setAvailable'),
+                     methods=['GET', 'POST'])
 
 
 if __name__ == '__main__':
