@@ -241,10 +241,14 @@ class students(db.Model):
         Output: return False if the student was already in
                 return True otherwise
         """
+        result = None
         try:
-            result = students.query.filter_by(id=id, session_id=session_id).first()
+            all_students = students.query.filter_by(session_id=session_id).first()
         except exc.SQLAlchemyError:
             result = None
+        for each in all_students:
+            if decrypt(each.id) == id:
+                result = id
         if result is not None:
             return False
         return True
