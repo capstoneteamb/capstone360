@@ -39,14 +39,11 @@
 				</input>				
 			</p>
 			{% endfor %}
-			{% if data[1:]|length %}
-			<p><input class="my-cancel-btn remove-student-btn" type=submit value='Remove Student' style="
+			<p><input class="my-cancel-btn" type=submit value='Remove Student' style="
 						background-color: #BCBCBC;
 						color: white;
 						width: 130px;
-						margin-top: -3px;">
-			</p>
-			{% endif %}
+						margin-top: -3px;"></p>
 		
 		</form>
 	 	<a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"
@@ -69,15 +66,16 @@
 				</input>				
 			</p>
 			{% endfor %}
-			{% if data[1:]|length %}
+		
 			<p><input class="my-cancel-btn lead-submit" type=submit value='Submit' style="
 						background-color: #BCBCBC;
 						color: white;
 						width: 130px;
 						margin-top: -3px;"></p>
-			{% endif %}
+		
 		</form>
 	</div>
 	{% endfor %}
 </div>
+
 {% endblock %}
