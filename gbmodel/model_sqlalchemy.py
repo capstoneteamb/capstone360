@@ -177,20 +177,15 @@ class teams(db.Model):
             for team_member in team_members:
                 for p in member_points:
                     if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
-                        temp.append({"name": decrypt(team_member.name), "id": team_member.id,
-                                     "min_points": p.min_points, "max_points": p.max_points})
+                        params = {"name": decrypt(team_member.name),
+                                  "id": team_member.id,
+                                  "min_points": p.min_points,
+                                  "max_points": p.max_points,
+                                  "lead": int(team_member.is_lead)}
+                        temp.append(params)
                         flag = 1
                 if flag == 0:
-                    temp.append({"name": decrypt(team_member.name), "id": team_member.id, "points": "N/A"})
-                    params = {"name": team_member.name,
-                              "id": team_member.id,
-                              "min_points": p.min_points,
-                              "max_points": p.max_points,
-                              "lead": int(team_member.is_lead)}
-                    temp.append(params)
-                    flag = 1
-                if flag == 0:
-                    params = {"name": team_member.name,
+                    params = {"name": decrypt(team_member.name),
                               "id": team_member.id,
                               "points": "N/A",
                               "lead": int(team_member.is_lead)}
@@ -324,10 +319,21 @@ class students(db.Model):
         # https://stackoverflow.com/questions/4186062/sqlalchemy-order-by-descending
         # https://docs.sqlalchemy.org/en/13/orm/query.html
         try:
-            results = students.query.filter(
+            all_students = students.query.filter(
                           students.session_id == session_id).order_by(students.tid.asc()).all()
         except exc.SQLAlchemyError:
             return None
+        results = []
+        for each in all_students:
+            new_student = students(id=each.id,
+                                   tid=each.tid,
+                                   session_id=each.session_id,
+                                   name=decrypt(each.name),
+                                   email_address=decrypt(each.email_address),
+                                   is_lead=each.is_lead,
+                                   midterm_done=each.midterm_done,
+                                   final_done=each.final_done) 
+            results.append(new_student)
         return results
 
     def get_user_sessions(self, student_id):
@@ -340,7 +346,11 @@ class students(db.Model):
             results = []  # to store objects
 
             # get all matching records
-            student_records = students.query.filter_by(id=student_id).all()
+           # student_records = students.query.filter_by(id=student_id).all()
+            all_students = students.query.all()
+            for each in all_students:
+                if decrypt(each.id) == student_id:
+                    student_records.append(each)
             if student_records is not None:
 
                 # for each record, add the capstone the id points to
@@ -361,7 +371,11 @@ class students(db.Model):
         Output: the student that we found, or none if nothing was found
         """
         try:
-            result = students.query.filter(students.id == sid, students.session_id == session_id).first()
+            #result = students.query.filter(students.id == sid, students.session_id == session_id).first()
+            all_students = students.query.filter(students.session_id == session_id).all()
+            for each in all_students:
+                if decrypt(each.id) == sid:
+                    result.append(each)
         except exc.SQLAlchemyError:
             return None
         return result
@@ -378,12 +392,27 @@ class students(db.Model):
         removed_student = removed_students()
         team = teams.query.filter(teams.name == t_name,
                                   teams.session_id == session_id).first()
+        all_students = students.query.filter(students.session_id == session_id).all()
         for i in sts:
+            '''
             student = students.query.filter(students.name == i,
                                             students.tid == team.id,
                                             students.session_id == session_id).first()
-            removed_student.add_student(student)
-            st = students.query.filter(students.id == student.id,
+            '''
+            for each in all_students:
+                if i == decrypt(each.name) and team.id == each.tid:
+                    e_id = each.id
+                    new_student = students(id=each.id,
+                                           tid=each.tid,
+                                           session_id=each.session_id,
+                                           name=decrypt(each.name),
+                                           email_address=decrypt(each.email_address),
+                                           is_lead=each.is_lead,
+                                           midterm_done=each.midterm_done,
+                                           final_done=each.final_done) 
+                    removed_student.add_student(new_student)
+            # removed_student.add_student(student)
+                    st = students.query.filter(students.id == e_id,
                                        students.session_id == session_id).first()
             db.session.delete(st)
             db.session.commit()
