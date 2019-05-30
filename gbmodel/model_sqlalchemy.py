@@ -481,6 +481,30 @@ class students(db.Model):
             db.session.commit()
         return True
 
+    def set_active(self, session_id, option):
+        """
+        Sets the active attribute in student to be 1 (active) or 0 (inactive).
+        For a student to be able to access their reviews, 1 must be set.
+        Inputs: The capstone session id of the class to set as active or not. Option as 'open' or 'close'.
+        "Open" to allow students to submit/edit reviews, "close" to not allow review submission.
+        Outputs: True to indicate success, False to indicate an error.
+        """
+        try:
+            student = students.query.filter(students.session_id == session_id).all()
+            if option == "open":
+                for i in student:
+                    i.active = 'open'
+                    db.session.commit()
+            elif option == "close":
+                for i in student:
+                    i.active = 'close'
+                    db.session.commit()
+            else:
+                return False
+
+            return True
+        except exc.SQLAlchemyError:
+            return False
 
 class capstone_session(db.Model):
     __table__ = db.Model.metadata.tables['capstone_session']
@@ -646,8 +670,9 @@ class capstone_session(db.Model):
         lists = []
         for i in caps:
             prof = professors.query.filter(professors.id == i.professor_id).first()
-            temp = str(i.start_term) + " - " + str(i.start_year) + " (" + str(prof.name) + ")"
-            lists.append(temp)
+            if prof is not None:
+                temp = str(i.start_term) + " - " + str(i.start_year) + " (" + str(prof.name) + ")"
+                lists.append(temp)
         return lists
 
     def get_active_sessions(self):

@@ -74,7 +74,8 @@ class ProfDashboard(MethodView):
         """
         This method handles all the functionalities from proDashboard
         includes add/remove students/teams, add new session, set review
-        midterm/final start/end dates and set team lead
+        midterm/final start/end dates, setting reviews to be open/closed,
+        and set team lead
         """
         session = gbmodel.capstone_session()
         student = gbmodel.students()
@@ -83,6 +84,7 @@ class ProfDashboard(MethodView):
         # Get current session id from dropdowns in profDashboard.html
         session_id = request.form['session_id']
         session_id = int(session_id)
+
         if 'student_name' in request.form:
             # Add New Student (student name, student id and student email)
             # Get team name and session id from profDashboard.html,
@@ -343,6 +345,21 @@ class ProfDashboard(MethodView):
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
+        elif 'set_review_available' in request.form:
+            # update students' review availability
+            print('setting')
+            setting = request.form.get('set_review_available')
+            result = student.set_active(session_id, setting)
+            if result is True:
+                # back to page
+                lists, sessions = team.dashboard(session_id)
+                return render_template('profDashboard.html',
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+            else:
+                error_msg = "Error When Selecting Option"
+                return render_template('setAvailable.html', error=error_msg, session_id=session_id)
 
 
 class AddStudent(MethodView):
@@ -457,6 +474,19 @@ class SetDate(MethodView):
         session_id = request.args.get('session_id')
         return render_template('setDate.html', error=None, session_id=session_id)
 
+class SetAvailable(MethodView):
+    """
+    This class handles get requests for setAvailable.html
+    """
+    @login_required
+    def get(self):
+        """
+        This method handles get requests for setAvailable.html
+        Input: only self
+        Output: renders template for setAvailable.html with the session id of profDashboard.html
+        """
+        session_id = request.args.get('session_id')
+        return render_template('setAvailable.html', error=None, session_id=session_id)
 
 class AssignTeam(MethodView):
     @login_required

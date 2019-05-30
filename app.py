@@ -47,6 +47,7 @@ def register_routes(app):
     from prof_dashboard import AddSession
     from prof_dashboard import AssignTeam
     from prof_dashboard import RemoveSession
+    from prof_dashboard import SetAvailable
     from student_dashboard import StudentDashboard
     from student_dashboard import EditStudent
     from student_register import StudentRegister
@@ -124,6 +125,10 @@ def register_routes(app):
     app.add_url_rule('/viewReview/',
                      view_func=ViewReview.as_view('viewReview'),
                      methods=['POST'])
+
+    app.add_url_rule('/setAvailable/',
+                    view_func=SetAvailable.as_view('setAvailable'),
+                    methods=['GET', 'POST'])
 
 
 if __name__ == '__main__':
