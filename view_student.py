@@ -5,9 +5,12 @@ from catCas import validate_professor
 import gbmodel
 import logging
 
+"""
+A class for the student page (that a professor would access form the professor dashboard. The professor
+should be able to use this page to access the midterm and final reviews for a student)
+"""
 
-# A class for the student page (that a professor would access form the professor dashboard. The professor
-# should be able to use this page to access the midterm and final reviews for a student)
+
 class ViewStudent(MethodView):
 
     def check_review_done(self, reviews_table, reviewer_id, reviewee_id, team_id, is_final):
