@@ -153,19 +153,26 @@ class ProfDashboard(MethodView):
                                    session_id=session_id)
         elif 'start_term' in request.form:
             # Add a new session to the profDashboard
+            # Gets all professors in DB and stores into prof_list
+            professors = gbmodel.professors()
+            prof_list = professors.get_all_professors()
             while not session.check_term_name(request.form['start_term']):
                 error = "Enter a valid term (Example: Summer)"
-                return render_template('addSession.html', error=error, session_id=session_id)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             while not session.check_term_year(request.form['start_year']):
                 error = "Enter a valid year (Example: 2019)"
-                return render_template('addSession.html', error=error, session_id=session_id)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             while not professor.check_professor(request.form['professor_id']):
                 error = "Enter a valid professor ID"
-                return render_template('addSession.html', error=error, session_id=session_id)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             while not session.check_dup_session(request.form['start_term'], request.form['start_year'],
                                                 request.form['professor_id']):
                 error = "Session already exists"
-                return render_template('addSession.html', error=error, session_id=session_id)
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
             start_term = request.form.get('start_term')
             start_year = request.form.get('start_year')
             start_term = start_term.replace("_", " ")
@@ -393,7 +400,9 @@ class AddSession(MethodView):
                 from profDashboard.html
         """
         session_id = request.args.get('session_id')
-        return render_template('addSession.html', error=None, session_id=session_id)
+        professors = gbmodel.professors()
+        prof_list = professors.get_all_professors()
+        return render_template('addSession.html', error=None, session_id=session_id, prof_list=prof_list)
 
 
 class RemoveSession(MethodView):
