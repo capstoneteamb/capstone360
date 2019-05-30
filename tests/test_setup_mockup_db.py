@@ -279,7 +279,7 @@ def test_generate_tables():
            and columns[7][2] == "DATETIME"
            and columns[7][3] == 1
            and columns[7][4] is None
-           and columns[7][5] == 0)
+           and columns[7][5] == 3)
 
     # Check if the reports table exists, and that it is empty
     cursor.execute("SELECT * FROM reports;")

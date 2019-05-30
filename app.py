@@ -23,6 +23,8 @@ def create_app(debug=False):
     if not debug:
         os.environ['CAPSTONE_SETTINGS'] = '/etc/capstone.prod.cfg'
         app.config.from_envvar('CAPSTONE_SETTINGS')
+    else:
+        app.config['DEBUG'] = True
 
     app.app_context().push()
     db.init_app(app)
