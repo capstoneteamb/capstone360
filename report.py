@@ -87,6 +87,7 @@ def _make_printable_reports(session_id, is_final):
 
     # Concatenate anonymized reports for all students on the team
     for s in students:
+        s.id = gbmodel.students().decrypt_bytearray(s.id)
         report = report + _make_student_report_pdf(s.id, session_id, is_final)
     return report
 
@@ -109,7 +110,7 @@ def _make_student_report_pdf(student_id, session_id, is_final, is_professor_repo
     if student is None:
         raise MissingStudentException("Trying to generate a report for a student that doesn't exist.")
 
-    name = student.name
+    name = gbmodel.students().decrypt_bytearray(student.name)
     team_id = student.tid
     team = gbmodel.teams().get_team_from_id(team_id)
 

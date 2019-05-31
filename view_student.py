@@ -61,6 +61,7 @@ class ViewStudent(MethodView):
             # Get the student and session id from the post request, and try to find the student in the db
             student_id = request.form.getlist('student_id')[0]
             session_id = request.form.getlist('session_id')[0]
+            student_id = students.decrypt_string(student_id)
             student = students.get_student_in_session(student_id, session_id)
 
             # If the student is found, find all of the student's team members and see if the student filled

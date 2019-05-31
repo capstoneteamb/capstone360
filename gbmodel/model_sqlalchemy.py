@@ -426,10 +426,12 @@ class students(db.Model):
         result = None
         # Operations that need to be performed to decrypt.
         # Bytearray stored as string, including preceding b.
+        '''
         if isinstance(sid, str):
             sid = sid[1:]
             sid = sid.encode('UTF8')
             sid = decrypt(sid)
+        '''
         try:
             #result = students.query.filter(students.id == sid, students.session_id == session_id).first()
             all_students = students.query.filter(students.session_id == session_id).all()
