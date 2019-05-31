@@ -73,7 +73,9 @@ class ViewStudent(MethodView):
                                                " id)"))
 
                 # Record it, along with some other information about the student
-                student_details = {"name": student.name, "id": student.id, "team_name": team.name}
+                student_details = {"name": students.decrypt_bytearray(student.name), 
+                                   "id": students.decrypt_bytearray(student.id),
+                                   "team_name": team.name}
 
                 # See if the student completed a midterm and final review for their team members and
                 # record it

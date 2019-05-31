@@ -279,7 +279,9 @@ class students(db.Model):
         """
         result = None
         try:
-            all_students = students.query.filter_by(session_id=session_id).first()
+            all_students = students.query.filter_by(session_id=session_id).all()
+            print(all_students)
+            print(len(all_students))
         except exc.SQLAlchemyError:
             result = None
         for each in all_students:
@@ -405,18 +407,35 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             return None
 
+    def decrypt_string(self, string):
+        string = string[1:]
+        string = string.encode('UTF8')
+        string = decrypt(string)
+        return string
+
+    def decrypt_bytearray(self, bytesarray):
+        string = decrypt(bytesarray)
+        return string
+
     def get_student_in_session(self, sid, session_id):
         """
         Get a student from the students table
         Input: student id, session id
         Output: the student that we found, or none if nothing was found
         """
+        result = None
+        # Operations that need to be performed to decrypt.
+        # Bytearray stored as string, including preceding b.
+        if isinstance(sid, str):
+            sid = sid[1:]
+            sid = sid.encode('UTF8')
+            sid = decrypt(sid)
         try:
             #result = students.query.filter(students.id == sid, students.session_id == session_id).first()
             all_students = students.query.filter(students.session_id == session_id).all()
             for each in all_students:
                 if decrypt(each.id) == sid:
-                    result.append(each)
+                    result = each
         except exc.SQLAlchemyError:
             return None
         return result
@@ -484,16 +503,28 @@ class students(db.Model):
     # output: the student's capstone session id value
     def get_student(self, s_id):
         try:
-            student = students.query.filter_by(id=s_id).first()
+            all_students = students.query.all()
+            for each in all_students:
+                if decrypt(each.id) == s_id:
+                    student = each
         except exc.SQLAlchemyError:
             return None
         return student
 
     def update_team(self, name, s_id, t_id):
         try:
+            '''
             students.query.filter_by(name=name,
                                      session_id=s_id).\
                                      update(dict(tid=t_id))
+            '''
+            needed_students = students.query.filter_by(session_id=s_id)
+            for each in needed_students:
+                if decrypt(each.name) == decrypt(name):
+                    print("Changing team.")
+                    students.query.filter_by(name = each.name,
+                                             session_id = s_id).\
+                                             update(dict(tid = t_id))
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
@@ -506,7 +537,13 @@ class students(db.Model):
         Output: True if the student is a team lead, False otherwise
         """
         try:
+            '''
             student = students.query.filter(students.id == s_id, students.session_id == sess_id).first()
+            '''
+            all_students = students.query.filter(students.session_id == sess_id)
+            for each in all_students:
+                if decrypt(each.id) == s_id:
+                    student = each
             if student.is_lead == 1:
                 return True
             else:
@@ -541,7 +578,10 @@ class students(db.Model):
         Output: apply new name and email to students in student table
         """
         try:
-            student = students.query.filter(students.id == id).all()
+            all_students = students.query.all()
+            for each in all_students:
+                if decrypt(each.id) == id:
+                   student = each
         except exc.SQLAlchemyError:
             student = None
         if student is None:
@@ -571,7 +611,7 @@ class students(db.Model):
         # Get list of students in the given team
         student = students.query.filter(students.tid == team_id).all()
         for i in student:
-            if i.name == lead:
+            if decrypt(i.name) == lead:
                 i.is_lead = 1
             else:
                 i.is_lead = 0

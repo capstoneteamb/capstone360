@@ -481,6 +481,8 @@ class AssignTeam(MethodView):
             error = "No students unassigned to a team."
             return render_template('errorPage.html', msg=error)
         sessions = team_table.dashboard(s_id)
+        for each in unassigned_students:
+            each.name = students_table.decrypt_bytearray(each.name)
         return render_template('assignTeam.html',
                                lists=unassigned_students,
                                sessions=sessions,
