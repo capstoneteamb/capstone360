@@ -50,7 +50,7 @@ class professors(db.Model):
             profs = professors().query.all()
             lists = []
             for i in profs:
-                temp = str(i.id)
+                temp = i
                 lists.append(temp)
         except exc.SQLAlchemyError:
             profs = None
