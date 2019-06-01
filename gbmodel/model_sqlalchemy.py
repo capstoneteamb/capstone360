@@ -190,7 +190,8 @@ class teams(db.Model):
             # Query to get the min & max student points of their final
             final_points = db.session.query(
                     func.max(reports.points).label("max_points"), func.min(reports.points)
-                                            .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                                            .label("min_points"),
+                                            reports.reviewee, reports.reviewer).filter_by(
                                                     tid=tids[i], session_id=session_id).filter(
                                                     reports.reviewee == students.id).filter(
                                                         reports.reviewee != reports.reviewer).filter(
@@ -198,8 +199,8 @@ class teams(db.Model):
                                                             students.id)
             # Query to get the min & max student points of their midterm
             midterm_points = db.session.query(
-                    func.max(reports.points).label("max_points"), func.min(reports.points)
-                                            .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                    func.max(reports.points).label("max_points"),
+                    func.min(reports.points).label("min_points"), reports.reviewee, reports.reviewer).filter_by(
                                                     tid=tids[i], session_id=session_id).filter(
                                                     reports.reviewee == students.id).filter(
                                                         reports.reviewee != reports.reviewer).filter(
@@ -214,10 +215,10 @@ class teams(db.Model):
                     for m in midterm_points:
                         if (team_member.id == m.reviewee):  # If the student's ID matches the review ID
                             params = {"name": team_member.name,
-                                    "id": team_member.id,
-                                    "active": "Midterm: ",
-                                    "min_points": m.min_points,
-                                    "max_points": m.max_points,
+                                      "id": team_member.id,
+                                      "active": "Midterm: ",
+                                      "min_points": m.min_points,
+                                      "max_points": m.max_points,
                                     "lead": int(team_member.is_lead)}
                             temp.append(params)
                             flag = 1
@@ -226,10 +227,10 @@ class teams(db.Model):
                     for f in final_points:
                         if (team_member.id == f.reviewee):  # If the student's ID matches the review ID
                             params = {"name": team_member.name,
-                                    "id": team_member.id,
-                                    "active": "Final: ",
-                                    "min_points": f.min_points,
-                                    "max_points": f.max_points,
+                                      "id": team_member.id,
+                                      "active": "Final: ",
+                                      "min_points": f.min_points,
+                                      "max_points": f.max_points,
                                     "lead": int(team_member.is_lead)}
                             temp.append(params)
                             flag = 1
