@@ -219,7 +219,7 @@ class teams(db.Model):
                 for p in member_points:
                     if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
                         params = {"name": decrypt(team_member.name),
-                                  "id": team_member.id,
+                                  "id": decrypt(team_member.id),
                                   "min_points": p.min_points,
                                   "max_points": p.max_points,
                                   "lead": int(team_member.is_lead)}
@@ -227,7 +227,7 @@ class teams(db.Model):
                         flag = 1
                 if flag == 0:
                     params = {"name": decrypt(team_member.name),
-                              "id": team_member.id,
+                              "id": decrypt(team_member.id),
                               "points": "N/A",
                               "lead": int(team_member.is_lead)}
                     temp.append(params)
@@ -345,11 +345,15 @@ class students(db.Model):
             new_student = students(id=each.id,
                                tid=each.tid,
                                session_id=each.session_id,
-                               name=decrypt(each.name),
-                               email_address=decrypt(each.email_address),
+                               name=each.name,
+                               email_address=each.email_address,
                                is_lead=each.is_lead,
                                midterm_done=each.midterm_done,
                                final_done=each.final_done) 
+            if isinstance(new_student.name, str) is False:
+                new_student.id = decrypt(new_student.id)
+                new_student.name = decrypt(new_student.name)
+            new_student.email_address = students.decrypt_bytearray(self, new_student.email_address)
             mems.append(new_student)
         return mems
 
@@ -368,7 +372,7 @@ class students(db.Model):
             return None
         results = []
         for each in all_students:
-            new_student = students(id=each.id,
+            new_student = students(id=decrypt(each.id),
                                    tid=each.tid,
                                    session_id=each.session_id,
                                    name=decrypt(each.name),
@@ -390,6 +394,7 @@ class students(db.Model):
 
             # get all matching records
            # student_records = students.query.filter_by(id=student_id).all()
+            student_records = []
             all_students = students.query.all()
             for each in all_students:
                 if decrypt(each.id) == student_id:
@@ -426,18 +431,20 @@ class students(db.Model):
         result = None
         # Operations that need to be performed to decrypt.
         # Bytearray stored as string, including preceding b.
-        '''
-        if isinstance(sid, str):
-            sid = sid[1:]
-            sid = sid.encode('UTF8')
-            sid = decrypt(sid)
-        '''
         try:
             #result = students.query.filter(students.id == sid, students.session_id == session_id).first()
             all_students = students.query.filter(students.session_id == session_id).all()
             for each in all_students:
                 if decrypt(each.id) == sid:
-                    result = each
+                    result = students(id=decrypt(each.id),
+                                           tid=each.tid,
+                                           session_id=each.session_id,
+                                           name=decrypt(each.name),
+                                           email_address=decrypt(each.email_address),
+                                           is_lead=each.is_lead,
+                                           midterm_done=each.midterm_done,
+                                           final_done=each.final_done) 
+                    return result
         except exc.SQLAlchemyError:
             return None
         return result
@@ -487,13 +494,25 @@ class students(db.Model):
         Output: object of found student
         """
         try:
+            '''
             result = engine.execute('select * from students')
             result = result.fetchall()
+            '''
+            result = students.query.all()
         except exc.SQLAlchemyError:
             result = None
         for each in result:
-            if (decrypt(each.name)) == id:
-                return each.session_id
+            print(each.id)
+            if (decrypt(each.id)) == id:
+                result = students(id=decrypt(each.id),
+                                  tid=each.tid,
+                                  session_id=each.session_id,
+                                  name=decrypt(each.name),
+                                  email_address=decrypt(each.email_address),
+                                  is_lead=each.is_lead,
+                                  midterm_done=each.midterm_done,
+                                  final_done=each.final_done) 
+                return result
         return -1
         if result is None:
             return False
@@ -579,20 +598,23 @@ class students(db.Model):
         Input: student's new email and name and current user id
         Output: apply new name and email to students in student table
         """
+        student = []
         try:
             all_students = students.query.all()
             for each in all_students:
                 if decrypt(each.id) == id:
-                   student = each
+                    student.append(each)
         except exc.SQLAlchemyError:
             student = None
         if student is None:
+            print("no student found")
             return False
         for i in student:
+            print("editing student information")
             if new_name != '':
-                i.name = new_name
+                i.name = encrypt(new_name)
             if new_email != '':
-                i.email_address = new_email
+                i.email_address = encrypt(new_email)
             db.session.commit()
         return True
 
@@ -1117,7 +1139,11 @@ class reports(db.Model):
 
             # update appropriate student 'done' attribute
             print('Finding Student')
-            student = students.query.filter_by(id=id, session_id=sess_id).first()
+            all_students = students.query.filter_by(session_id=sess_id).all()
+           # student = students.query.filter_by(id=id, session_id=sess_id).first()
+            for each in all_students:
+                if decrypt(each.id) == id:
+                    student = each
             if state == 'midterm':
                 student.midterm_done = 1
             elif state == 'final':

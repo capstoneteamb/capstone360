@@ -61,7 +61,6 @@ class ViewStudent(MethodView):
             # Get the student and session id from the post request, and try to find the student in the db
             student_id = request.form.getlist('student_id')[0]
             session_id = request.form.getlist('session_id')[0]
-            student_id = students.decrypt_string(student_id)
             student = students.get_student_in_session(student_id, session_id)
 
             # If the student is found, find all of the student's team members and see if the student filled
@@ -74,8 +73,8 @@ class ViewStudent(MethodView):
                                                " id)"))
 
                 # Record it, along with some other information about the student
-                student_details = {"name": students.decrypt_bytearray(student.name), 
-                                   "id": students.decrypt_bytearray(student.id),
+                student_details = {"name": student.name, 
+                                   "id": student.id,
                                    "team_name": team.name}
 
                 # See if the student completed a midterm and final review for their team members and

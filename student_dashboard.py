@@ -36,6 +36,7 @@ class StudentDashboard(MethodView):
             msg = "Student not found"
             return render_template('errorMsg.html', msg=msg, student_register=True)
         else:
+            print(validate_student())
             student_name = validate_student().name
             user_name = validate_student().id
             caps = gbmodel.students().get_user_sessions(user_name)  # get user's capstone sessions
