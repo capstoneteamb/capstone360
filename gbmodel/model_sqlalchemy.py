@@ -190,23 +190,23 @@ class teams(db.Model):
             # Query to get the min & max student points of their final
             final_points = db.session.query(
                     func.max(reports.points).label("max_points"), func.min(reports.points)
-                                            .label("min_points"),
-                                                reports.reviewee, reports.reviewer).filter_by(
-                                                    tid=tids[i], session_id=session_id).filter(
-                                                    reports.reviewee == students.id).filter(
-                                                        reports.reviewee != reports.reviewer).filter(
-                                                            reports.is_final == 1).group_by(
-                                                            students.id)
-            # Query to get the min & max student points of their midterm
+                                            .label("min_points"), reports.reviewee,
+                    reports.reviewer).filter_by(
+                                                tid=tids[i], session_id=session_id).filter(
+                                                reports.reviewee == students.id).filter(
+                                                    reports.reviewee != reports.reviewer).filter(
+                                                        reports.is_final == 1).group_by(
+                                                        students.id)
+        # Query to get the min & max student points of their midterm
             midterm_points = db.session.query(
                     func.max(reports.points).label("max_points"),
                     func.min(reports.points).label("min_points"), reports.reviewee,
-                                            reports.reviewer).filter_by(
-                                                    tid=tids[i], session_id=session_id).filter(
-                                                    reports.reviewee == students.id).filter(
-                                                        reports.reviewee != reports.reviewer).filter(
-                                                            reports.is_final == 0).group_by(
-                                                            students.id)
+                    reports.reviewer).filter_by(
+                            tid=tids[i], session_id=session_id).filter(
+                            reports.reviewee == students.id).filter(
+                                reports.reviewee != reports.reviewer).filter(
+                                    reports.is_final == 0).group_by(
+                                    students.id)
             # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
