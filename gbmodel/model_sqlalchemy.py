@@ -191,7 +191,7 @@ class teams(db.Model):
             final_points = db.session.query(
                     func.max(reports.points).label("max_points"), func.min(reports.points)
                                             .label("min_points"),
-                                            reports.reviewee, reports.reviewer).filter_by(
+                                                reports.reviewee, reports.reviewer).filter_by(
                                                     tid=tids[i], session_id=session_id).filter(
                                                     reports.reviewee == students.id).filter(
                                                         reports.reviewee != reports.reviewer).filter(
@@ -200,7 +200,8 @@ class teams(db.Model):
             # Query to get the min & max student points of their midterm
             midterm_points = db.session.query(
                     func.max(reports.points).label("max_points"),
-                    func.min(reports.points).label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                    func.min(reports.points).label("min_points"), reports.reviewee,
+                        reports.reviewer).filter_by(
                                                     tid=tids[i], session_id=session_id).filter(
                                                     reports.reviewee == students.id).filter(
                                                         reports.reviewee != reports.reviewer).filter(
@@ -219,7 +220,7 @@ class teams(db.Model):
                                       "active": "Midterm: ",
                                       "min_points": m.min_points,
                                       "max_points": m.max_points,
-                                    "lead": int(team_member.is_lead)}
+                                      "lead": int(team_member.is_lead)}
                             temp.append(params)
                             flag = 1
                 # Checks whether the student is in final
@@ -231,7 +232,7 @@ class teams(db.Model):
                                       "active": "Final: ",
                                       "min_points": f.min_points,
                                       "max_points": f.max_points,
-                                    "lead": int(team_member.is_lead)}
+                                      "lead": int(team_member.is_lead)}
                             temp.append(params)
                             flag = 1
                 if flag == 0:
