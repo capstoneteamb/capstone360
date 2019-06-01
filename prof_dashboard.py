@@ -88,12 +88,10 @@ class ProfDashboard(MethodView):
             # Get team name and session id from profDashboard.html,
             # new student id, name, email from addStudent.html
             team_name = request.form.get('team_name')
-            team_name = team_name.replace("_", " ")
             if not student.check_dup_student(request.form['student_id'], session_id):
                 # If student id in a current session already exists
                 # Return to addStudent.html with error msg and request a new form
                 error = "Student id " + str(request.form['student_id']) + " already exists"
-                team_name = team_name.replace(" ", "_")
                 return render_template('addStudent.html',
                                        team_name=team_name,
                                        session_id=session_id,
@@ -103,7 +101,6 @@ class ProfDashboard(MethodView):
                 # with error msg and request a new form
                 if self.valid_email(str(request.form['student_email'])) is False:
                     error = "Invalid Email Address"
-                    team_name = team_name.replace(" ", "_")
                     return render_template('addStudent.html',
                                            team_name=team_name,
                                            session_id=session_id,
@@ -125,7 +122,6 @@ class ProfDashboard(MethodView):
             # get list of students and team name from profDashboard.html
             students = request.form.getlist('removed_student')
             team_name = request.form.get('team')
-            team_name = team_name.replace("_", " ")
             # Remove student/students from database
             student.remove_student(students, team_name, session_id)
             lists, sessions = team.dashboard(session_id)
@@ -141,7 +137,6 @@ class ProfDashboard(MethodView):
             # character was added to the beginning of the name. We will want to remove it before we continue
             # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
             team_name = team_name[1:]
-            team_name = team_name.replace("_", " ")
             # Remove team and students in the team from database
             team.remove_team(team_name, session_id)
             lists, sessions = team.dashboard(session_id)
@@ -206,7 +201,6 @@ class ProfDashboard(MethodView):
                 error = "Team name already exists"
                 return render_template('addTeam.html', error=error, session_id=session_id)
             team_name = request.form.get('team_name')
-            team_name = team_name.replace("_", " ")
             # Add new team to the given session from profDashboard.html
             team.insert_team(session_id, team_name)
             # Update new list of sessions, teams, students to reflect on profDashboard.html
@@ -341,7 +335,6 @@ class ProfDashboard(MethodView):
             # Get team name and lead from checkboxes in profDashboard.html
             team_name = request.form.get('team_lead')
             student_name = request.form.get('is_lead')
-            team_name = team_name.replace("_", " ")
             # Set lead for chosen team in current sesison
             student.set_lead(session_id, team_name, student_name)
             # Update new list of sessions, teams, students to reflect on profDashboard.html
@@ -365,7 +358,6 @@ class AddStudent(MethodView):
                 name of the team from profDashboard.html
         """
         team_name = request.args.get('data')
-        team_name = team_name.replace(" ", "_")
         session_id = request.args.get('session_id')
         return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
 
@@ -446,7 +438,6 @@ class RemoveTeam(MethodView):
                 and team name from profDashboard.html
         """
         team_name = request.args.get('data')
-        team_name = team_name.replace(" ", "_")
         session_id = request.args.get('session_id')
         return render_template('removeTeam.html', team_name=team_name, session_id=session_id)
 

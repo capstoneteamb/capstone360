@@ -6,18 +6,18 @@
 		{% if error %}
 			<p><strong>Error:</strong> {{ error }}
 		{% endif %}
-		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
-			<p class="heading">Student Name: <input type=text required='required' name=student_name></p>
-			<p class="heading">Student ID: <input type=text required='required' name=student_id></p>
-			<p class="heading">Student Email Address: <input type=text name=student_email></p>
+		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
+			<p class="heading">Student Name: <input type="text" required="required" name="student_name"</p>
+			<p class="heading">Student ID: <input type="text" required="required" name="student_id"></p>
+			<p class="heading">Student Email Address: <input type="text" name="student_email"></p>
 			<p class="heading" style="display: inline-block;">Team Name: {{team_name}}</p> 
-			<input type="hidden" value={{team_name}} name=team_name>
-			<input type="hidden" value={{session_id}} name=session_id>
+			<input type="hidden" value="{{team_name}}" name="team_name">
+			<input type="hidden" value="{{session_id}}" name="session_id">
 			
-			<p><input class="my-btn" type=submit value='Add Student' style="
+			<p><input class="my-btn" type="submit" value="Add Student" style="
 					background-color: #b7c229;
  				   	color: white;
-    				border: none;f
+    		 		border: none;
     				border-radius: 5px;
 					padding: 10px 20px;
 					cursor: pointer;"></p>	

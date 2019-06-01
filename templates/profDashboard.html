@@ -24,10 +24,10 @@
 	</div>
 	
 	<div class="student-card remove-card">
-		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
+		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
 			<h4>{{data[0]}}</h4>
 			{% for student in data[1:] %}
-			<p class=entry>
+			<p class="entry">
 				<img class="user-icon" style="display: inline-block;"
 					src="{{ url_for('static', filename='Assets/user.png')}}">
 				<span class="name" style="display: inline-block;"> {{ student['name'] }}
@@ -35,12 +35,12 @@
 				<input class="remove-check" type="checkbox" style="display: inline-block;" name="removed_student"
 					value="{{ student['name'] }}"> 
 					<input type="hidden" name="team" value="{{data[0]}}">
-					<input type="hidden" value={{session_id}} name=session_id>
+					<input type="hidden" value="{{session_id}}" name="session_id">
 				</input>				
 			</p>
 			{% endfor %}
 			{% if data[1:]|length %}
-			<p><input class="my-cancel-btn remove-student-btn" type=submit value='Remove Student' style="
+			<p><input class="my-cancel-btn remove-student-btn" type="submit" value="Remove Student" style="
 						background-color: #BCBCBC;
 						color: white;
 						width: 130px;
@@ -54,10 +54,10 @@
 	</div>
 
 	<div class="student-card lead-card lead-card-{{loop.index}}">
-		<form class="form-lead-{{loop.index}}"action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
+		<form class="form-lead-{{loop.index}}"action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
 			<h4>{{data[0]}}</h4>
 			{% for student in data[1:] %}
-			<p class=entry>
+			<p class="entry">
 				<img class="user-icon" style="display: inline-block;"
 					src="{{ url_for('static', filename='Assets/user.png')}}">
 				<span class="name" style="display: inline-block;"> {{ student['name'] }}</span>
@@ -65,7 +65,7 @@
 					value="{{ student['name'] }}" data-lead="{{student['lead']}}"> 
 					<input type="hidden" name="lead_value" value="{{student['lead']}}">
 					<input type="hidden" name="team_lead" value="{{data[0]}}">
-					<input type="hidden" value={{session_id}} name=session_id>
+					<input type="hidden" value="{{session_id}}" name="session_id">
 				</input>				
 			</p>
 			{% endfor %}

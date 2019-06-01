@@ -6,16 +6,16 @@
   {% if error %}
     <p><strong>Error:</strong> {{ error }}
   {% endif %}
-  <form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
+  <form action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
 	{% for student in lists %}
     <p style="padding-top: 25px;">{{student['name']}}</p>
       Place on Team:<br>
       <input type="text" name={{ "assigned_team" + (loop.index|string)}} style="width: 400px;">
 	{% endfor %}
-  <input type="hidden" name=assigned_teams>
-  <input type="hidden" name=size value={{lists|length}}>
-  <input type="hidden" value={{session_id}} name=session_id>
-  <p><input class="my-btn" type=submit value='Submit Changes'>
+  <input type="hidden" name="assigned_teams">
+  <input type="hidden" name="size" value={{lists|length}}>
+  <input type="hidden" value={{session_id}} name="session_id">
+  <p><input class="my-btn" type="submit" value="Submit Changes">
   </form>
   </div>
 

@@ -12,7 +12,7 @@
     <div class="student-card">
         <h4>Midterm</h4>
         {% for s in students %}
-            <p class=entry>
+            <p class="entry">
                 <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
                 <a href="{{ url_for('professorReport', student_id=s.id, session_id=s.session_id, is_final=False) }}"><span class="name" style="display: inline-block;">{{ s.name }}</span></a>
             </p>
@@ -24,7 +24,7 @@
     <div class="student-card">
         <h4>Final</h4>
         {% for s in students %}
-            <p class=entry>
+            <p class="entry">
                 <img class="user-icon" style="display:inline-block;" src="{{ url_for('static', filename='Assets/user.png')}}">
                 <a href="{{ url_for('professorReport', student_id=s.id, session_id=s.session_id, is_final=True) }}"><span class="name" style="display: inline-block;">{{ s.name }}</span></a>
             </p>
