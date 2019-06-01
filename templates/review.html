@@ -2,7 +2,7 @@
 
 {% block content %}
 <a href="{{ url_for('cas.logout')}}">
-	<div class="student-login-btn"
+    <div class="student-login-btn"
     style=
     "width: 150px;
     left: 93%;
@@ -166,7 +166,7 @@
         {%- endif %}
         {% if state == 'final' -%}
         <br>
-	<label for="proud">Are you proud of your accomplishment for this project?</label>
+    <label for="proud">Are you proud of your accomplishment for this project?</label>
         {% if is_done == 1 -%}
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required>
         {% for k in data -%}

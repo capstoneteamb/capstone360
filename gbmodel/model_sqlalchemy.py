@@ -308,7 +308,6 @@ class students(db.Model):
         Output: return False if student id already exists in the current session
                 add student to the database and return True otherwise
         """
-        print(t_name)
         result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
         tid = result.id
         new_student = students(id=id,
