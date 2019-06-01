@@ -209,6 +209,7 @@ class teams(db.Model):
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
+                # Checks whether the student is in midterm
                 if team_member.active == "midterm" or team_member.active is None:
                     for m in midterm_points:
                         if (team_member.id == m.reviewee):  # If the student's ID matches the review ID
@@ -220,6 +221,7 @@ class teams(db.Model):
                                     "lead": int(team_member.is_lead)}
                             temp.append(params)
                             flag = 1
+                # Checks whether the student is in final
                 elif team_member.active == "final":
                     for f in final_points:
                         if (team_member.id == f.reviewee):  # If the student's ID matches the review ID
