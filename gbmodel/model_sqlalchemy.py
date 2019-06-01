@@ -187,31 +187,56 @@ class teams(db.Model):
         lists = [[] for _ in range(len(tids))]
         flag = 0
         for i in range(len(tids)):
-            # Query to get the min & max student points and the ID of the reviewee
-            member_points = db.session.query(
-                func.max(reports.points).label("max_points"), func.min(reports.points)
-                                        .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
-                                                tid=tids[i], session_id=session_id).filter(
-                                                reports.reviewee == students.id).filter(
-                                                    reports.reviewee != reports.reviewer).group_by(
-                                                        students.id)
+            # Query to get the min & max student points of their final
+            final_points = db.session.query(
+                    func.max(reports.points).label("max_points"), func.min(reports.points)
+                                            .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                                                    tid=tids[i], session_id=session_id).filter(
+                                                    reports.reviewee == students.id).filter(
+                                                        reports.reviewee != reports.reviewer).filter(
+                                                            reports.is_final == True).group_by(
+                                                            students.id)
+            # Query to get the min & max student points of their midterm
+            midterm_points = db.session.query(
+                    func.max(reports.points).label("max_points"), func.min(reports.points)
+                                            .label("min_points"), reports.reviewee, reports.reviewer).filter_by(
+                                                    tid=tids[i], session_id=session_id).filter(
+                                                    reports.reviewee == students.id).filter(
+                                                        reports.reviewee != reports.reviewer).filter(
+                                                            reports.is_final == False).group_by(
+                                                            students.id)
             # Query to get the students in the students table
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                for p in member_points:
-                    if (team_member.id == p.reviewee):  # If the student's ID matches the review ID
-                        params = {"name": team_member.name,
-                                  "id": team_member.id,
-                                  "min_points": p.min_points,
-                                  "max_points": p.max_points,
-                                  "lead": int(team_member.is_lead)}
-                        temp.append(params)
-                        flag = 1
+                if team_member.active == "midterm" or team_member.active is None:
+                    for m in midterm_points:
+                        if (team_member.id == m.reviewee):  # If the student's ID matches the review ID
+                            params = {"name": team_member.name,
+                                    "id": team_member.id,
+                                    "active": "Midterm: ",
+                                    "min_points": m.min_points,
+                                    "max_points": m.max_points,
+                                    "lead": int(team_member.is_lead)}
+                            temp.append(params)
+                            flag = 1
+                elif team_member.active == "final":
+                    for f in final_points:
+                        if (team_member.id == f.reviewee):  # If the student's ID matches the review ID
+                            params = {"name": team_member.name,
+                                    "id": team_member.id,
+                                    "active": "Final: ",
+                                    "min_points": f.min_points,
+                                    "max_points": f.max_points,
+                                    "lead": int(team_member.is_lead)}
+                            temp.append(params)
+                            flag = 1
                 if flag == 0:
                     params = {"name": team_member.name,
                               "id": team_member.id,
-                              "points": "N/A",
+                              "active": "",
+                              "min_points": "",
+                              "max_points": "",
                               "lead": int(team_member.is_lead)}
                     temp.append(params)
                 flag = 0
