@@ -22,17 +22,23 @@ class review(MethodView):
     # holds fields that should appear in the table on the review page
     # -- these are what people will see
     human_fields = ['Name',
-                    'Technical Mastery',
-                    'Work Ethic',
-                    'Communication',
-                    'Cooperation',
-                    'Initiative',
-                    'Team Focus',
-                    'Contribution',
+                    """ Technical Mastery - Mastery of the skills
+                        involved in their role(s) with the project""",
+                    """ Work Ethic - Cheerfully performing their tasks
+                        without excessive complaining, work avoidance""",
+                    """ Communication - Ability to understand others points
+                        and to effectively get their points across""",
+                    """ Cooperation - Willing to be flexible, share knowledge,
+                        genuinely interested in what they can do for the project to go smoothly """,
+                    """ Initiative - Seeing what needs to be done and doing
+                        it without someone asking them to """,
+                    """ Team Focus - Interested in the entire project and its progress,
+                        not just exclusively thinking about their part """,
+                    "Contribution - Assess this person's overall contribution to the project",
                     'Leadership (Team Lead Only)',
                     'Organization (Team Lead Only)',
                     'Delegation (Team Lead Only)',
-                    'Points',
+                    'Points - Score your teammates 0-100. Give 0 to yourself. Sum across team must be 100.',
                     'Strengths',
                     'Weaknesses',
                     'Traits to Work On']
@@ -521,6 +527,9 @@ class review(MethodView):
                 if i == user_id:
                     learned = request.form[('learned')]
                     learned = learned.strip()
+                    if len(learned) > 30000:
+                        print('string too long')
+                        abort(422)
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
@@ -528,9 +537,19 @@ class review(MethodView):
                     if i == user_id:
                         proud = request.form[('proud')]
                         proud = proud.strip()
+                        if len(proud) > 30000:
+                            print('string too long')
+                            abort(422)
 
                 points = request.form[('points_' + str(i))]
                 points = points.strip()
+
+                if((len(strn) > 30000) or
+                   (len(wkn) > 30000) or
+                   (len(traits) > 30000)):
+                    print('string too long')
+                    abort(422)
+
                 points = self.convert_to_int(points)
 
                 # default to not late
