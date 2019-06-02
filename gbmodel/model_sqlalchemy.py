@@ -435,7 +435,7 @@ class students(db.Model):
             for each in all_students:
                 if decrypt(each.id) == sid:
                     result = students(id=decrypt(each.id),
-tid=each.tid,
+                                      tid=each.tid,
                                       session_id=each.session_id,
                                       name=decrypt(each.name),
                                       email_address=decrypt(each.email_address),
