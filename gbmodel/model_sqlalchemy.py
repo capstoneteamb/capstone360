@@ -434,14 +434,14 @@ class students(db.Model):
             all_students = students.query.filter(students.session_id == session_id).all()
             for each in all_students:
                 if decrypt(each.id) == sid:
-                    result = students(id=decrypt(each.id),
-                    tid=each.tid,
-                    session_id=each.session_id,
-                    name=decrypt(each.name),
-                    email_address=decrypt(each.email_address),
-                    is_lead=each.is_lead,
-                    midterm_done=each.midterm_done,
-                    final_done=each.final_done)
+                    result = students(id=(decrypt(each.id)),
+                tid=each.tid,
+                session_id=each.session_id,
+                name=decrypt(each.name),
+                email_address=decrypt(each.email_address),
+                is_lead=each.is_lead,
+                midterm_done=each.midterm_done,
+                final_done=each.final_done)
                     return result
         except exc.SQLAlchemyError:
             return None
