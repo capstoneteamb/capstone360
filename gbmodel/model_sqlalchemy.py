@@ -542,8 +542,7 @@ class students(db.Model):
                 if decrypt(each.name) == decrypt(name):
                     print("Changing team.")
                     students.query.filter_by(name=each.name,
-                                             session_id=s_id).\
-                                 update(dict(tid=t_id))
+                                             session_id=s_id).update(dict(tid=t_id))
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
