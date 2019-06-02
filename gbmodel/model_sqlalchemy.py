@@ -182,6 +182,7 @@ class teams(db.Model):
         """
         student = students()
         session = capstone_session()
+        today = datetime.datetime.now()
         tids = [row.id for row in self.get_team_session_id(session_id)]
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
@@ -211,8 +212,8 @@ class teams(db.Model):
             team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             temp = [team_names[i]]
             for team_member in team_members:
-                # Checks whether the student is in midterm
-                if team_member.active == "midterm" or team_member.active is None:
+                # Checks whether the review is within the midterm dates
+                if session.check_review_state(session_id, today) == "midterm":
                     for m in midterm_points:
                         if (team_member.id == m.reviewee):  # If the student's ID matches the review ID
                             params = {"name": team_member.name,
@@ -223,8 +224,8 @@ class teams(db.Model):
                                       "lead": int(team_member.is_lead)}
                             temp.append(params)
                             flag = 1
-                # Checks whether the student is in final
-                elif team_member.active == "final":
+                # Checks whether the review is within the final dates
+                elif session.check_review_state(session_id, today) == "final":
                     for f in final_points:
                         if (team_member.id == f.reviewee):  # If the student's ID matches the review ID
                             params = {"name": team_member.name,
