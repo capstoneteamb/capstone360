@@ -73,7 +73,7 @@ class ViewStudent(MethodView):
                                                " id)"))
 
                 # Record it, along with some other information about the student
-                student_details = {"name": student.name, 
+                student_details = {"name": student.name,
                                    "id": student.id,
                                    "team_name": team.name}
 

@@ -343,13 +343,13 @@ class students(db.Model):
         mems = []
         for each in e_mems:
             new_student = students(id=each.id,
-                               tid=each.tid,
-                               session_id=each.session_id,
-                               name=each.name,
-                               email_address=each.email_address,
-                               is_lead=each.is_lead,
-                               midterm_done=each.midterm_done,
-                               final_done=each.final_done) 
+                                   tid=each.tid,
+                                   session_id=each.session_id,
+                                   name=each.name,
+                                   email_address=each.email_address,
+                                   is_lead=each.is_lead,
+                                   midterm_done=each.midterm_done,
+                                   final_done=each.final_done)
             if isinstance(new_student.name, str) is False:
                 new_student.id = decrypt(new_student.id)
                 new_student.name = decrypt(new_student.name)
@@ -379,7 +379,7 @@ class students(db.Model):
                                    email_address=decrypt(each.email_address),
                                    is_lead=each.is_lead,
                                    midterm_done=each.midterm_done,
-                                   final_done=each.final_done) 
+                                   final_done=each.final_done)
             results.append(new_student)
         return results
 
@@ -393,7 +393,6 @@ class students(db.Model):
             results = []  # to store objects
 
             # get all matching records
-           # student_records = students.query.filter_by(id=student_id).all()
             student_records = []
             all_students = students.query.all()
             for each in all_students:
@@ -432,18 +431,17 @@ class students(db.Model):
         # Operations that need to be performed to decrypt.
         # Bytearray stored as string, including preceding b.
         try:
-            #result = students.query.filter(students.id == sid, students.session_id == session_id).first()
             all_students = students.query.filter(students.session_id == session_id).all()
             for each in all_students:
                 if decrypt(each.id) == sid:
                     result = students(id=decrypt(each.id),
-                                           tid=each.tid,
-                                           session_id=each.session_id,
-                                           name=decrypt(each.name),
-                                           email_address=decrypt(each.email_address),
-                                           is_lead=each.is_lead,
-                                           midterm_done=each.midterm_done,
-                                           final_done=each.final_done) 
+                                                 tid=each.tid,
+                                                 session_id=each.session_id,
+                                                 name=decrypt(each.name),
+                                                 email_address=decrypt(each.email_address),
+                                                 is_lead=each.is_lead,
+                                                 midterm_done=each.midterm_done,
+                                                 final_done=each.final_done)
                     return result
         except exc.SQLAlchemyError:
             return None
@@ -478,11 +476,11 @@ class students(db.Model):
                                            email_address=decrypt(each.email_address),
                                            is_lead=each.is_lead,
                                            midterm_done=each.midterm_done,
-                                           final_done=each.final_done) 
+                                           final_done=each.final_done)
                     removed_student.add_student(new_student)
             # removed_student.add_student(student)
                     st = students.query.filter(students.id == e_id,
-                                       students.session_id == session_id).first()
+                                               students.session_id == session_id).first()
             db.session.delete(st)
             db.session.commit()
         return True
@@ -511,7 +509,7 @@ class students(db.Model):
                                   email_address=decrypt(each.email_address),
                                   is_lead=each.is_lead,
                                   midterm_done=each.midterm_done,
-                                  final_done=each.final_done) 
+                                  final_done=each.final_done)
                 return result
         return -1
         if result is None:
@@ -543,9 +541,9 @@ class students(db.Model):
             for each in needed_students:
                 if decrypt(each.name) == decrypt(name):
                     print("Changing team.")
-                    students.query.filter_by(name = each.name,
-                                             session_id = s_id).\
-                                             update(dict(tid = t_id))
+                    students.query.filter_by(name=each.name,
+                                             session_id=s_id).\
+                                             update(dict(tid=t_id))
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
@@ -1140,7 +1138,6 @@ class reports(db.Model):
             # update appropriate student 'done' attribute
             print('Finding Student')
             all_students = students.query.filter_by(session_id=sess_id).all()
-           # student = students.query.filter_by(id=id, session_id=sess_id).first()
             for each in all_students:
                 if decrypt(each.id) == id:
                     student = each
