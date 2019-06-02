@@ -188,28 +188,32 @@ class teams(db.Model):
         lists = [[] for _ in range(len(tids))]
         flag = 0
         for i in range(len(tids)):
-            # Query to get the min & max student points of their final
-            final_points = db.session.query(
-                    func.max(reports.points).label("max_points"), func.min(reports.points)
-                                            .label("min_points"), reports.reviewee,
-                    reports.reviewer).filter_by(
-                                                tid=tids[i], session_id=session_id).filter(
-                                                reports.reviewee == students.id).filter(
-                                                    reports.reviewee != reports.reviewer).filter(
-                                                        reports.is_final == 1).group_by(
-                                                        students.id)
-        # Query to get the min & max student points of their midterm
-            midterm_points = db.session.query(
-                    func.max(reports.points).label("max_points"),
-                    func.min(reports.points).label("min_points"), reports.reviewee,
-                    reports.reviewer).filter_by(
-                            tid=tids[i], session_id=session_id).filter(
-                            reports.reviewee == students.id).filter(
-                                reports.reviewee != reports.reviewer).filter(
-                                    reports.is_final == 0).group_by(
-                                    students.id)
-            # Query to get the students in the students table
-            team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
+            try:
+                # Query to get the min & max student points of their final
+                final_points = db.session.query(
+                        func.max(reports.points).label("max_points"), func.min(reports.points)
+                                                .label("min_points"), reports.reviewee,
+                        reports.reviewer).filter_by(
+                                                    tid=tids[i], session_id=session_id).filter(
+                                                    reports.reviewee == students.id).filter(
+                                                        reports.reviewee != reports.reviewer).filter(
+                                                            reports.is_final == 1).group_by(
+                                                            students.id)
+                # Query to get the min & max student points of their midterm
+                midterm_points = db.session.query(
+                        func.max(reports.points).label("max_points"),
+                        func.min(reports.points).label("min_points"), reports.reviewee,
+                        reports.reviewer).filter_by(
+                                tid=tids[i], session_id=session_id).filter(
+                                reports.reviewee == students.id).filter(
+                                    reports.reviewee != reports.reviewer).filter(
+                                        reports.is_final == 0).group_by(
+                                        students.id)
+            
+                # Query to get the students in the students table
+                team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
+            except exc.SQLAlchemyError:                   
+                return 'Error'
             temp = [team_names[i]]
             for team_member in team_members:
                 # Checks whether the review is within the midterm dates
