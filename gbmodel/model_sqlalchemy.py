@@ -209,10 +209,9 @@ class teams(db.Model):
                                     reports.reviewee != reports.reviewer).filter(
                                         reports.is_final == 0).group_by(
                                         students.id)
-            
                 # Query to get the students in the students table
                 team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
-            except exc.SQLAlchemyError:                   
+            except exc.SQLAlchemyError:
                 return 'Error'
             temp = [team_names[i]]
             for team_member in team_members:
