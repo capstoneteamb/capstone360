@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-
 {% block content %}
 <a href="{{ url_for('cas.logout')}}">
     <div class="student-login-btn"
@@ -18,7 +17,6 @@
 <br>
 <br>
 <br>
-
 {% if fatal_error %}
 {{ fatal_error }}
 <a href="/studentDashboard"><div class="student-login-btn" style="bottom: unset; top: 17%; left: 5%;">Back</div></a>
@@ -59,7 +57,6 @@
                                     Score for {{mem['name']}}'s {{human_fields[i]}}
                                 </div>
                                 <div class="col-2">
-                                        
                                 </div>
                                 <div class="col-6">
                                     {% for j in range(5) %}
@@ -139,16 +136,16 @@
                             required>
                         {% for k in data -%}
                         {% if k[test] is defined -%}{{k[test]}}{%- endif %}
-                        {%- endfor %}
+                        {% endfor %}
                         </textarea>
                         {% else %}
                         <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
                             name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
                             required></textarea>
-                        {%- endif %}
+                        {% endif %}
                     </td>
-                    {%- endif %}
-                    {%- endfor %}
+                    {% endif %}
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             </table>
@@ -163,7 +160,7 @@
         </textarea>
         {% else %}
         <textarea placeholder="What did you learn?" class="form-control" name="learned" id="learned" required></textarea>
-        {%- endif %}
+        {% endif %}
         {% if state == 'final' -%}
         <br>
     <label for="proud">Are you proud of your accomplishment for this project?</label>
@@ -171,12 +168,12 @@
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required>
         {% for k in data -%}
         {% if k['proud'] is defined -%}{{k['proud']}}{%- endif %}
-        {%- endfor %}
+        {% endfor %}
         </textarea>
         {% else %}
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required></textarea>
-        {%- endif %}
-        {%- endif %}
+        {% endif %}
+        {% endif %}
         <br>
         <input class="my-btn" type="submit" value='Submit' style="
                 background-color: #b7c229;

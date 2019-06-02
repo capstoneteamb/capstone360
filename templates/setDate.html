@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <h3>Add Team</h3>
 <div class="add-container">
     <div class="input-card date-card">
         {% if error %}
-            <p><strong>Error:</strong> {{ error }}
+        <p><strong>Error:</strong> {{ error }}
         {% endif %}
         <form action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
             <p class="heading">Midterm Start Date:</p>
@@ -21,10 +20,7 @@
                 background-color: #b7c229;
                 color: white;"></p>
         </form>
-
         <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: -57px;">Cancel</button></a>
-
     </div>
 </div>
-
 {% endblock %}

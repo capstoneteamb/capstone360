@@ -20,21 +20,21 @@
             </div>
         </div>
         <div class="row">
-           <div class="col">
-               <p><b>Team Name:</b> {{details['team_name']}}</p> 
-               <p><b>Reviewer:</b> {{details['reviewer']}}</p> 
-               <p><b>Reviewee:</b> {{details['reviewee']}}</p> 
-               <p><b>Time Submitted:</b> {{details['time']}}</p>
-               <p>
-                   <b>Submitted Late:</b>
-                   {% if details['is_late'] %}
-                   Yes
-                   {% else %}
-                   No
-                   {% endif %}
-               <p>
-               <hr>
-           </div>
+            <div class="col">
+                <p><b>Team Name:</b> {{details['team_name']}}</p>
+                <p><b>Reviewer:</b> {{details['reviewer']}}</p>
+                <p><b>Reviewee:</b> {{details['reviewee']}}</p>
+                <p><b>Time Submitted:</b> {{details['time']}}</p>
+                <p>
+                    <b>Submitted Late:</b>
+                    {% if details['is_late'] %}
+                    Yes
+                    {% else %}
+                    No
+                    {% endif %}
+                <p>
+                <hr>
+            </div>
         </div>
         {% for review_question in review_data %}
         <div class="row">

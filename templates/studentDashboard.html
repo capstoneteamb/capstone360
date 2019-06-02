@@ -10,14 +10,13 @@
                 <form>
                     <select id="options" name="selected_session" style="transform: translate(35%, 0); margin-top: 35%;">
                         {% for i in caps %}
-                            <option value="{{i['id']}}" {% if i == caps|last %}selected{% endif %}>{{i['start_term']}} {{i['start_year']}} - {{i['end_term']}} {{i['end_year']}}</option>
+                        <option value="{{i['id']}}" {% if i == caps|last %}selected{% endif %}>{{i['start_term']}} {{i['start_year']}} - {{i['end_term']}} {{i['end_year']}}</option>
                         {% endfor %}
-                        
                     </select>
                 </form>
                 <a href="{{ url_for('cas.logout')}}"><div class="student-login-btn" style=
-                    "width: 150px; 
-                    text-align: center; 
+                    "width: 150px;
+                    text-align: center;
                     background-color: #ff9e16;
                     bottom: 12%;">Logout </div></a>
             </div>
