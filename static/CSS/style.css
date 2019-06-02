@@ -1,22 +1,23 @@
-body       { 
-    font-family: "Helvetica", sans-serif; 
-    font-size: 20px; 
+body {
+    font-family: "Helvetica", sans-serif;
+    font-size: 20px;
     margin: 0;
     background-color: #BCBCBC;
 }
 
-a:hover{
+a:hover {
     text-decoration: none;
 }
 
-h1, h2  {
-     color: white; 
-     width: 100%;
-     padding: 50px;
-     background-color: #4286f4;
-     text-align: center;
-     border-radius: 10px;
-    }
+h1,
+h2 {
+    color: white;
+    width: 100%;
+    padding: 50px;
+    background-color: #4286f4;
+    text-align: center;
+    border-radius: 10px;
+}
 
 h3 {
     text-align: center;
@@ -24,38 +25,39 @@ h3 {
     padding: 10px 50px;
 }
 
-.nav-container{
+.nav-container {
     color: #cecece;
     position: fixed;
     top: 100px;
     z-index: 9999;
 }
 
-.row.nav{
+.row.nav {
     background-color: #6a6a6d;
     display: flex;
     align-items: center;
 }
 
-.nav{
+.nav {
     text-align: center;
     padding: 10px;
 }
 
-.nav a:visited{
+.nav a:visited {
     color: #cecece;
 }
 
-.row.button{
+.row.button {
     text-align: center;
 }
 
-.sub-buttons, .add-student-btn{
-    display:none;
+.sub-buttons,
+.add-student-btn {
+    display: none;
 }
 
-.sub-buttons{
-    height: 50px;
+.sub-buttons {
+    height: 70px;
     color: #fff;
     background-color: #e0ee2a;
     font-size: 16px;
@@ -64,69 +66,99 @@ h3 {
     align-items: center;
 }
 
-@media (max-width: 1000px){
-    .sub-buttons{
+@media (max-width: 1300px) {
+    .sub-buttons {
         font-size: 11px;
     }
 }
 
-.sub-buttons a{
+.sub-buttons a {
     color: grey;
 }
 
-.sub-buttons .col-sm-2{
+.sub-buttons .col-sm-2 {
     display: inline-block;
     width: 24%;
 }
 
-.sub-buttons .col-sm:nth-child(-n+7){
-    border-right: 1px solid rgba(0,0,0, 0.3);
+.sub-buttons .col-sm:nth-child(-n+8) {
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
 }
-.remove-card{
+
+.remove-card {
     display: none;
 }
 
-.lead-card{
+.lead-card {
     display: none;
 }
 
-.lead-check{
+.lead-check {
     position: absolute;
     right: 25px;
-} 
+}
 
-.edit-btn{
+.edit-btn {
     cursor: pointer;
 }
 
-.row.header{
+.row.header {
     margin-left: 0;
     z-index: 9999;
 }
 
-form       { margin:.1em auto; padding:.1em; width: 100%; border: 1px }
-.heading  { font-weight: bold; margin-top: 30px;}
-.entry     { 
-    margin-bottom: 2em; 
-    border-bottom: 1px solid #888; 
+form {
+    width: 100%;
+    border: 1px
+}
+
+.heading {
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.entry {
+    margin-bottom: 2em;
+    border-bottom: 1px solid #888;
     position: relative;
 }
+
 input[type=text],
-input[type=date]
-{ margin: .5em 0; padding: .5em; font-size: 12px; color: #777; width: 100%;
-border-top:0; border-right:0; border-left: 0;}
-input[type=date]{text-align: center;}
-input[type=textarea] { margin: .5em 0; padding: .5em; font-size: 12px; color: #777; width: 100%;}
+input[type=date] {
+    margin: .5em 0;
+    padding: .5em;
+    font-size: 12px;
+    color: #777;
+    width: 100%;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+}
+
+input[type=date] {
+    text-align: center;
+}
+
+input[type=textarea] {
+    margin: .5em 0;
+    padding: .5em;
+    font-size: 12px;
+    color: #777;
+    width: 100%;
+}
+
 input {
     display: block;
 }
 
-.text-look-alike-button{
+.text-look-alike-button {
     margin: auto;
     text-align: center;
     background-color: inherit;
     border: 0px;
     color: white;
+    padding: 0;
+    margin-left: 25px !important;
 }
 
 .checkbox-container {
@@ -134,7 +166,7 @@ input {
     font-weight: bold;
 }
 
-.student-card{
+.student-card {
     background-color: #5D5E61;
     color: #fff;
     padding: 50px;
@@ -148,11 +180,11 @@ input {
     margin-top: 100px;
 }
 
-.student-card:nth-child(-n+3){
+.student-card:nth-child(-n+3) {
     margin-top: 250px !important;
 }
 
-.student-page-card{
+.student-page-card {
     background-color: #5D5E61;
     color: #fff;
     padding: 50px;
@@ -163,17 +195,18 @@ input {
     margin: auto;
 }
 
-.student-card h4{
+.student-card h4 {
     text-align: center;
 }
 
-.add-container, .remove-container{
+.add-container,
+.remove-container {
     display: flex;
     justify-content: center;
     margin-top: 150px;
 }
 
-.input-card{
+.input-card {
     background-color: #fff;
     padding: 50px;
     border-radius: 10px;
@@ -183,15 +216,16 @@ input {
     width: 400px;
     margin-top: 50px;
 }
-.header-img{
+
+.header-img {
     width: 100%;
 }
 
-.my-btn{
+.my-btn {
     background-color: #E0EE2A;
     color: grey;
     border: none;
-    border-radius:5px;
+    border-radius: 5px;
     font-size: 12px;
     cursor: pointer;
     float: left;
@@ -199,44 +233,46 @@ input {
     width: 130px;
     margin-top: 25px;
 }
-.my-cancel-btn{
+
+.my-cancel-btn {
     background-color: #E0EE2A;
     color: grey;
     border: none;
-    border-radius:5px;
+    border-radius: 5px;
     font-size: 12px;
     cursor: pointer;
     float: right;
     padding: 10px 20px;
     width: 100px;
 }
-.card-btn{
+
+.card-btn {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.psu-logo{
+.psu-logo {
     width: 240px;
     margin-left: 35px;
 }
 
-.header{
+.header {
     height: 100px;
-    position:fixed;
-    top:0;
-    width:100vw;
-    background-color:#313036;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    background-color: #313036;
     display: flex;
     align-items: center;
 }
 
-.body{
-    margin-top:124px;
+.body {
+    margin-top: 124px;
 }
 
-.login-container{
+.login-container {
     margin-top: 100px;
     position: absolute;
     left: 50%;
@@ -244,26 +280,26 @@ input {
     width: 450px;
 }
 
-.login-hero{
+.login-hero {
     width: 100%;
     height: 450px;
     background-color: #313036;
     border-radius: 10px;
 }
 
-.login-hero img{
-    width:100%;
+.login-hero img {
+    width: 100%;
 }
 
-.login-hero h3{
+.login-hero h3 {
     color: #fff;
     position: absolute;
-    left:50%;
+    left: 50%;
     top: 70px;
     transform: translateX(-50%);
 }
 
-.student-login-btn{
+.student-login-btn {
     color: white;
     position: absolute;
     left: 50%;
@@ -273,7 +309,8 @@ input {
     border-radius: 5px;
     bottom: 20%;
 }
-.prof-login-btn{
+
+.prof-login-btn {
     color: white;
     position: absolute;
     left: 50%;
@@ -283,59 +320,78 @@ input {
     border-radius: 5px;
     bottom: 40%;
 }
-.user-icon{
+
+.user-icon {
     width: 24px;
     opacity: 0.4;
 }
 
-.name{
+.name {
     margin-left: 25px;
 }
 
-.nav .col-sm{
+.nav .col-sm {
     border-right: 1px solid grey;
 }
 
-.nav .col-sm:last-child{
+.nav .col-sm:last-child {
     border-right: none;
 }
 
-.dashboard-container{
+.dashboard-container {
     margin-top: 250px;
 }
 
-.remove-check{
+.remove-check {
     position: absolute;
     right: 25px;
 }
 
-@media (min-width: 576px){
-    .container{max-width: 100%;}
+@media (min-width: 576px) {
+    .container {
+        max-width: 100%;
+    }
 }
 
-.date-card{
+.date-card {
     width: 500px;
 }
 
-.input-card.date-card form{
+.input-card.date-card form {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
 }
 
-.input-card.date-card > form > .heading,
-.input-card.date-card > form > input{
+.input-card.date-card>form>.heading,
+.input-card.date-card>form>input {
     font-size: 18px;
     width: 49%;
 }
 
-.input-card.date-card > form > input{
+.input-card.date-card>form>input {
     font-size: 12px;
 }
 
-/* https://stackoverflow.com/questions/8739665/is-background-colornone-valid-css - second answer (by Jitendra Vyas and JGallardo, not the accepted answer, though it might not matter)*/
-#student-page-student-info{
+/* https://stackoverflow.com/questions/8739665/is-background-colornone-valid-css 
+- second answer (by Jitendra Vyas and JGallardo, not the accepted answer, 
+though it might not matter)*/
+#student-page-student-info {
     background-color: transparent;
     color: black;
     padding: 0px;
+}
+
+.student-register-card>input {
+    border-radius: 0;
+}
+
+.student-register-card>.form-control {
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+}
+
+.student-register-card>a:hover {
+    color: grey;
 }
