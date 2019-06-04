@@ -8,11 +8,13 @@ from sqlalchemy import exc, func
 
 sys.path.append(os.getcwd())
 
+
 def log_exception():
     exception_details = sys.exc_info()
     error = "Gbmodel - {}: {}".format(exception_details[0].__name__, exception_details[1])
     logging.error(error)
     traceback.print_tb(exception_details[2])
+
 
 class professors(db.Model):
     """
@@ -29,7 +31,7 @@ class professors(db.Model):
         """
         try:
             result = professors.query.filter(professors.id == id).first()
-        except exc.SQLAlchemyError as error:
+        except exc.SQLAlchemyError:
             log_exception()
             result = None
 
@@ -69,7 +71,7 @@ class professors(db.Model):
         except exc.SQLAlchemyError:
             log_exception()
             result = None
-        
+
         if result is not None:
             return True
         return False
@@ -85,7 +87,7 @@ class professors(db.Model):
         except exc.SQLAlchemyError:
             log_exception()
             prof = None
-        
+
         if prof is None:
             return -1  # can I change this to None?
         return prof.id
@@ -105,7 +107,7 @@ class teams(db.Model):
         except exc.SQLAlchemyError:
             log_exception("")
             max_id = None
-        
+
         if max_id is None:
             return 1
         else:
@@ -123,7 +125,7 @@ class teams(db.Model):
         except exc.SQLAlchemyError:
             log_exception()
             result = None
-        
+
         if result is not None:
             return False
         return True
@@ -737,7 +739,7 @@ class capstone_session(db.Model):
             result = capstone_session().query.filter_by(
                 start_term=s_term, start_year=s_year, professor_id=p_id).first()
         except exc.SQLAlchemyError:
-            log_exception() 
+            log_exception()
             result = None
 
         if result is not None:
