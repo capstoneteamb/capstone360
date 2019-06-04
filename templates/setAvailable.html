@@ -1,29 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <h3>Set Reviews To Be Open/Closed</h3>
 <div class="add-container">
-	<div class="input-card date-card">
-		{% if error %}
-			<p><strong>Error:</strong> {{ error }}
-		{% endif %}
-		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
+    <div class="input-card date-card">
+        {% if error %}
+        <p><strong>Error:</strong> {{ error }}
+        {% endif %}
+        <form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
             <p class="heading">Select to Open or Close Reviews:</p>
                 <select id='set_review_available' name="set_review_available">
                     <option value="open">Open</option>
                     <option value="close">Close</option>
                     <option selected disabled hidden>Select Option</option>
                 </select>
-                
             <input type="hidden" value={{session_id}} name="session_id">
-			<p><input class="my-btn" type=submit value='Submit' style="
-				background-color: #b7c229;
-				color: white;"></p>
-		</form>
-
-		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: -57px;">Cancel</button></a>
-
-	</div>
+            <p><input class="my-btn" type=submit value='Submit' style="
+                   background-color: #b7c229;
+                   color: white;"></p>
+        </form>
+        <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: -57px;">Cancel</button></a>
+    </div>
 </div>
-
 {% endblock %}

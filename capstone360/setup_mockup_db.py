@@ -256,7 +256,7 @@ def fill_tables_with_data(cursor, student_data, num_sessions, num_teams):
                             is_team_lead,
                             False,
                             False,
-                            'midterm',
+                            'open',
                             student['email_address']))
 
 
