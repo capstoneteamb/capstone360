@@ -236,22 +236,30 @@ class teams(db.Model):
             try:
                 # Query to get the min & max student points of their final
                 final_points = db.session.query(
-                        func.max(reports.points).label("max_points"), func.min(reports.points)
-                                                .label("min_points"), reports.reviewee,
-                        reports.reviewer).filter_by(
-                                                    tid=tids[i], session_id=session_id).filter(
-                                                    reports.reviewee == students.id).filter(
-                                                        reports.reviewee != reports.reviewer).filter(
-                                                            reports.is_final == 1).group_by(students.id)
+                    func.max(reports.points).label("max_points"),
+                    func.min(reports.points).label("min_points"),
+                    reports.reviewee,
+                    reports.reviewer).filter_by(
+                        tid=tids[i],
+                        session_id=session_id,
+                        reviewee=student.id).filter(
+                            reports.reviewee != reports.reviewer).filter(
+                                reports.is_final == True).group_by(
+                                    reports.reviewer).group_by(
+                                        reports.reviewee)
                 # Query to get the min & max student points of their midterm
                 midterm_points = db.session.query(
-                        func.max(reports.points).label("max_points"),
-                        func.min(reports.points).label("min_points"), reports.reviewee,
-                        reports.reviewer).filter_by(
-                                tid=tids[i], session_id=session_id).filter(
-                                reports.reviewee == students.id).filter(
-                                    reports.reviewee != reports.reviewer).filter(
-                                        reports.is_final == 0).group_by(students.id)
+                    func.max(reports.points).label("max_points"),
+                    func.min(reports.points).label("min_points"),
+                    reports.reviewee,
+                    reports.reviewer).filter_by(
+                        tid=tids[i],
+                        session_id=session_id,
+                        reviewee=students.id).filter(
+                            reports.reviewee != reports.reviewer).filter(
+                                reports.is_final == False).group_by(
+                                    reports.reviewer).group_by(
+                                        reports.reviewee)
                 # Query to get the students in the students table
                 team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             except exc.SQLAlchemyError:
@@ -546,7 +554,10 @@ class students(db.Model):
         """
         try:
             empty_team = teams.query.filter_by(name="", session_id=s_id).first()
-            return students.query.filter_by(session_id=s_id, tid=empty_team.id).all()
+            if empty_team:
+                return students.query.filter_by(session_id=s_id, tid=empty_team.id).all()
+            else:
+                return None
         # https://stackoverflow.com/questions/6470428/catch-multiple-exceptions-in-one-line-except-block
         except (exc.SQLAlchemyError, AttributeError):
             log_exception()
