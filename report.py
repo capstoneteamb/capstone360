@@ -41,7 +41,7 @@ class GeneratedProfessorReportView(MethodView):
             pdf = _make_student_report_pdf(student_id, session_id, is_final, is_professor_report=True)
             response = make_response(pdf)
         except MissingStudentException:
-            response = make_response(render_template('404.html'), 404)
+            response = make_response(render_template('errorPage.html', msg="Team/student not found."))
 
         return response
 
@@ -64,7 +64,7 @@ class GeneratedAnonymousReportView(MethodView):
             pdf = _make_printable_reports(session_id, is_final)
             response = make_response(pdf)
         except MissingStudentException:
-            response = make_response(render_template('404.html'), 404)
+            response = make_response(render_template('errorPage.html', msg="Team/student not found."))
 
         return response
 
