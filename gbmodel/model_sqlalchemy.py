@@ -193,29 +193,45 @@ class teams(db.Model):
                 move all student in the team to unassigned student
         """
         try:
-            # Remove team
-            team = teams()
-            result = teams.query.filter(teams.name == name,
-                                        teams.session_id == session_id).first()
-            tid = result.id
-            team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
-            db.session.delete(team)
-            db.session.commit()
+            # Get the team slated for removal
+            teams_obj = teams()
+            team = teams_obj.query.filter(teams.name == name,
+                                          teams.session_id == session_id).first()
 
-            # Remove students in team
-            student_list = students.query.filter(students.tid == tid, students.session_id == session_id).all()
-            tid = team.get_tid_from_name("", session_id)
-            if tid is None:
-                tid = team.insert_team(session_id, "")
-            for i in student_list:
-                i.tid = tid
+            # Get the students on the team
+            student_list = students.query.filter(students.tid == team.id, students.session_id == session_id).all()
+
+            # If we are trying to remove a team with students on it...
+            if student_list:
+                # Jump ship if the team is the empty team. We don't delete the empty team if there are
+                # students in it
+                if name == "":
+                    return False
+
+                # Otherwise, move all the students on the team to the empty team
+                empty_team_id = teams_obj.get_tid_from_name("", session_id)
+                if empty_team_id is None:
+                    empty_team_id = teams_obj.insert_team(session_id, "")
+                for student in student_list:
+                    student.tid = empty_team_id
+
+            # Remove all of the review submitted with team id
+            reviews = reports.query.filter(reports.tid == team.id).all()
+            for review in reviews:
+                db.session.delete(review)
+
+            # Now, remove the team
+            db.session.delete(team)
+
+            # Commit db changes
             db.session.commit()
 
             # Indicate operation successful
             return True
         except exc.SQLAlchemyError:
-            # Catch and log error
+            # Log exception, and rollback db changes
             log_exception()
+            db.session.rollback()
             return False
 
     def dashboard(self, session_id):
