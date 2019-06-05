@@ -127,7 +127,8 @@ class ProfDashboard(MethodView):
                 # Get team name in current session from profDashboard.html
                 team_name = request.form.get('removed_team')
                 # There was a problem removing teams with blank names, so (in remove team requests) a '_'
-                # character was added to the beginning of the name. We will want to remove it before we continue
+                # character was added to the beginning of the name.
+                # We will want to remove it before we continue
                 # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
                 team_name = team_name[1:]
                 # Remove team and students in the team from database
@@ -272,7 +273,8 @@ class ProfDashboard(MethodView):
                             students_table.insert_student(student_name, "", student_id, session_id, team_name)
                         else:
                             # Keep track of what students weren't added to the database (and make a note it)
-                            logging.warning("CSV Add Students/Team - Error inserting student into the database")
+                            logging.warning("CSV Add Students/Team -"
+                                            "Error inserting student into the database")
                             uninserted_students.append(student_name)
                     except SQLAlchemyError:
                         logging.error(('CSV Add Students/Team -'
