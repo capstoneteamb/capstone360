@@ -5,7 +5,6 @@ handles get post request for proDashboard.html
 from flask import request, render_template
 from flask.views import MethodView
 import gbmodel
-import datetime
 from catCas import validate_professor
 from flask_cas import login_required
 import logging
@@ -52,7 +51,7 @@ class ProfDashboard(MethodView):
             # choose 'select session' in dropdown
             elif user_session == "":
                 session_id = ""
-            else:                 
+            else:
                 term = str(user_session[:user_session.index("-")].strip())
                 year = int(user_session[user_session.index("-")+1:user_session.index("(")].strip())
                 prof = str(user_session[user_session.index("(")+1:user_session.index(")")].strip())
@@ -73,6 +72,7 @@ class ProfDashboard(MethodView):
         student = gbmodel.students()
         team = gbmodel.teams()
         professor = gbmodel.professors()
+<<<<<<< HEAD
 <<<<<<< HEAD
         # Get current session id from dropdowns in profDashboard.html
         session_id = request.form['session_id']
@@ -162,9 +162,14 @@ class ProfDashboard(MethodView):
 =======
         
         try:
+=======
+
+        if 'session_id' in request.form:
+>>>>>>> flake8 issues
             # Get current session id from dropdowns in profDashboard.html
             # IFF session id is not NULL
             session_id = request.form['session_id']
+            print(session_id)
             if 'student_name' in request.form:
                 # Add New Student (student name, student id and student email)
                 # Get team name and session id from profDashboard.html,
@@ -177,9 +182,9 @@ class ProfDashboard(MethodView):
                     error = "Student id " + str(request.form['student_id']) + " already exists"
                     team_name = team_name.replace(" ", "_")
                     return render_template('addStudent.html',
-                                        team_name=team_name,
-                                        session_id=session_id,
-                                        error=error)
+                                           team_name=team_name,
+                                           session_id=session_id,
+                                           error=error)
                 if request.form['student_email'] != '':
                     # If new email is invalid, return to addStudent.html
                     # with error msg and request a new form
@@ -187,21 +192,21 @@ class ProfDashboard(MethodView):
                         error = "Invalid Email Address"
                         team_name = team_name.replace(" ", "_")
                         return render_template('addStudent.html',
-                                            team_name=team_name,
-                                            session_id=session_id,
-                                            error=error)
+                                               team_name=team_name,
+                                               session_id=session_id,
+                                               error=error)
                 # Insert new student information into the database
                 student.insert_student(request.form['student_name'],
-                                    request.form['student_email'],
-                                    request.form['student_id'],
-                                    session_id,
-                                    team_name)
+                                       request.form['student_email'],
+                                       request.form['student_id'],
+                                       session_id,
+                                       team_name)
                 # Update new list of students to reflect on profDashboard.html
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
-                                    lists=lists,
-                                    sessions=sessions,
-                                    session_id=session_id)
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
             elif 'team' in request.form:
                 # Remove a student/students from a team
                 # get list of students and team name from profDashboard.html
@@ -212,9 +217,9 @@ class ProfDashboard(MethodView):
                 student.remove_student(students, team_name, session_id)
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
-                                    lists=lists,
-                                    sessions=sessions,
-                                    session_id=session_id)
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
             elif 'removed_team' in request.form:
                 # Remove a team in a session
                 # Get team name in current session from profDashboard.html
@@ -228,9 +233,9 @@ class ProfDashboard(MethodView):
                 team.remove_team(team_name, session_id)
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
-                                    lists=lists,
-                                    sessions=sessions,
-                                    session_id=session_id)
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
             elif 'start_term' in request.form:
                 # Add a new session to the profDashboard
                 # Gets all professors in DB and stores into prof_list
@@ -269,13 +274,16 @@ class ProfDashboard(MethodView):
                 while not session.check_session_id_valid(request.form['removed_session']):
                     error = "Invalid session ID"
                     return render_template('profDashboard.html',
-                                        lists=lists, sessions=sessions, session_id=session_id)
+                                           lists=lists,
+                                           sessions=sessions,
+                                           session_id=session_id)
                 remove_session = request.form.get('removed_session')
                 remove_session = remove_session.replace("_", " ")
                 session.remove_session(session_id)
                 session_id = session.get_max() - 1
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
+<<<<<<< HEAD
 <<<<<<< HEAD
                                        lists=lists, sessions=sessions, session_id=session_id)
             remove_session = request.form.get('removed_session')
@@ -360,6 +368,11 @@ class ProfDashboard(MethodView):
                                    lists=lists,
                                    sessions=sessions,
                                    session_id=session_id)
+=======
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+>>>>>>> flake8 issues
             # If ADD TEAM was submitted (addTeam)
             elif 'team_name' in request.form:
                 # Add a new team to a current session
@@ -376,9 +389,9 @@ class ProfDashboard(MethodView):
                 # Update new list of sessions, teams, students to reflect on profDashboard.html
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
-                                    lists=lists,
-                                    sessions=sessions,
-                                    session_id=session_id)
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
             # if ASSIGNED TEAMS for to place new students on teams was submitted
             elif 'assigned_teams' in request.form:
                 size = request.form.get('size')
@@ -401,9 +414,9 @@ class ProfDashboard(MethodView):
                     i += 1
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
-                                    lists=lists,
-                                    sessions=sessions,
-                                    session_id=session_id)
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
             # If IMPORT STUDENTS was submitted (addTeamCSV)
             elif 'student_data_csv' in request.files:
                 session_id = int(request.form['session_id'])
@@ -415,24 +428,24 @@ class ProfDashboard(MethodView):
                 if(file.filename == ''):
 >>>>>>> fixed issue 104
                     return render_template('csvAddTeam.html',
-                                        session_id=session_id,
-                                        error="Please select a file to upload")
+                                           session_id=session_id,
+                                           error="Please select a file to upload")
                 stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
                 csv_reader = csv.reader(stream, delimiter=',')
                 uninserted_students = []
                 for row in csv_reader:
                     if len(row) > 3:
                         return render_template('csvAddTeam.html',
-                                            session_id=session_id,
-                                            error="Incorrect csv Format")
+                                               session_id=session_id,
+                                               error="Incorrect csv Format")
                     try:
                         student_name = row[0]
                         student_id = row[1]
                         team_name = row[2]
                     except IndexError:
                         return render_template('csvAddTeam.html',
-                                            session_id=session_id,
-                                            error="Incorrect csv Format")
+                                               session_id=session_id,
+                                               error="Incorrect csv Format")
 
                     # Create team if it doesn't exist, then create the student.
                     try:
@@ -440,10 +453,10 @@ class ProfDashboard(MethodView):
                             teams_table.insert_team(session_id, team_name)
                     except SQLAlchemyError:
                         logging.error(('CSV Add Students/Team - Error checking for existing team and/or'
-                                    ' inserting a new one'))
+                                       ' inserting a new one'))
                         return render_template('csvAddTeam.html',
-                                            session_id=session_id,
-                                            error="Something went wrong")
+                                               session_id=session_id,
+                                               error="Something went wrong")
                     try:
                         if students_table.check_dup_student(student_id, session_id) is True:
                             students_table.insert_student(student_name, "", student_id, session_id, team_name)
@@ -453,19 +466,19 @@ class ProfDashboard(MethodView):
                             uninserted_students.append(student_name)
                     except SQLAlchemyError:
                         logging.error(('CSV Add Students/Team -'
-                                    ' Error inserting students or checking if they exist in the database'))
+                                       ' Error inserting students or checking if they exist in the database'))
                         return render_template('csvAddTeam.html',
-                                            session_id=session_id,
-                                            error="Something went wrong")
+                                               session_id=session_id,
+                                               error="Something went wrong")
 
                 # If everything went well, reload the professor dashboard
                 if len(uninserted_students) == 0:
                     logging.info("CSV Add Students/Team - added student data from uploaded csv file")
                     lists, sessions = team.dashboard(session_id)
                     return render_template('profDashboard.html',
-                                        lists=lists,
-                                        sessions=sessions,
-                                        session_id=session_id)
+                                           lists=lists,
+                                           sessions=sessions,
+                                           session_id=session_id)
                 # If there were some problems, let the user know
                 else:
                     print(uninserted_students)
@@ -473,8 +486,8 @@ class ProfDashboard(MethodView):
                     error_str = error_str + ", ".join(uninserted_students)
                     error_str = error_str + ". They are already in this session."
                     return render_template('csvAddTeam.html',
-                                        session_id=session_id,
-                                        error=error_str)
+                                           session_id=session_id,
+                                           error=error_str)
 
             # If SET DATE for reviews was submitted (setDate)
             elif 'midterm_start' in request.form:
@@ -485,9 +498,9 @@ class ProfDashboard(MethodView):
                 final_start = request.form.get('final_start')
                 final_end = request.form.get('final_end')
                 params = {'midterm_start': midterm_start,
-                        'midterm_end': midterm_end,
-                        'final_start': final_start,
-                        'final_end': final_end}
+                          'midterm_end': midterm_end,
+                          'final_start': final_start,
+                          'final_end': final_end}
                 if session.date_error(params) is not None:
                     # Check if the dates are valid, rendering to setDate.html
                     # with a error message
@@ -498,6 +511,7 @@ class ProfDashboard(MethodView):
                 # Update new list of sessions, teams, students to reflect on profDashboard.html
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
+<<<<<<< HEAD
 <<<<<<< HEAD
                                        lists=lists,
                                        sessions=sessions,
@@ -568,6 +582,11 @@ class ProfDashboard(MethodView):
                                     lists=lists,
                                     sessions=sessions,
                                     session_id=session_id)
+=======
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+>>>>>>> flake8 issues
             elif 'team_lead' in request.form:
                 # Set team lead for a team in current session
                 # Get team name and lead from checkboxes in profDashboard.html
@@ -579,16 +598,23 @@ class ProfDashboard(MethodView):
                 # Update new list of sessions, teams, students to reflect on profDashboard.html
                 lists, sessions = team.dashboard(session_id)
                 return render_template('profDashboard.html',
-                                    lists=lists,
-                                    sessions=sessions,
-                                    session_id=session_id)
-        except:
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+        else:
             lists, sessions = team.dashboard("")
             return render_template('profDashboard.html',
+<<<<<<< HEAD
                                     lists=lists,
                                     sessions=sessions,
                                     session_id="")
 >>>>>>> fixed issue 104
+=======
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id="")
+
+>>>>>>> flake8 issues
 
 class AddStudent(MethodView):
     """
