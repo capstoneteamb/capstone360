@@ -5,12 +5,12 @@ $(document).ready(function () {
         $add = $('.add-student-btn')
         if (($this).is(":hidden")) {
             $this.slideDown('fast', function () {
-                $this.css('display','flex')
+                $this.css('display', 'flex')
             });
-            $add.css('display','block');
+            $add.css('display', 'block');
         } else {
             $this.slideUp('fast');
-            $add.css('display','none');
+            $add.css('display', 'none');
         }
         edit_remove_reset();
         edit_lead_reset();
@@ -31,7 +31,7 @@ $(document).ready(function () {
     })
 
     // hides remove editing when edit is clicked again
-    function edit_remove_reset(){
+    function edit_remove_reset() {
         $remove = $('.remove-card')
         $display = $('.display-card')
         if ($remove.css('display') == "block") {
@@ -56,7 +56,7 @@ $(document).ready(function () {
     })
 
     // hides lead editing when edit is clicked
-    function edit_lead_reset(){
+    function edit_lead_reset() {
         $lead = $('.lead-card')
         $display = $('.display-card')
         if ($lead.css('display') == "block") {
@@ -70,8 +70,45 @@ $(document).ready(function () {
     $('.selected_session').change(function () {
         sessionStorage.setItem('count', this.value);
     });
+
     if (sessionStorage.getItem('count')) {
         $('.selected_session').val(sessionStorage.getItem('count'));
+    }
+
+    //show the last session after a session is removed
+    $('.remove-session-btn').on('click', function () {
+        sessionStorage.setItem('remove-session', "true");
+    })
+
+    setTimeout(function () {
+        var addSession = sessionStorage.getItem('remove-session');
+        if (addSession == "true") {
+            check_remove_session();
+        }
+    }, 100);
+
+    function check_remove_session() {
+        var last = $('.selected_session option:last').val();
+        $('.selected_session').val(last);
+        sessionStorage.setItem('remove-session', "false");
+    }
+
+    //show added session when adding session
+    $('.add-session-btn').on('click', function () {
+        sessionStorage.setItem('add-session', "true");
+    })
+
+    setTimeout(function () {
+        var addSession = sessionStorage.getItem('add-session');
+        if (addSession == "true") {
+            check_add_session();
+        }
+    }, 100);
+
+    function check_add_session() {
+        var last = $('.selected_session option:last').val();
+        $('.selected_session').val(last);
+        sessionStorage.setItem('add-session', "false");
     }
 
     // checkbox for lead
