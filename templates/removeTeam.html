@@ -1,6 +1,6 @@
-{% extends "menu.html" %}
+{% extends "layout.html" %}
 {% block content %}
-<!-- This is the input frontend where users can input information about recipes -->
+
 	<h3>Remove Team</h3>
 	<div class="remove-container">
 	<div class="input-card">
@@ -13,7 +13,7 @@
 				color: white;
 		></p>						
 		</form>
-		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: 5px;">Cancel</button></a>
+		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: 9px;">Cancel</button></a>
 	</div>
 	</div>
 

@@ -1,4 +1,4 @@
-{% extends "menu.html" %}
+{% extends "layout.html" %}
 {% block content %}
 	<h3>Add Students</h3>
 	<div class="add-container">
@@ -22,7 +22,7 @@
 					padding: 10px 20px;
 					cursor: pointer;"></p>	
 		</form>
-		<a href="{{ url_for('profDashboard', session_id=session_id) }}" ><button class="my-cancel-btn" style="margin-top: 6px;">Cancel</button></a>
+		<a href="{{ url_for('profDashboard', session_id=session_id) }}" ><button class="my-cancel-btn" style="margin-top: 9px;">Cancel</button></a>
 	</div>
 	</div>
 
