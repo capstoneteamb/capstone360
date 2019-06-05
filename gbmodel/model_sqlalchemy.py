@@ -214,6 +214,8 @@ class teams(db.Model):
                 if empty_team_id is None:
                     empty_team_id = teams_obj.insert_team(session_id, "")
                 for student in student_list:
+                    student.midterm_done = False
+                    student.final_done = False
                     student.tid = empty_team_id
 
             # Remove all of the review submitted with team id
