@@ -1063,7 +1063,7 @@ class reports(db.Model):
         """
         try:
             result = reports.query.filter(reports.tid == tid,
-                                          reports.is_final == is_final).distinct()
+                                          reports.is_final == is_final).distinct().all()
             return result
         except exc.SQLAlchemyError:
             log_exception()

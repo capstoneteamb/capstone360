@@ -219,16 +219,15 @@ class review(MethodView):
             # get student info
             tid = self.get_tid(id, capstone_id)
             state = self.get_state(id, capstone_id)
-            is_final = 0
+            is_final = False
             if state == 'final':
-                is_final = 1
-            else:
-                is_final = 0
+                is_final = True
 
             itemize = []  # will only hold dictionary
             dat = {}  # to hold all fields
             # for each report, add info to the dictionary matching the style of the review.html fields
-            for report in gbmodel.reports().get_team_reports(tid, is_final):
+            reports = gbmodel.reports().get_team_reports(tid, is_final)
+            for report in reports:
                 dat["reviewee"] = report.reviewee
                 dat["tech_mast_" + report.reviewee] = report.tech_mastery
                 dat["work_ethic_" + report.reviewee] = report.work_ethic
@@ -263,17 +262,14 @@ class review(MethodView):
         if there are any user input errors to report, and if there are
         any fatal errors to report as a result of user action.
         """
-
         # check if user exists
         # user_id = request.args.get('user_name')
         if validate_student() is False:
             return render_template('index.html')
         else:
             user_id = validate_student().id
-
         # get user's team id
         tid = self.get_tid(user_id, capstone_id)
-
         # check if the user is not on the empty team (a.k.a: if the user is not on a team)
         try:
             empty_team = gbmodel.teams().get_tid_from_name("", capstone_id)
@@ -507,8 +503,8 @@ class review(MethodView):
                 points = self.convert_to_int(points)
 
                 # default to not late
-                late = 0
-                is_final = 0
+                late = False
+                is_final = False
                 try:
                     print('Checking if Late')
                     is_not_late = gbmodel.capstone_session().check_not_late(cid,
@@ -517,7 +513,7 @@ class review(MethodView):
                                                                                            capstone_id))
 
                     if is_not_late is False:
-                        late = 1
+                        late = True
                 except SQLAlchemyError:
                     self.display_error('student look up error - capstone')
 
@@ -525,10 +521,10 @@ class review(MethodView):
 
                 if self.get_state(user_id, capstone_id) == 'midterm':
                     # for midterm set final to false
-                    is_final = 0
+                    is_final = False
                 elif self.get_state(user_id, capstone_id) == 'final':
                     # for midterm set final to false
-                    is_final = 1
+                    is_final = True
 
                 if done == 1:
                     # update existing record
