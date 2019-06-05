@@ -89,7 +89,7 @@ class professors(db.Model):
             prof = None
 
         if prof is None:
-            return -1  # can I change this to None?
+            return -1
         return prof.id
 
 
@@ -105,7 +105,7 @@ class teams(db.Model):
         try:
             max_id = db.session.query(func.max(teams.id)).scalar()
         except exc.SQLAlchemyError:
-            log_exception("")
+            log_exception()
             max_id = None
 
         if max_id is None:

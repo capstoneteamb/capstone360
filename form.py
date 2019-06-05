@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask.views import MethodView
 from datetime import datetime
 import gbmodel
+import logging
 from catCas import validate_student
 from flask_cas import login_required
 
@@ -65,7 +66,7 @@ class review(MethodView):
         input: self and a string to report to the console
         output: none
         """
-        print(err_str)
+        logging.error("Fill Out Review - " + err_str)
         abort(500)
 
     def convert_to_int(self, to_convert):
@@ -136,7 +137,7 @@ class review(MethodView):
             # get the state based on the capstone id and the current time
             state = gbmodel.capstone_session().check_review_state(capstone_id, datetime.now())
         except SQLAlchemyError:
-            print('Student Look Up Error - Get State')
+            logging.error('Fill Out Review - Student Look Up Error - Get State')
             return 'Error'
 
         # return student state
@@ -350,7 +351,7 @@ class review(MethodView):
         user_id = request.form.get('user_id')
         test_user = self.confirm_user(user_id, capstone_id)
         if test_user is False:
-            print('Error when identifiyng user')
+            logging.error('Fill Out Review - Error when identifiyng user')
             return render_template('review.html',
                                    mems=None,
                                    state=None,
@@ -362,7 +363,7 @@ class review(MethodView):
         # get users state
         state = self.get_state(user_id, capstone_id)
         if state == 'Error':
-            print('Error while retrieving student state')
+            logging.error('Fill Out Review - Error while retrieving student state')
             return render_template('review.html',
                                    name=self.get_self_name(user_id),
                                    mems=None,
@@ -373,7 +374,7 @@ class review(MethodView):
         try:
             mems = gbmodel.students().get_team_members(tid)
         except SQLAlchemyError:
-            print('Error while retrieving team members')
+            logging.error('Fill Out Review - Error while retrieving team members')
             return render_template('review.html',
                                    name=self.get_self_name(),
                                    mems=None,
@@ -396,7 +397,7 @@ class review(MethodView):
 
         # check that conditions for points match requirements
         for j in id_list:
-            print('checking points')
+            logging.info('checking points')
             # check points for being in bounds and adding to 100
             points = request.form[('points_' + str(j))]
             try:
@@ -431,7 +432,7 @@ class review(MethodView):
         done = self.get_done(user_id, capstone_id)
         # get form inputs and submit to the database
         if points_pass is True:
-            print('Retrieving Form Input')
+            logging.info('Retrieving Form Input')
             pass_insert = True  # will test if all insertions are successful
             for i in id_list:
                 # Get each radio input and verify that it's an integer
@@ -506,7 +507,7 @@ class review(MethodView):
                 late = False
                 is_final = False
                 try:
-                    print('Checking if Late')
+                    logging.info('Checking if Late')
                     is_not_late = gbmodel.capstone_session().check_not_late(cid,
                                                                             datetime.now(),
                                                                             self.get_state(user_id,
@@ -517,7 +518,7 @@ class review(MethodView):
                 except SQLAlchemyError:
                     self.display_error('student look up error - capstone')
 
-                print('checking student state')
+                logging.info('checking student state')
 
                 if self.get_state(user_id, capstone_id) == 'midterm':
                     # for midterm set final to false
@@ -529,7 +530,7 @@ class review(MethodView):
                 if done == 1:
                     # update existing record
                     try:
-                        print('updating report')
+                        logging.info('updating report')
                         report = gbmodel.reports().get_report(user_id, i, tid, is_final)
                         report.tech_mastery = tech
                         report.work_ethic = ethic
@@ -551,7 +552,7 @@ class review(MethodView):
                     except SQLAlchemyError:
                         pass_insert = False
                 else:
-                    print('creating report')
+                    logging.info('creating report')
                     # insert new record
                     # add report, but do not commit yet
                     test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
@@ -561,15 +562,15 @@ class review(MethodView):
                                                                is_final, late)
                     # remember if this report submission failed
                     if test_sub is False:
-                        print('report creation failure')
+                        logging.error('report creation failure')
                         pass_insert = False
 
             if done == 1:
                 # commit updates
-                print('committing edits')
+                logging.info('committing edits')
                 test_commit = gbmodel.reports().commit_updates(pass_insert)
             else:
-                print('committing reports')
+                logging.info('committing reports')
                 # commit reports and update the user's state.
                 #  roll back changes if insertion failed
                 test_commit = gbmodel.reports().commit_reports(user_id,
@@ -580,7 +581,7 @@ class review(MethodView):
                 # success
                 return render_template('submitted.html')
             else:
-                self.display_error('Submission Errror')
+                self.display_error('Submission Error')
 
         return render_template('review.html',
                                name=self.get_self_name(user_id, capstone_id),

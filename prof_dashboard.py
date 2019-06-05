@@ -259,6 +259,7 @@ class ProfDashboard(MethodView):
                     student_id = row[1]
                     team_name = row[2]
                 except IndexError:
+                    logging.warning("CSV Add Students/Team - Problem parsing csv")
                     return render_template('csvAddTeam.html',
                                            session_id=session_id,
                                            error="Incorrect csv Format")
@@ -297,7 +298,6 @@ class ProfDashboard(MethodView):
                                        session_id=session_id)
             # If there were some problems, let the user know
             else:
-                print(uninserted_students)
                 error_str = "There was a problem inserting the following students into the database: "
                 error_str = error_str + ", ".join(uninserted_students)
                 error_str = error_str + ". They are already in this session."
