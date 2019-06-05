@@ -199,7 +199,8 @@ class teams(db.Model):
                                           teams.session_id == session_id).first()
 
             # Get the students on the team
-            student_list = students.query.filter(students.tid == team.id, students.session_id == session_id).all()
+            student_list = students.query.filter(students.tid == team.id,
+                                                 students.session_id == session_id).all()
 
             # If we are trying to remove a team with students on it...
             if student_list:
@@ -255,27 +256,19 @@ class teams(db.Model):
                     func.max(reports.points).label("max_points"),
                     func.min(reports.points).label("min_points"),
                     reports.reviewee,
-                    reports.reviewer).filter_by(
-                        tid=tids[i],
-                        session_id=session_id,
-                        reviewee=student.id).filter(
-                            reports.reviewee != reports.reviewer).filter(
-                                reports.is_final == True).group_by(
-                                    reports.reviewer).group_by(
-                                        reports.reviewee)
+                    reports.reviewer).filter_by(tid=tids[i], is_final=True).filter(
+                        reports.reviewee != reports.reviewer).group_by(
+                            reports.reviewer).group_by(
+                                reports.reviewee)
                 # Query to get the min & max student points of their midterm
                 midterm_points = db.session.query(
                     func.max(reports.points).label("max_points"),
                     func.min(reports.points).label("min_points"),
                     reports.reviewee,
-                    reports.reviewer).filter_by(
-                        tid=tids[i],
-                        session_id=session_id,
-                        reviewee=students.id).filter(
-                            reports.reviewee != reports.reviewer).filter(
-                                reports.is_final == False).group_by(
-                                    reports.reviewer).group_by(
-                                        reports.reviewee)
+                    reports.reviewer).filter_by(tid=tids[i], is_final=False).filter(
+                        reports.reviewee != reports.reviewer).group_by(
+                                reports.reviewer).group_by(
+                                    reports.reviewee)
                 # Query to get the students in the students table
                 team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             except exc.SQLAlchemyError:
