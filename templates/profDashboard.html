@@ -1,83 +1,77 @@
 {% extends "menu.html" %}
 {% block content %} 
-
 <div class="container prof_dashboard-container">
-	<!-- <a href="{{ url_for('setDate', session_id=session_id)}}"><button class="my-btn">Set Date?</button></a> -->
-	{% for data in lists %}
-	<div class="student-card display-card">
-		<h4>{{data[0]}}</h4>
-		{% for student in data[1:] %}
-                <form method="post" action={{url_for('viewStudent')}}>
-                    <p class="entry">
-                        <span class="name" style="display: inline-block;">
-                            <img class="user-icon" style="display: inline-block;"
-                                src="{{ url_for('static', filename='Assets/user.png')}}">
-
-                            <input type="hidden" name="student_id" value="{{student['id']}}">
-                            <input type="hidden" name="session_id" value="{{session_id}}">
-							<input class="text-look-alike-button" style="display: inline-block; margin-left: 10px;" type="submit" value="{{student['name']}} ({{student['active']}}{{student['min_points']}} - {{student['max_points']}})">
-                        </span>
-                    </p>
-                </form>
-		{% endfor %}
-		<a href="{{ url_for('addStudent', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn add-student-btn">Add Student</button></a>
-	</div>
-	
-	<div class="student-card remove-card">
-		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
-			<h4>{{data[0]}}</h4>
-			{% for student in data[1:] %}
-			<p class=entry>
-				<img class="user-icon" style="display: inline-block;"
-					src="{{ url_for('static', filename='Assets/user.png')}}">
-				<span class="name" style="display: inline-block;"> {{ student['name'] }}
-				</span>
-				<input class="remove-check" type="checkbox" style="display: inline-block;" name="removed_student"
-					value="{{ student['name'] }}"> 
-					<input type="hidden" name="team" value="{{data[0]}}">
-					<input type="hidden" value={{session_id}} name=session_id>
-				</input>				
-			</p>
-			{% endfor %}
-			{% if data[1:]|length %}
-			<p><input class="my-cancel-btn remove-student-btn" type=submit value='Remove Student' style="
-						background-color: #BCBCBC;
-						color: white;
-						width: 130px;
-						margin-top: -3px;">
-			</p>
-			{% endif %}
-		
-		</form>
-	 	<a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"
-				style="background-color: #ff9e16">Remove Team</button></a>
-	</div>
-
-	<div class="student-card lead-card lead-card-{{loop.index}}">
-		<form class="form-lead-{{loop.index}}"action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
-			<h4>{{data[0]}}</h4>
-			{% for student in data[1:] %}
-			<p class=entry>
-				<img class="user-icon" style="display: inline-block;"
-					src="{{ url_for('static', filename='Assets/user.png')}}">
-				<span class="name" style="display: inline-block;"> {{ student['name'] }}</span>
-				<input id="lead" class="lead-check" type="checkbox" style="display: inline-block;" name="is_lead"
-					value="{{ student['name'] }}" data-lead="{{student['lead']}}"> 
-					<input type="hidden" name="lead_value" value="{{student['lead']}}">
-					<input type="hidden" name="team_lead" value="{{data[0]}}">
-					<input type="hidden" value={{session_id}} name=session_id>
-				</input>				
-			</p>
-			{% endfor %}
-			{% if data[1:]|length %}
-			<p><input class="my-cancel-btn lead-submit" type=submit value='Submit' style="
-						background-color: #BCBCBC;
-						color: white;
-						width: 130px;
-						margin-top: -3px;"></p>
-			{% endif %}
-		</form>
-	</div>
-	{% endfor %}
+    {% for data in lists %}
+    <div class="student-card display-card">
+        <h4>{{data[0]}}</h4>
+        {% for student in data[1:] %}
+        <form method="post" action="{{url_for('viewStudent')}}">
+            <p class="entry">
+                <span class="name" style="display: inline-block;">
+                    <img class="user-icon" style="display: inline-block;"
+                        src="{{ url_for('static', filename='Assets/user.png')}}">
+                    <input type="hidden" name="student_id" value="{{student['id']}}">
+                    <input type="hidden" name="session_id" value="{{session_id}}">
+                    <input class="text-look-alike-button" style="display: inline-block; margin-left: 10px;" type="submit" value="{{student['name']}} ({{student['active']}}{{student['min_points']}} - {{student['max_points']}})">
+                </span>
+            </p>
+        </form>
+        {% endfor %}
+        <a href="{{ url_for('addStudent', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn add-student-btn">Add Student</button></a>
+    </div>
+    <div class="student-card remove-card">
+        <form action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
+            <h4>{{data[0]}}</h4>
+            {% for student in data[1:] %}
+            <p class="entry">
+                <img class="user-icon" style="display: inline-block;"
+                    src="{{ url_for('static', filename='Assets/user.png')}}">
+                <span class="name" style="display: inline-block;"> {{ student['name'] }}
+                </span>
+                <input class="remove-check" type="checkbox" style="display: inline-block;" name="removed_student"
+                    value="{{ student['name'] }}">
+                    <input type="hidden" name="team" value="{{data[0]}}">
+                    <input type="hidden" value="{{session_id}}" name="session_id">
+                </input>
+            </p>
+            {% endfor %}
+            {% if data[1:]|length %}
+            <p><input class="my-cancel-btn remove-student-btn" type="submit" value="Remove Student" style="
+                   background-color: #BCBCBC;
+                   color: white;
+                   width: 130px;
+                   margin-top: -3px;">
+            </p>
+            {% endif %}
+        </form>
+        <a href="{{ url_for('removeTeam', data=data[0], session_id=session_id)}}"><button class="my-btn card-btn"
+                style="background-color: #ff9e16">Remove Team</button></a>
+    </div>
+    <div class="student-card lead-card lead-card-{{loop.index}}">
+        <form class="form-lead-{{loop.index}}"action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
+            <h4>{{data[0]}}</h4>
+            {% for student in data[1:] %}
+            <p class="entry">
+                <img class="user-icon" style="display: inline-block;"
+                    src="{{ url_for('static', filename='Assets/user.png')}}">
+                <span class="name" style="display: inline-block;"> {{ student['name'] }}</span>
+                <input id="lead" class="lead-check" type="checkbox" style="display: inline-block;" name="is_lead"
+                    value="{{ student['name'] }}" data-lead="{{student['lead']}}">
+                    <input type="hidden" name="lead_value" value="{{student['lead']}}">
+                    <input type="hidden" name="team_lead" value="{{data[0]}}">
+                    <input type="hidden" value="{{session_id}}" name="session_id">
+                </input>
+            </p>
+            {% endfor %}
+            {% if data[1:]|length %}
+            <p><input class="my-cancel-btn lead-submit" type=submit value='Submit' style="
+                   background-color: #BCBCBC;
+                   color: white;
+                   width: 130px;
+                   margin-top: -3px;"></p>
+            {% endif %}
+        </form>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

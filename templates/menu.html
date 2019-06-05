@@ -2,7 +2,7 @@
 {% block menu %}
 <div class="container nav-container">
     <div class="row nav">
-        <div class="col-sm" method='POST'>Sessions 
+        <div class="col-sm" method="POST">Sessions 
             <form style="display: inline;">
                 <select class="selected_session" name="selected_session" onchange="this.form.submit()">
                     {% for i in sessions %}
@@ -49,7 +49,7 @@
             <a href="javascript:void(0)" class="remove-btn">Remove</a>
         </div>
         <div class="col-sm">
-		    <a href="{{ url_for('setDate', session_id=session_id)}}">Set Review Dates</a>
+            <a href="{{ url_for('setDate', session_id=session_id)}}">Set Review Dates</a>
         </div>
         <div class="col-sm">
             <a href="javascript:void(0)" class="lead-btn">Set Lead</a>

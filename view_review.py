@@ -73,7 +73,7 @@ class ViewReview(MethodView):
             session_id = request.form.getlist('session_id')[0]
             reviewer_id = request.form.getlist('reviewer_id')[0]
             reviewee_id = request.form.getlist('reviewee_id')[0]
-            is_final = int(request.form.getlist('is_final')[0])
+            is_final = request.form.getlist('is_final')[0]
 
             # Query the database for the the reviewing student
             reviewer = students.get_student_in_session(reviewer_id, session_id)
@@ -103,7 +103,7 @@ class ViewReview(MethodView):
                                   "reviewee": reviewee.name,
                                   "team_name": team.name,
                                   "is_late": report.is_late,
-                                  "is_final": (is_final == 1)}
+                                  "is_final": is_final}
 
                 # Get the main part of the review
                 parsed_review = [
