@@ -404,7 +404,7 @@ class students(db.Model):
         Output: A list of student objects representing the students on that team
         """
         try:
-            mems = students.query.filter_by(tid=tid).distinct()
+            mems = students.query.filter_by(tid=tid).distinct().all()
         except exc.SQLAlchemyError:
             log_exception()
             return None
