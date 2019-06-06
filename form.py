@@ -561,7 +561,8 @@ class review(MethodView):
                     # insert new record
                     # add report, but do not commit yet
                     test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
-                                                               tid, i.encode('UTF8'), tech, ethic, com, coop, init,
+                                                               tid, i.encode('UTF8'), tech,
+                                                               ethic, com, coop, init,
                                                                focus, cont, lead, org, dlg, points,
                                                                strn, wkn, traits, learned, proud,
                                                                is_final, late)

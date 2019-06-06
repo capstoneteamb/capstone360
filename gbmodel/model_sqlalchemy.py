@@ -13,7 +13,6 @@ try:
     key = bytes(key.encode("UTF8"))
     cipher = Fernet(key)
 
-
     def encrypt(p_text):
         """
         Encrypt plain text string to cipther text stored in a byte array
@@ -23,18 +22,17 @@ try:
         c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))  # Encrypt name
         return c_text
 
-
     def decrypt(c_text):
         """
         Decrypt byte array to a plain text string
         Input: byte array
         Output: string
         """
-        p_text = cipher.decrypt(c_text) # Decrypt byte array
-        p_text = p_text.decode('UTF8') # Decode byte array to string
+        p_text = cipher.decrypt(c_text)  # Decrypt byte array
+        p_text = p_text.decode('UTF8')  # Decode byte array to string
         return p_text
-except:
-    print("error initilizing cipher package.")
+except cryptography.fernet.InvalidToken:
+    log_exception()
 
 
 sys.path.append(os.getcwd())
