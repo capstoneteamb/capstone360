@@ -48,9 +48,6 @@ class ProfDashboard(MethodView):
             # When professor first login, user_session = None
             if user_session is None:
                 session_id = ""
-            # choose 'select session' in dropdown
-            elif user_session == "":
-                session_id = ""
             else:
                 term = str(user_session[:user_session.index("-")].strip())
                 year = int(user_session[user_session.index("-")+1:user_session.index("(")].strip())
