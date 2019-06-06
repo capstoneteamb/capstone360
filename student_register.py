@@ -46,7 +46,7 @@ class StudentRegister(MethodView):
         active_sessions = []
         for session in sessions:
             # Get the name of the professor running the session
-            professor = professors.get_professors(session.professor_id)
+            professor = professors.get_professor(session.professor_id)
             if professor is None:
                 logging.error(("Student Registration Failure - the professor of a specific Capstone session "
                                "wasn't found. Was the professor removed from the database?"))

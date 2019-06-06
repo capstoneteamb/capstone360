@@ -1,19 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
-	<h3>Remove Session</h3>
-	<div class="remove-container">
-	<div class="input-card">
-		<form action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
-			<p class="heading" style="display: inline-block;">Session ID: {{session_id}}</p> 
-			<input type="hidden" value={{session_id}} name=removed_session>	
-			<input type="hidden" value={{session_id}} name=session_id>	
-			<p><input class="my-btn remove-session-btn" type=submit value='Delete Session' style="
-				background-color: #ff9e16";
-				color: white;
-		></p>						
-		</form>
-		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: 5px;">Cancel</button></a>
-	</div>
-	</div>
-
+<h3>Remove Session</h3>
+<div class="remove-container">
+    <div class="input-card">
+        <form action="{{ url_for('profDashboard', session_id=session_id) }}" method="POST">
+            <p class="heading" style="display: inline-block;">Session ID: {{session_id}}</p>
+            <input type="hidden" value={{session_id}} name="removed_session">
+            <input type="hidden" value={{session_id}} name="session_id">
+            <p><input class="my-btn remove-session-btn" type="submit" value="Delete Session" style="
+                   background-color: #ff9e16;
+                   color: white;">
+            </p>
+        </form>
+        <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-cancel-btn" style="margin-top: 5px;">Cancel</button></a>
+    </div>
+</div>
 {% endblock %}

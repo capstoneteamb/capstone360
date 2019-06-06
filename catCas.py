@@ -31,7 +31,7 @@ def validate_professor():
     cas = CAS()
     username = cas.username
     professors = gbmodel.professors()
-    found_professors = professors.get_professors(username)
+    found_professors = professors.get_professor(username)
     if not found_professors:
         return False
     return found_professors
