@@ -229,21 +229,21 @@ class review(MethodView):
             dat = {}  # to hold all fields
             # for each report, add info to the dictionary matching the style of the review.html fields
             for report in gbmodel.reports().get_team_reports(tid, is_final):
-                dat["reviewee"] = report.reviewee
-                dat["tech_mast_" + report.reviewee] = report.tech_mastery
-                dat["work_ethic_" + report.reviewee] = report.work_ethic
-                dat["comm_" + report.reviewee] = report.communication
-                dat["coop_" + report.reviewee] = report.cooperation
-                dat["init_" + report.reviewee] = report.initiative
-                dat["team_focus_" + report.reviewee] = report.team_focus
-                dat["contr_" + report.reviewee] = report.contribution
-                dat["lead_" + report.reviewee] = report.leadership
-                dat["org_" + report.reviewee] = report.organization
-                dat["dlg_" + report.reviewee] = report.delegation
-                dat["points_" + report.reviewee] = report.points
-                dat["str_" + report.reviewee] = report.strengths
-                dat["wkn_" + report.reviewee] = report.weaknesses
-                dat["traits_" + report.reviewee] = report.traits_to_work_on
+                dat["reviewee"] = report.reviewee.decode('UTF8')
+                dat["tech_mast_" + report.reviewee.decode('UTF8')] = report.tech_mastery
+                dat["work_ethic_" + report.reviewee.decode('UTF8')] = report.work_ethic
+                dat["comm_" + report.reviewee.decode('UTF8')] = report.communication
+                dat["coop_" + report.reviewee.decode('UTF8')] = report.cooperation
+                dat["init_" + report.reviewee.decode('UTF8')] = report.initiative
+                dat["team_focus_" + report.reviewee.decode('UTF8')] = report.team_focus
+                dat["contr_" + report.reviewee.decode('UTF8')] = report.contribution
+                dat["lead_" + report.reviewee.decode('UTF8')] = report.leadership
+                dat["org_" + report.reviewee.decode('UTF8')] = report.organization
+                dat["dlg_" + report.reviewee.decode('UTF8')] = report.delegation
+                dat["points_" + report.reviewee.decode('UTF8')] = report.points
+                dat["str_" + report.reviewee.decode('UTF8')] = report.strengths
+                dat["wkn_" + report.reviewee.decode('UTF8')] = report.weaknesses
+                dat["traits_" + report.reviewee.decode('UTF8')] = report.traits_to_work_on
                 if report.what_you_learned is not None:
                     dat["learned"] = report.what_you_learned
                 if report.proud_of_accomplishment is not None:
@@ -352,6 +352,10 @@ class review(MethodView):
         """
         # check if user exists
         user_id = request.form.get('user_id')
+        # request.form.get returns a string.
+        # Convert user_id back to byte array.
+        user_id = user_id[2:]
+        user_id = user_id.encode('UTF8')
         test_user = self.confirm_user(user_id, capstone_id)
         if test_user is False:
             print('Error when identifiyng user')
@@ -467,7 +471,7 @@ class review(MethodView):
 
                 # check if current student is leader
                 try:
-                    is_lead = gbmodel.students().check_team_lead(i, capstone_id)
+                    is_lead = gbmodel.students().check_team_lead(i.encode('UTF8'), capstone_id)
                 except SQLAlchemyError:
                     self.display_error('student look up error')
 
@@ -491,14 +495,16 @@ class review(MethodView):
                 traits = traits.strip()
 
                 learned = None
-                if i == user_id:
+                # Decode and remove the last character of user_id
+                # due to formatting of byte array.
+                if i == user_id.decode('UTF8')[:-1]:
                     learned = request.form[('learned')]
                     learned = learned.strip()
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
                 if self.get_state(user_id, capstone_id) == 'final':
-                    if i == user_id:
+                    if i == user_id.decode('UTF8')[:-1]:
                         proud = request.form[('proud')]
                         proud = proud.strip()
 
@@ -534,7 +540,7 @@ class review(MethodView):
                     # update existing record
                     try:
                         print('updating report')
-                        report = gbmodel.reports().get_report(user_id, i, tid, is_final)
+                        report = gbmodel.reports().get_report(user_id, i.encode('UTF8'), tid, is_final)
                         report.tech_mastery = tech
                         report.work_ethic = ethic
                         report.communication = com
@@ -559,7 +565,7 @@ class review(MethodView):
                     # insert new record
                     # add report, but do not commit yet
                     test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
-                                                               tid, i, tech, ethic, com, coop, init,
+                                                               tid, i.encode('UTF8'), tech, ethic, com, coop, init,
                                                                focus, cont, lead, org, dlg, points,
                                                                strn, wkn, traits, learned, proud,
                                                                is_final, late)

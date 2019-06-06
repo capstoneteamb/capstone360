@@ -3,22 +3,36 @@ import sys
 import datetime
 from extensions import db
 from sqlalchemy import exc, func
-from cryptography.fernet import Fernet
-key_file = open("../key.txt")
-key = key_file.readline()
-key = bytes(key.encode("UTF8"))
-cipher = Fernet(key)
+
+try:
+    from cryptography.fernet import Fernet
+    key_file = open("key.txt")
+    key = key_file.readline()
+    key = bytes(key.encode("UTF8"))
+    cipher = Fernet(key)
 
 
-def encrypt(p_text):
-    c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))  # Encrypt name
-    return c_text
+    def encrypt(p_text):
+        """
+        Encrypt plain text string to cipther text stored in a byte array
+        Input: string
+        Output: byte array
+        """
+        c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))  # Encrypt name
+        return c_text
 
 
-def decrypt(c_text):
-    p_text = cipher.decrypt(c_text)
-    p_text = p_text.decode('UTF8')
-    return p_text
+    def decrypt(c_text):
+        """
+        Decrypt byte array to a plain text string
+        Input: byte array
+        Output: string
+        """
+        p_text = cipher.decrypt(c_text) # Decrypt byte array
+        p_text = p_text.decode('UTF8') # Decode byte array to string
+        return p_text
+except:
+    print("error initilizing cipher package.")
 
 
 sys.path.append(os.getcwd())
@@ -27,6 +41,22 @@ sys.path.append(os.getcwd())
 class professors(db.Model):
     __table__ = db.Model.metadata.tables['professors']
 
+    '''
+    def insert_professor(self, name, id):
+        """
+        Add new student
+        Input: student name, student email address, student id, team name and id of the selected session
+        Output: return False if student id already exists in the current session
+                add student to the database and return True otherwise
+        """
+        id = encrypt(id)
+        name = encrypt(name)
+        new_professor = professors(id=id,
+                               name=name)
+        db.session.add(new_professor)
+        db.session.commit()
+    '''
+
     def get_professors(self, id):
         """
         Get a list of professors
@@ -34,7 +64,10 @@ class professors(db.Model):
         Output: list of professors id
         """
         try:
-            result = professors.query.filter(professors.id == id).first()
+            all_professors = professors.query.filter().all()
+            for each in all_professors:
+                if each.id == id:
+                    result = each
         except exc.SQLAlchemyError:
             result = None
         if result is None:
@@ -237,7 +270,7 @@ class teams(db.Model):
                     for m in midterm_points:
                         if (team_member.id == m.reviewee):  # If the student's ID matches the review ID
                             params = {"name": decrypt(team_member.name),
-                                      "id": decrypt(team_member.id),
+                                      "id": team_member.id,
                                       "active": "Midterm: ",
                                       "min_points": m.min_points,
                                       "max_points": m.max_points,
@@ -249,7 +282,7 @@ class teams(db.Model):
                     for f in final_points:
                         if (team_member.id == f.reviewee):  # If the student's ID matches the review ID
                             params = {"name": decrypt(team_member.name),
-                                      "id": decrypt(team_member.id),
+                                      "id": team_member.id,
                                       "active": "Final: ",
                                       "min_points": f.min_points,
                                       "max_points": f.max_points,
@@ -258,7 +291,7 @@ class teams(db.Model):
                             flag = 1
                 if flag == 0:
                     params = {"name": decrypt(team_member.name),
-                              "id": decrypt(team_member.id),
+                              "id": team_member.id,
                               "active": "",
                               "min_points": "",
                               "max_points": "",
@@ -313,8 +346,6 @@ class students(db.Model):
         result = None
         try:
             all_students = students.query.filter_by(session_id=session_id).all()
-            print(all_students)
-            print(len(all_students))
         except exc.SQLAlchemyError:
             result = None
         for each in all_students:
@@ -375,18 +406,14 @@ class students(db.Model):
             return None
         mems = []
         for each in e_mems:
-            new_student = students(id=each.id,
+            new_student = students(id=each.id.decode('UTF8'),
                                    tid=each.tid,
                                    session_id=each.session_id,
-                                   name=each.name,
+                                   name=decrypt(each.name),
                                    email_address=each.email_address,
                                    is_lead=each.is_lead,
                                    midterm_done=each.midterm_done,
                                    final_done=each.final_done)
-            if isinstance(new_student.name, str) is False:
-                new_student.id = decrypt(new_student.id)
-                new_student.name = decrypt(new_student.name)
-            new_student.email_address = students.decrypt_bytearray(self, new_student.email_address)
             mems.append(new_student)
         return mems
 
@@ -405,7 +432,7 @@ class students(db.Model):
             return None
         results = []
         for each in all_students:
-            new_student = students(id=decrypt(each.id),
+            new_student = students(id=each.id,
                                    tid=each.tid,
                                    session_id=each.session_id,
                                    name=decrypt(each.name),
@@ -429,7 +456,7 @@ class students(db.Model):
             student_records = []
             all_students = students.query.all()
             for each in all_students:
-                if decrypt(each.id) == student_id:
+                if decrypt(each.id) == decrypt(student_id):
                     student_records.append(each)
             if student_records is not None:
 
@@ -466,8 +493,8 @@ class students(db.Model):
         try:
             all_students = students.query.filter(students.session_id == session_id).all()
             for each in all_students:
-                if decrypt(each.id) == sid:
-                    result = students(id=decrypt(each.id),
+                if decrypt(each.id) == decrypt(sid):
+                    result = students(id=each.id,
                                       tid=each.tid,
                                       session_id=each.session_id,
                                       name=decrypt(each.name),
@@ -533,9 +560,8 @@ class students(db.Model):
         except exc.SQLAlchemyError:
             result = None
         for each in result:
-            print(each.id)
             if (decrypt(each.id)) == id:
-                result = students(id=decrypt(each.id),
+                result = students(id=each.id,
                                   tid=each.tid,
                                   session_id=each.session_id,
                                   name=decrypt(each.name),
@@ -593,7 +619,7 @@ class students(db.Model):
             '''
             all_students = students.query.filter(students.session_id == sess_id)
             for each in all_students:
-                if decrypt(each.id) == s_id:
+                if each.id == s_id:
                     student = each
             if student.is_lead == 1:
                 return True
@@ -632,7 +658,7 @@ class students(db.Model):
         try:
             all_students = students.query.all()
             for each in all_students:
-                if decrypt(each.id) == id:
+                if each.id == id:
                     student.append(each)
         except exc.SQLAlchemyError:
             student = None
@@ -1171,7 +1197,7 @@ class reports(db.Model):
             print('Finding Student')
             all_students = students.query.filter_by(session_id=sess_id).all()
             for each in all_students:
-                if decrypt(each.id) == id:
+                if decrypt(each.id) == decrypt(id):
                     student = each
             if state == 'midterm':
                 student.midterm_done = 1

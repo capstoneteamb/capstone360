@@ -29,6 +29,7 @@ class GeneratedProfessorReportView(MethodView):
         single student, with comments deanonymized.
         """
         student_id = request.args.get('student_id')
+        student_id = student_id.encode('UTF8')
         session_id = request.args.get('session_id')
         is_final = request.args.get('is_final')
         # TODO find a less fragile way to deal with booleans in urls
