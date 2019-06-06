@@ -8,7 +8,7 @@ from sqlalchemy import exc, func
 
 try:
     from cryptography.fernet import Fernet
-    key_file = open("key.txt")
+    key_file = open("../key.txt")
     key = key_file.readline()
     key = bytes(key.encode("UTF8"))
     cipher = Fernet(key)
@@ -19,7 +19,7 @@ try:
         Input: string
         Output: byte array
         """
-        c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))  # Encrypt name
+        c_text = cipher.encrypt(bytes(p_text, encoding='UTF8'))
         return c_text
 
     def decrypt(c_text):
@@ -28,11 +28,13 @@ try:
         Input: byte array
         Output: string
         """
-        p_text = cipher.decrypt(c_text)  # Decrypt byte array
+        p_text = cipher.decrypt(c_text)
         p_text = p_text.decode('UTF8')  # Decode byte array to string
         return p_text
+
 except OSError:
-    print("Error in cipher package.")
+    print("Error in cipher package. Exiting...")
+    exit()
 
 
 sys.path.append(os.getcwd())
@@ -59,17 +61,13 @@ class professors(db.Model):
         Output: the professor object associated with the given id
         """
         try:
-            all_professors = professors.query.filter().all()
-            for each in all_professors:
-                if each.id == id:
-                    result = each
+            if id is not None and id:
+                professor = professors.query.filter(professors.id==str(id)).first()
+                return professor
         except exc.SQLAlchemyError:
             log_exception()
-            result = None
 
-        if result is None:
-            return False
-        return result
+        return False
 
     def get_all_professors(self):
         """
@@ -378,6 +376,26 @@ class teams(db.Model):
 class students(db.Model):
     __table__ = db.Model.metadata.tables['students']
 
+    def decrypt_string(self, string):
+        """
+        Decrypt a string
+        Input: the string you want to encrypt
+        Output: the decryped string
+        """
+        string = string[1:]
+        string = string.encode('UTF8')
+        string = decrypt(string)
+        return string
+
+    def decrypt_bytearray(self, bytesarray):
+        """
+        Decrypt a bytearray
+        Input: the byte array you want to encrypt
+        Output: the decrypted byte array
+        """
+        string = decrypt(bytesarray)
+        return string
+
     def check_dup_student(self, id, session_id):
         """
         Check if a student already exits in a session
@@ -408,7 +426,7 @@ class students(db.Model):
         try:
             result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
             tid = result.id
-            # encrypt information.
+            # encrypt information
             id = encrypt(id)
             name = encrypt(name)
             email_address = encrypt(email_address)
@@ -459,11 +477,11 @@ class students(db.Model):
             return None
         mems = []
         for each in e_mems:
-            new_student = students(id=each.id.decode('UTF8'),
+            new_student = students(id=decrypt(each.id),
                                    tid=each.tid,
                                    session_id=each.session_id,
                                    name=decrypt(each.name),
-                                   email_address=each.email_address,
+                                   email_address=decrypt(each.email_address),
                                    is_lead=each.is_lead,
                                    midterm_done=each.midterm_done,
                                    final_done=each.final_done)
@@ -510,7 +528,7 @@ class students(db.Model):
             student_records = []
             all_students = students.query.all()
             for each in all_students:
-                if decrypt(each.id) == decrypt(student_id):
+                if decrypt(each.id) == student_id:
                     student_records.append(each)
             if student_records is not None:
 
@@ -526,30 +544,19 @@ class students(db.Model):
             log_exception()
             return None
 
-    def decrypt_string(self, string):
-        string = string[1:]
-        string = string.encode('UTF8')
-        string = decrypt(string)
-        return string
-
-    def decrypt_bytearray(self, bytesarray):
-        string = decrypt(bytesarray)
-        return string
-
     def get_student_in_session(self, sid, session_id):
         """
         Get a student from the students table
         Input: student id, session id
         Output: the student that we found, or none if nothing was found
         """
-        result = None
         # Operations that need to be performed to decrypt.
         # Bytearray stored as string, including preceding b.
         try:
             all_students = students.query.filter(students.session_id == session_id).all()
             for each in all_students:
-                if decrypt(each.id) == decrypt(sid):
-                    result = students(id=each.id,
+                if decrypt(each.id) == sid:
+                    result = students(id=sid,
                                       tid=each.tid,
                                       session_id=each.session_id,
                                       name=decrypt(each.name),
@@ -560,8 +567,8 @@ class students(db.Model):
                     return result
         except exc.SQLAlchemyError:
             log_exception()
-            return None
-        return result
+        
+        return None
 
     def remove_student(self, sts, t_name, session_id):
         """
@@ -629,25 +636,20 @@ class students(db.Model):
             result = result.fetchall()
             '''
             result = students.query.all()
+            for each in result:
+                if (decrypt(each.id)) == id:
+                    return students(id=id,
+                                    tid=each.tid,
+                                    session_id=each.session_id,
+                                    name=decrypt(each.name),
+                                    email_address=decrypt(each.email_address),
+                                    is_lead=each.is_lead,
+                                    midterm_done=each.midterm_done,
+                                    final_done=each.final_done)
         except exc.SQLAlchemyError:
             log_exception()
-            result = None
-        for each in result:
-            if (decrypt(each.id)) == id:
-                result = students(id=each.id,
-                                  tid=each.tid,
-                                  session_id=each.session_id,
-                                  name=decrypt(each.name),
-                                  email_address=decrypt(each.email_address),
-                                  is_lead=each.is_lead,
-                                  midterm_done=each.midterm_done,
-                                  final_done=each.final_done)
-                return result
-        return -1
-        if result is None:
-            return False
-        else:
-            return result
+
+        return False
 
     # Get the single student matching the id passed in
     # input: student id of the student to retrieve
@@ -693,11 +695,13 @@ class students(db.Model):
             '''
             student = students.query.filter(students.id == s_id, students.session_id == sess_id).first()
             '''
+            student = None
             all_students = students.query.filter(students.session_id == sess_id)
             for each in all_students:
-                if each.id == s_id:
+                if decrypt(each.id) == s_id:
                     student = each
-            if student.is_lead == 1:
+
+            if student is not None and student.is_lead == 1:
                 return True
             else:
                 return False
@@ -732,9 +736,9 @@ class students(db.Model):
         try:
             all_students = students.query.all()
             for each in all_students:
-                if each.id == id:
+                if decrypt(each.id) == id:
                     student.append(each)
-            if student is None:
+            if not student:
                 print("no student found")
                 return False
             for i in student:
@@ -747,6 +751,7 @@ class students(db.Model):
             return True
         except exc.SQLAlchemyError:
             log_exception()
+            db.session.rollback()
             return False
 
     def set_lead(self, session_id, team_name, lead):
@@ -1233,9 +1238,50 @@ class reports(db.Model):
         Outputs: result - all report objects for the team
         """
         try:
-            result = reports.query.filter(reports.tid == tid,
-                                          reports.is_final == is_final).distinct().all()
-            return result
+            reviews = []
+            results = reports.query.filter(reports.tid == tid,
+                                           reports.is_final == is_final).distinct().all()
+            for review in results:
+                new_review = reports(session_id=reports.session_id,
+                                     time=review.time,
+                                     reviewer=decrypt(review.reviewer),
+                                     tid=tid,
+                                     reviewee=decrypt(review.reviewee),
+                                     tech_mastery=review.tech_mastery,
+                                     work_ethic=review.work_ethic,
+                                     communication=review.communication,
+                                     cooperation=review.cooperation,
+                                     initiative=review.initiative,
+                                     team_focus=review.team_focus,
+                                     contribution=review.contribution,
+                                     leadership=review.leadership,
+                                     organization=review.organization,
+                                     delegation=review.delegation,
+                                     points=review.points,
+                                     strengths=decrypt(review.strengths),
+                                     weaknesses=decrypt(review.weaknesses),
+                                     traits_to_work_on=decrypt(review.traits_to_work_on),
+                                     what_you_learned=decrypt(review.what_you_learned),
+                                     proud_of_accomplishment=decrypt(review.proud_of_accomplishment),
+                                     is_final=review.is_final,
+                                     is_late=review.is_late))
+
+                # Handle arguments that could potentially be empty
+                if new_review.strengths:
+                    new_review.strengths=decrypt(review.strengths)
+                if new_review.weaknessess:
+                    new_review.weaknesses=decrypt(review.weaknesses)
+                if new_review.traits_to_work_on:
+                    new_review.traits_to_work_on=decrypt(review.traits_to_work_on)
+                if new_review.what_you_learned:
+                    new_review.what_you_learned=decrypt(review.what_you_learned)
+                if new_review.proud_of_accomplishemnt:
+                    new_review.proud_of_accomplishment=decrypt(review.proud_of_accomplishment)
+
+                # Append review
+                new_review.append(review)
+
+            return reviews
         except exc.SQLAlchemyError:
             log_exception()
             return None
@@ -1249,12 +1295,24 @@ class reports(db.Model):
         Outputs: true if adding was successful, false if not
         """
         try:
+            # Handle arguments that could potentially be empty
+            if strn:
+                strn = encrypt(strn)
+            if wkn:
+                wkn = encrypt(wkn)
+            if triats:
+                traits = encrypt(traits)
+            if learned:
+                learned = encrypt(learned)
+            if proud:
+                proud = encrypt(proud)
+            
             # Build Report object from method input
             new_report = reports(session_id=sess_id,
                                  time=time,
-                                 reviewer=reviewer,
+                                 reviewer=encrypt(reviewer),
                                  tid=tid,
-                                 reviewee=reviewee,
+                                 reviewee=encrypt(reviewee),
                                  tech_mastery=tech,
                                  work_ethic=ethic,
                                  communication=com,
@@ -1273,6 +1331,7 @@ class reports(db.Model):
                                  proud_of_accomplishment=proud,
                                  is_final=is_final,
                                  is_late=late)
+
             # add the report and return true for success
             db.session.add(new_report)
             print('Adding Report to Session')
@@ -1302,7 +1361,7 @@ class reports(db.Model):
             print('Finding Student')
             all_students = students.query.filter_by(session_id=sess_id).all()
             for each in all_students:
-                if decrypt(each.id) == decrypt(id):
+                if decrypt(each.id) == id:
                     student = each
             if state == 'midterm':
                 student.midterm_done = 1

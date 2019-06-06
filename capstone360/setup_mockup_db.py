@@ -10,7 +10,7 @@ import sqlite3
 from cryptography.fernet import Fernet
 
 # Get encryption key.
-key_file = open("key.txt")
+key_file = open("../key.txt")
 key = key_file.readline()
 key = bytes(key.encode("UTF8"))
 cipher = Fernet(key)

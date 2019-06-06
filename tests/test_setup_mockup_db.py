@@ -10,7 +10,7 @@ from capstone360.setup_mockup_db import names, generate_student_data, generate_t
 import sqlite3
 import os
 from cryptography.fernet import Fernet
-key_file = open("key.txt")
+key_file = open("../key.txt")
 key = key_file.readline()
 key = bytes(key.encode("UTF8"))
 cipher = Fernet(key)

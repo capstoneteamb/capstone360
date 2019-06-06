@@ -48,7 +48,7 @@ class StudentRegister(MethodView):
             # Get the name of the professor running the session
             professor = professors.get_professor(session.professor_id)
             if professor is None:
-                logging.error(("Student Registration Failure - the professor of a specific Capstone session "
+                logging.error(("Student Registration - the professor of a specific Capstone session "
                                "wasn't found. Was the professor removed from the database?"))
                 return self.display_error("Something went wrong")
 
@@ -81,23 +81,23 @@ class StudentRegister(MethodView):
             name = request.form.getlist('name')[0]
             email_address = request.form.getlist('email_address')[0]
             session_id = request.form.getlist('session_id')[0]
-
+            print("Print 2")
             # Verify that the student isn't already registered for the target session
             if students.get_student_in_session(student_id, session_id) is not None:
                 logging.warning(("A student tried to register for a Capstone session, but the student was "
                                  "already registered for the session"))
                 return self.display_error("You are already in this session")
-
+            print("Print 3")
             # Add the student to the database
             # The student won't be on a team when they first sign up, so we have to assign them to the
             # empty team for the target session. We start by checking if the empty team exists. If the
             # target session doesn't have one yet, we create it
             if teams.get_tid_from_name("", session_id) is None:
                 teams.insert_team(session_id, "")
-
+            print("Print 4")
             # Insert the student into the database (as a part of the empty team)
             students.insert_student(name, email_address, student_id, session_id, "")
-
+            print("Pring 5")
             # Log the event and render the page with a message telling the student that they have been
             # registered (along with a link to the student page)
             logging.info("A student registered for a Capstone session")
@@ -105,5 +105,5 @@ class StudentRegister(MethodView):
 
         # https://stackoverflow.com/questions/47719838/how-to-catch-all-exceptions-in-try-catch-block-python
         except Exception as error:
-            logging.error("Student Registration Failure: " + str(error))
+            logging.error("Student Registration - " + str(error))
             return self.display_error("Something went wrong")
