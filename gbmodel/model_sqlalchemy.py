@@ -31,7 +31,7 @@ try:
         p_text = cipher.decrypt(c_text)  # Decrypt byte array
         p_text = p_text.decode('UTF8')  # Decode byte array to string
         return p_text
-except InvalidToken:
+except cryptography.fernet.InvalidToken():
     print("Error in cipher package.")
 
 
