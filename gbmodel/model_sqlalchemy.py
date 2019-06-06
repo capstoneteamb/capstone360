@@ -648,6 +648,7 @@ class students(db.Model):
             # success, so return true
             return True
         except exc.SQLAlchemyError:
+            log_exception()
             return False
 
 
