@@ -126,7 +126,7 @@ class ProfDashboard(MethodView):
                 # Get team name in current session from profDashboard.html
                 team_name = request.form.get('removed_team')
                 # There was a problem removing teams with blank names, so (in remove team requests) a '_'
-                # character was added to the beginning of the name. 
+                # character was added to the beginning of the name.
                 # We will want to remove it before we continue
                 # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
                 team_name = team_name[1:]
