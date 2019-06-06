@@ -23,17 +23,23 @@ class review(MethodView):
     # holds fields that should appear in the table on the review page
     # -- these are what people will see
     human_fields = ['Name',
-                    'Technical Mastery',
-                    'Work Ethic',
-                    'Communication',
-                    'Cooperation',
-                    'Initiative',
-                    'Team Focus',
-                    'Contribution',
+                    """ Technical Mastery - Mastery of the skills
+                        involved in their role(s) with the project""",
+                    """ Work Ethic - Cheerfully performing their tasks
+                        without excessive complaining, work avoidance""",
+                    """ Communication - Ability to understand others points
+                        and to effectively get their points across""",
+                    """ Cooperation - Willing to be flexible, share knowledge,
+                        genuinely interested in what they can do for the project to go smoothly """,
+                    """ Initiative - Seeing what needs to be done and doing
+                        it without someone asking them to """,
+                    """ Team Focus - Interested in the entire project and its progress,
+                        not just exclusively thinking about their part """,
+                    "Contribution - Assess this person's overall contribution to the project",
                     'Leadership (Team Lead Only)',
                     'Organization (Team Lead Only)',
                     'Delegation (Team Lead Only)',
-                    'Points',
+                    'Points - Score your teammates 0-100. Give 0 to yourself. Sum across team must be 100.',
                     'Strengths',
                     'Weaknesses',
                     'Traits to Work On']
@@ -174,6 +180,28 @@ class review(MethodView):
         except SQLAlchemyError:
             return None
 
+    def check_available(self, user_id, capstone_id):
+        """
+        This method checks if a student's reviews are open or clocked
+        Inputs: user_id -- the student's id in the database,
+        capstone_id -- the capstone session the student belongs to
+        Outputs: True -- the student can proceed with reviews.
+        False -- The student cannot proceed with reviews.
+        """
+        try:
+            # get student
+            student = gbmodel.students().get_student_in_session(user_id, capstone_id)
+            if student is None:
+                return False
+
+            # check if reviews are 'open'
+            if student.active == 'open':
+                return True
+            else:
+                return False
+        except SQLAlchemyError:
+            return False
+
     def confirm_user(self, user_id, capstone_id):
         """
         This method checks to ensure that the user trying to access
@@ -185,6 +213,11 @@ class review(MethodView):
         # check if the current user is found in the database
         student = gbmodel.students().get_student_in_session(user_id, capstone_id)
         if student is None:
+            return False
+
+        # check review availability
+        available = self.check_available(user_id, capstone_id)
+        if available is False:
             return False
 
         # check the user's active reports
@@ -492,6 +525,9 @@ class review(MethodView):
                 if i == user_id:
                     learned = request.form[('learned')]
                     learned = learned.strip()
+                    if len(learned) > 30000:
+                        print('string too long')
+                        abort(422)
 
                 proud = None
                 # only get 'proud' if the student is filling out final review
@@ -499,9 +535,19 @@ class review(MethodView):
                     if i == user_id:
                         proud = request.form[('proud')]
                         proud = proud.strip()
+                        if len(proud) > 30000:
+                            print('string too long')
+                            abort(422)
 
                 points = request.form[('points_' + str(i))]
                 points = points.strip()
+
+                if((len(strn) > 30000) or
+                   (len(wkn) > 30000) or
+                   (len(traits) > 30000)):
+                    print('string too long')
+                    abort(422)
+
                 points = self.convert_to_int(points)
 
                 # default to not late

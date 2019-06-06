@@ -45,20 +45,18 @@
             <table class="table table-striped" style="font-size: 12px">
                 {% for i in range(15)%}
                 <tr>
-                    <td>{{human_fields[i]}}</td>
+                    <td style="max-width: 150px">{{human_fields[i]}}</td>
                     {% for mem in mems %}
                     {% if i == 0 %}
-                    <td>{{mem['name']}}</td>
+                    <td style="max-width: 250px;">{{mem['name']}}</td>
                     {% elif i < 8 %}
-                    <td>
+                    <td style="max-width: 250px; padding: 0px">
                         <div class="container">
                             <div class="row">
                                 <div class="col-4">
-                                    Score for {{mem['name']}}'s {{human_fields[i]}}
+                                    {{mem['name']}}
                                 </div>
-                                <div class="col-2">
-                                </div>
-                                <div class="col-6">
+                                <div class="col-8">
                                     {% for j in range(5) %}
                                     <div class="custom-control custom-radio">
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
@@ -84,15 +82,15 @@
                         </div>
                     </td>
                     {% elif i < 11 %}
-                    <td>
+                    <td style="max-width: 250px; padding: 0px">
                         <div class="container">
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
                                     {% if mem['is_lead'] == 1 %}
-                                    Score for {{mem['name']}}'s {{human_fields[i]}}
+                                        {{mem['name']}}
                                     {% endif %}
                                 </div>
-                                <div class="col-6">
+                                <div class="col-8">
                                     {% for j in range(5) %}
                                     {% if mem['is_lead'] == 1 %}
                                     <div class="custom-control custom-radio">
@@ -120,7 +118,7 @@
                         </div>
                     </td>
                     {% elif i < 12 %}
-                    <td>
+                    <td style="max-width: 250px;">
                         <input type="text" placeholder="Enter Value 0-100" class="form-control" name="{{code_fields[i]}}_{{mem['id']}}"
                             id="{{code_fields[i]}}_{{mem['id']}}" 
                             {% if data %}
@@ -134,7 +132,7 @@
                             required>
                     </td>
                     {% else %}
-                    <td>
+                    <td style="max-width: 250px">
                         {% if is_done == 1 -%}
                         {% set test = code_fields[i]~'_'~mem['id'] %}
                         <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
