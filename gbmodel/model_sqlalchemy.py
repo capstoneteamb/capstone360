@@ -31,8 +31,8 @@ try:
         p_text = cipher.decrypt(c_text)  # Decrypt byte array
         p_text = p_text.decode('UTF8')  # Decode byte array to string
         return p_text
-except cryptography.fernet.InvalidToken:
-    log_exception()
+except InvalidToken:
+    print("Error in cipher package.")
 
 
 sys.path.append(os.getcwd())
@@ -435,7 +435,7 @@ class students(db.Model):
         Output: list of student names, if everything succeeds. None otherwise
         """
         try:
-            e_result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
+            e_result = [r.name for r in students.query.filter_by(tid=tid)]
             result = []
             for r in e_result:  # Decrypt string
                 r = decrypt(r)
@@ -779,7 +779,7 @@ class students(db.Model):
             log_exception()
             return False
         # Get list of students in the given team
-        student = students.query.filter(students.tid == team_id).all()
+        student = students.query.filter(students.tid == team.id).all()
         for i in student:
             if decrypt(i.name) == lead:
                 i.is_lead = 1
