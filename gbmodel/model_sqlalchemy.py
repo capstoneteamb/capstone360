@@ -377,9 +377,10 @@ class students(db.Model):
                                    session_id=session_id,
                                    name=name,
                                    email_address=email_address,
-                                   is_lead=0,
-                                   midterm_done=0,
-                                   final_done=0)
+                                   is_lead=False,
+                                   midterm_done=False,
+                                   final_done=False,
+                                   active="open")
             db.session.add(new_student)
             db.session.commit()
         except exc.SQLAlchemyError:
@@ -596,7 +597,7 @@ class students(db.Model):
         """
         Professor can set a lead for each team
         Input: self, chosen session id, team name and lead name
-        Output: set 1 to team lead and 0 to the rest of students in the team
+        Output: set True to team lead and False to the rest of students in the team
         """
         # Sanity check inputs
         if team_name is None or lead is None:
@@ -613,10 +614,39 @@ class students(db.Model):
             student = students.query.filter(students.tid == team.id).all()
             for i in student:
                 if i.name == lead:
-                    i.is_lead = 1
+                    i.is_lead = True
                 else:
-                    i.is_lead = 0
+                    i.is_lead = False
                 db.session.commit()
+            return True
+        except exc.SQLAlchemyError:
+            log_exception()
+            return False
+
+    def set_active(self, session_id, option):
+        """
+        Sets the active attribute in student
+        For a student to be able to access their reviews, "open" must be set
+        Inputs: The capstone session id of the class to set as active or not. Option as 'open' or 'close'.
+                "Open" to allow students to submit/edit reviews, "close" to not allow review submission.
+        Outputs: True to indicate success, False to indicate an error.
+        """
+        try:
+            student = students.query.filter(students.session_id == session_id).all()
+            # check option, set accordingly
+            if option == "open":
+                for i in student:
+                    i.active = 'open'
+                    db.session.commit()
+            elif option == "close":
+                for i in student:
+                    i.active = 'close'
+                    db.session.commit()
+            else:
+                # mismatch, return false
+                return False
+
+            # success, so return true
             return True
         except exc.SQLAlchemyError:
             log_exception()
@@ -794,8 +824,9 @@ class capstone_session(db.Model):
         lists = []
         for i in caps:
             prof = professors.query.filter(professors.id == i.professor_id).first()
-            temp = str(i.start_term) + " - " + str(i.start_year) + " (" + str(prof.name) + ")"
-            lists.append(temp)
+            if prof is not None:
+                temp = str(i.start_term) + " - " + str(i.start_year) + " (" + str(prof.name) + ")"
+                lists.append(temp)
         return lists
 
     def get_active_sessions(self):
@@ -852,8 +883,9 @@ class capstone_session(db.Model):
         """
         Check if start and end dates are valid
         Input: start and end dates
-        Output: Return 0 if valid, return 1 if start date is after the end date
-                Return 1 if either start or end date is empty
+        Output: Return 0 if valid (both start and end date being empty is valid)
+                Return 1 if start date is after the end date
+                Return 2 if either start date or end date is empty (but not both)
         """
         params = {'start': start, 'end': end}
         if params['start'] and params['end']:
