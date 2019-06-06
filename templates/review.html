@@ -1,8 +1,7 @@
 {% extends "layout.html" %}
-
 {% block content %}
 <a href="{{ url_for('cas.logout')}}">
-	<div class="student-login-btn"
+    <div class="student-login-btn"
     style=
     "width: 150px;
     left: 93%;
@@ -18,7 +17,6 @@
 <br>
 <br>
 <br>
-
 {% if fatal_error %}
 {{ fatal_error }}
 <a href="/studentDashboard"><div class="student-login-btn" style="bottom: unset; top: 17%; left: 5%;">Back</div></a>
@@ -43,7 +41,7 @@
 <section class="content">
     <form method="post">
         <div class="table-responsive" style="width: 100%; overflow-x:auto; overflow-y:auto">
-            <input type="hidden" value={{user_id}} name=user_id>
+            <input type="hidden" value="{{user_id}}" name="user_id">
             <table class="table table-striped" style="font-size: 12px">
                 {% for i in range(15)%}
                 <tr>
@@ -59,7 +57,6 @@
                                     Score for {{mem['name']}}'s {{human_fields[i]}}
                                 </div>
                                 <div class="col-2">
-                                        
                                 </div>
                                 <div class="col-6">
                                     {% for j in range(5) %}
@@ -67,6 +64,7 @@
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
                                             name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
                                             value="{{5-j}}"
+					    {% if data %}
                                             {% for k in data %}
                                                 {% set test = code_fields[i]~'_'~mem['id'] %}
                                                 {% if k[test] is defined %}
@@ -75,6 +73,7 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
+					    {% endif %}
                                             required>
                                         <label class="custom-control-label"
                                             for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
@@ -100,7 +99,8 @@
                                         <input type="radio" id="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}"
                                             name="{{code_fields[i]}}_{{mem['id']}}" class="custom-control-input"
                                             value="{{5-j}}" 
-                                            {% for k in data %}
+					    {% if data %}
+					    {% for k in data %}
                                                 {% set test = code_fields[i]~'_'~mem['id'] %}
                                                 {% if k[test] is defined %}
                                                     {%if k[test] == 5-j %}
@@ -108,6 +108,7 @@
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
+					    {% endif %}
                                             required>
                                         <label class="custom-control-label"
                                             for="{{code_fields[i]}}{{5 - j}}_{{mem['id']}}">{{5-j}}</label>
@@ -122,12 +123,14 @@
                     <td>
                         <input type="text" placeholder="Enter Value 0-100" class="form-control" name="{{code_fields[i]}}_{{mem['id']}}"
                             id="{{code_fields[i]}}_{{mem['id']}}" 
-                            {% for k in data %}
+                            {% if data %}
+			    {% for k in data %}
                                 {% set test = code_fields[i]~'_'~mem['id'] %}
                                 {% if k[test] is defined %}
                                     value="{{k[test]}}"
                                 {% endif %}
                             {% endfor %}
+                            {% endif %}
                             required>
                     </td>
                     {% else %}
@@ -137,18 +140,20 @@
                         <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
                             name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
                             required>
+			{% if data %}
                         {% for k in data -%}
                         {% if k[test] is defined -%}{{k[test]}}{%- endif %}
-                        {%- endfor %}
+                        {% endfor %}
+			{% endif %}
                         </textarea>
                         {% else %}
                         <textarea placeholder="What Are {{mem['name']}}'s {{human_fields[i]}}? '" class="form-control"
                             name="{{code_fields[i]}}_{{mem['id']}}" id="{{code_fields[i]}}_{{mem['id']}}" rows="5"
                             required></textarea>
-                        {%- endif %}
+                        {% endif %}
                     </td>
-                    {%- endif %}
-                    {%- endfor %}
+                    {% endif %}
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             </table>
@@ -157,26 +162,30 @@
         <label for="learned">What you learned</label>
         {% if is_done == 1 -%}
         <textarea placeholder="What did you learn?" class="form-control" name="learned" id="learned" required>
-        {% for k in data -%}
+        {% if data %}
+	{% for k in data -%}
         {% if k['learned'] is defined -%}{{k['learned']}}{% else %}{%- endif %}
         {% endfor -%}
+        {% endif %}
         </textarea>
         {% else %}
         <textarea placeholder="What did you learn?" class="form-control" name="learned" id="learned" required></textarea>
-        {%- endif %}
+        {% endif %}
         {% if state == 'final' -%}
         <br>
-	<label for="proud">Are you proud of your accomplishment for this project?</label>
+    <label for="proud">Are you proud of your accomplishment for this project?</label>
         {% if is_done == 1 -%}
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required>
-        {% for k in data -%}
+        {% if data %}
+	{% for k in data -%}
         {% if k['proud'] is defined -%}{{k['proud']}}{%- endif %}
-        {%- endfor %}
+        {% endfor %}
+        {% endif %}
         </textarea>
         {% else %}
         <textarea placeholder="Are you proud of your accomplishment for this project?" class="form-control" name="proud" id="proud" required></textarea>
-        {%- endif %}
-        {%- endif %}
+        {% endif %}
+        {% endif %}
         <br>
         <input class="my-btn" type="submit" value='Submit' style="
                 background-color: #b7c229;

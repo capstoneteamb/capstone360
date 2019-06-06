@@ -1,34 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
-
-	<h3>Add Session</h3>
-	<div class="add-container">
-	<div class="input-card">
-		{% if error %}
-			<p><strong>Error:</strong> {{ error }}
-		{% endif %}
-		<form id="add-session" action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
-			<p class="heading">Start Term: <input type=text required='required' name=start_term></p>
-			<p class="heading">Start Year: <input type=text required='required' name=start_year></p>
-			<p class="heading">Assign to professor:</p>
-			<select class="selected_professor" name="professor_id">
-				{% for i in prof_list %}
-				<option value="{{i.id}}" name="professors">{{i.name}}</option>
-				{% endfor %}
-			</select> 
-			<input type="hidden" value={{session_id}} name=session_id>
-		</form>
-		<input onClick="$('#add-session').submit()" class="my-btn" type=submit value='Add Session' style="
-				background-color: #b7c229;
-				color: white;
-				border: none;
-				border-radius:5px;
-				padding: 10px 20px;
-				cursor: pointer;
-				margin-right: 30px;">
-		<a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
-		
-	</div>
-	</div>
-
+<h3>Add Session</h3>
+<div class="add-container">
+    <div class="input-card">
+        {% if error %}
+            <p><strong>Error:</strong> {{ error }}
+        {% endif %}
+        <form id="add-session" action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
+            <p class="heading">Start Term: <input type=text required='required' name=start_term></p>
+            <p class="heading">Start Year: <input type=text required='required' name=start_year></p>
+            <p class="heading">Assign to professor:</p>
+            <select class="selected_professor" name="professor_id">
+                {% for i in prof_list %}
+                <option value="{{i.id}}" name="professors">{{i.name}}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" value={{session_id}} name=session_id>
+        </form>
+        <input onClick="$('#add-session').submit()" class="my-btn" type=submit value='Add Session' style="
+                background-color: #b7c229;
+                color: white;
+                border: none;
+                border-radius:5px;
+                padding: 10px 20px;
+                cursor: pointer;
+                margin-right: 30px;">
+        <a href="{{ url_for('profDashboard', session_id=session_id) }}"><button class="my-btn">Cancel</button></a>
+    </div>
+</div>
 {% endblock %}

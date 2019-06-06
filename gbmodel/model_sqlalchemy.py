@@ -1,6 +1,8 @@
 import os
 import sys
 import datetime
+import logging
+import traceback
 from extensions import db
 from sqlalchemy import exc, func
 
@@ -38,30 +40,25 @@ except:
 sys.path.append(os.getcwd())
 
 
+def log_exception():
+    exception_details = sys.exc_info()
+    error = "Gbmodel - {}: {}".format(exception_details[0].__name__, exception_details[1])
+    logging.error(error)
+    traceback.print_tb(exception_details[2])
+
+
 class professors(db.Model):
+    """
+    Class for the professors table
+    Table column data imported automatically
+    """
     __table__ = db.Model.metadata.tables['professors']
 
-    '''
-    def insert_professor(self, name, id):
+    def get_professor(self, id):
         """
-        Add new student
-        Input: student name, student email address, student id, team name and id of the selected session
-        Output: return False if student id already exists in the current session
-                add student to the database and return True otherwise
-        """
-        id = encrypt(id)
-        name = encrypt(name)
-        new_professor = professors(id=id,
-                               name=name)
-        db.session.add(new_professor)
-        db.session.commit()
-    '''
-
-    def get_professors(self, id):
-        """
-        Get a list of professors
-        Input: team id, session id
-        Output: list of professors id
+        Get a professor with the given id
+        Input: professor id
+        Output: the professor object associated with the given id
         """
         try:
             all_professors = professors.query.filter().all()
@@ -69,15 +66,18 @@ class professors(db.Model):
                 if each.id == id:
                     result = each
         except exc.SQLAlchemyError:
+            log_exception()
             result = None
+
         if result is None:
             return False
         return result
 
     def get_all_professors(self):
         """
-        gets a list of all professors
-        in the database (by id)
+        Get a list of all professors in the database (by id)
+        Input: none
+        Output: a list of professors
         """
         try:
             profs = professors().query.all()
@@ -86,7 +86,9 @@ class professors(db.Model):
                 temp = i
                 lists.append(temp)
         except exc.SQLAlchemyError:
+            log_exception()
             profs = None
+
         if profs is None:
             return False
         return lists
@@ -101,20 +103,25 @@ class professors(db.Model):
             prof_id = prof_id.strip().lower()
             result = professors().query.filter_by(id=prof_id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             result = None
+
         if result is not None:
             return True
         return False
 
     def prof_id(self, name):
         """
+        Gets the id of the professor with the given name, if he is found. Returns -1 otherwise
         Input: professor name
         Output: return professor's id
         """
         try:
             prof = professors.query.filter_by(name=name).first()
         except exc.SQLAlchemyError:
+            log_exception()
             prof = None
+
         if prof is None:
             return -1
         return prof.id
@@ -132,7 +139,9 @@ class teams(db.Model):
         try:
             max_id = db.session.query(func.max(teams.id)).scalar()
         except exc.SQLAlchemyError:
+            log_exception()
             max_id = None
+
         if max_id is None:
             return 1
         else:
@@ -148,7 +157,9 @@ class teams(db.Model):
             result = teams().query.filter_by(name=t_name,
                                              session_id=session_id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             result = None
+
         if result is not None:
             return False
         return True
@@ -166,40 +177,47 @@ class teams(db.Model):
 
     def get_team_session_id(self, session_id):
         """
+        Get a list of all of the teams in a session
         Input: session id of the selected session
-        Output: list of teams and their info. from the selected session
+        Output: list of teams and their info from the selected session
         """
         try:
             team = teams.query.filter_by(session_id=session_id).all()
             return team
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
     def remove_team_from_session(self, name, session_id):
         """
         Remove a team and all the students from that team
         Input: name of the team and session id
+        Output: True if the operation completed successfully. False if something went wrong
         """
-        student = students()
-        removed_student = removed_students()
-        result = teams.query.filter(teams.name == name,
-                                    teams.session_id == session_id).first()
-        tid = result.id
-        list_students = student.get_students(tid, session_id)
-        if list_students is not None:
-            for i in list_students:
-                result = students.query.filter(students.name == i,
-                                               students.session_id == session_id).first()
-                removed_student.add_student(result)
-        student_list = students.query.filter(students.tid == tid,
-                                             students.session_id == session_id).all()
-        for i in student_list:
-            db.session.delete(i)
+        try:
+            student = students()
+            removed_student = removed_students()
+            result = teams.query.filter(teams.name == name,
+                                        teams.session_id == session_id).first()
+            tid = result.id
+            list_students = student.get_students(tid)
+            if list_students is not None:
+                for i in list_students:
+                    result = students.query.filter(students.name == i,
+                                                   students.session_id == session_id).first()
+                    removed_student.add_student(result)
+            student_list = students.query.filter(students.tid == tid,
+                                                 students.session_id == session_id).all()
+            for i in student_list:
+                db.session.delete(i)
+                db.session.commit()
+            team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
+            db.session.delete(team)
             db.session.commit()
-        team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
-        db.session.delete(team)
-        db.session.commit()
-        return True
+            return True
+        except exc.SQLAlchemyError:
+            log_exception()
+            return False
 
     def remove_team(self, name, session_id):
         """
@@ -208,21 +226,50 @@ class teams(db.Model):
         Output: delete a team
                 move all student in the team to unassigned student
         """
-        team = teams()
-        result = teams.query.filter(teams.name == name,
-                                    teams.session_id == session_id).first()
-        tid = result.id
-        team = teams.query.filter(teams.id == tid, teams.session_id == session_id).first()
-        db.session.delete(team)
-        db.session.commit()
-        student_list = students.query.filter(students.tid == tid, students.session_id == session_id).all()
-        tid = team.get_tid_from_name("", session_id)
-        if tid is None:
-            tid = team.insert_team(session_id, "")
-        for i in student_list:
-            i.tid = tid
-        db.session.commit()
-        return True
+        try:
+            # Get the team slated for removal
+            teams_obj = teams()
+            team = teams_obj.query.filter(teams.name == name,
+                                          teams.session_id == session_id).first()
+
+            # Get the students on the team
+            student_list = students.query.filter(students.tid == team.id,
+                                                 students.session_id == session_id).all()
+
+            # If we are trying to remove a team with students on it...
+            if student_list:
+                # Jump ship if the team is the empty team. We don't delete the empty team if there are
+                # students in it
+                if name == "":
+                    return False
+
+                # Otherwise, move all the students on the team to the empty team
+                empty_team_id = teams_obj.get_tid_from_name("", session_id)
+                if empty_team_id is None:
+                    empty_team_id = teams_obj.insert_team(session_id, "")
+                for student in student_list:
+                    student.midterm_done = False
+                    student.final_done = False
+                    student.tid = empty_team_id
+
+            # Remove all of the review submitted with team id
+            reviews = reports.query.filter(reports.tid == team.id).all()
+            for review in reviews:
+                db.session.delete(review)
+
+            # Now, remove the team
+            db.session.delete(team)
+
+            # Commit db changes
+            db.session.commit()
+
+            # Indicate operation successful
+            return True
+        except exc.SQLAlchemyError:
+            # Log exception, and rollback db changes
+            log_exception()
+            db.session.rollback()
+            return False
 
     def dashboard(self, session_id):
         """
@@ -238,31 +285,26 @@ class teams(db.Model):
         lists = [[] for _ in range(len(tids))]
         flag = 0
         for i in range(len(tids)):
+            # Get min and max
             try:
                 # Query to get the min & max student points of their final
                 final_points = db.session.query(
-                        func.max(reports.points).label("max_points"), func.min(reports.points)
-                                                .label("min_points"), reports.reviewee,
-                        reports.reviewer).filter_by(
-                                                    tid=tids[i], session_id=session_id).filter(
-                                                    reports.reviewee == students.id).filter(
-                                                        reports.reviewee != reports.reviewer).filter(
-                                                            reports.is_final == 1).group_by(
-                                                            students.id)
+                    func.max(reports.points).label("max_points"),
+                    func.min(reports.points).label("min_points"),
+                    reports.reviewee).filter_by(tid=tids[i], is_final=True).filter(
+                        reports.reviewee != reports.reviewer).group_by(reports.reviewee)
                 # Query to get the min & max student points of their midterm
                 midterm_points = db.session.query(
-                        func.max(reports.points).label("max_points"),
-                        func.min(reports.points).label("min_points"), reports.reviewee,
-                        reports.reviewer).filter_by(
-                                tid=tids[i], session_id=session_id).filter(
-                                reports.reviewee == students.id).filter(
-                                    reports.reviewee != reports.reviewer).filter(
-                                        reports.is_final == 0).group_by(
-                                        students.id)
+                    func.max(reports.points).label("max_points"),
+                    func.min(reports.points).label("min_points"),
+                    reports.reviewee).filter_by(tid=tids[i], is_final=False).filter(
+                        reports.reviewee != reports.reviewer).group_by(reports.reviewee)
                 # Query to get the students in the students table
                 team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             except exc.SQLAlchemyError:
+                log_exception()
                 return 'Error'
+
             temp = [team_names[i]]
             for team_member in team_members:
                 # Checks whether the review is within the midterm dates
@@ -311,6 +353,7 @@ class teams(db.Model):
         try:
             result = teams.query.filter(teams.id == team_id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             return None
         return result
 
@@ -325,6 +368,7 @@ class teams(db.Model):
             result = teams.query.filter(teams.name == team_name,
                                         teams.session_id == ses_id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
         if result is not None:
@@ -338,7 +382,7 @@ class students(db.Model):
 
     def check_dup_student(self, id, session_id):
         """
-        Check if the new added student already exits in the databse
+        Check if a student already exits in a session
         Input: id of the student and selected session id
         Output: return False if the student was already in
                 return True otherwise
@@ -347,6 +391,7 @@ class students(db.Model):
         try:
             all_students = students.query.filter_by(session_id=session_id).all()
         except exc.SQLAlchemyError:
+            log_exception()
             result = None
         for each in all_students:
             if decrypt(each.id) == id:
@@ -362,47 +407,57 @@ class students(db.Model):
         Output: return False if student id already exists in the current session
                 add student to the database and return True otherwise
         """
-        result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
-        tid = result.id
-        #  Encrypt all data on the student that is sensitive.
-        id = encrypt(id)
-        name = encrypt(name)
-        email_address = encrypt(email_address)
-        new_student = students(id=id,
-                               tid=tid,
-                               session_id=session_id,
-                               name=name,
-                               email_address=email_address,
-                               is_lead=0,
-                               midterm_done=0,
-                               final_done=0)
-        db.session.add(new_student)
-        db.session.commit()
+        try:
+            result = teams.query.filter(teams.name == t_name, teams.session_id == session_id).first()
+            tid = result.id
+            # encrypt information.
+            id = encrypt(id)
+            name = encrypt(name)
+            email_address = encrypt(email_address)
+            new_student = students(id=id,
+                                   tid=tid,
+                                   session_id=session_id,
+                                   name=name,
+                                   email_address=email_address,
+                                   is_lead=0,
+                                   midterm_done=0,
+                                   final_done=0)
+            db.session.add(new_student)
+            db.session.commit()
+        except exc.SQLAlchemyError:
+            log_exception()
+            return False
+
         return True
 
-    def get_students(self, tid, session_id):
-        e_result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
-        result = []
-        for r in e_result:  # Decrypt string
-            r = decrypt(r)
-            result.append(r)
+    def get_students(self, tid):
         """
-        Get a list of students from a team in current session
+        Get a list of the names of all students from a given team
         Input: team id, session id
-        Output: list of student names
+        Output: list of student names, if everything succeeds. None otherwise
         """
-        result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
+        try:
+            e_result = [r.name for r in students.query.filter_by(tid=tid, session_id=session_id)]
+            result = []
+            for r in e_result:  # Decrypt string
+                r = decrypt(r)
+                result.append(r)
+        except exc.SQLAlchemyError:
+            log_exception()
+            return None
+
         return result
 
     def get_team_members(self, tid):
         """
         Get all members of a team
         Input: team id as tid
-        Output: Student objects representing the students on that team
+        Output: A list of student objects representing the students on that team
         """
         try:
             e_mems = students.query.filter_by(tid=tid).distinct()
         except exc.SQLAlchemyError:
+            log_exception()
             return None
         mems = []
         for each in e_mems:
@@ -429,6 +484,7 @@ class students(db.Model):
             all_students = students.query.filter(
                           students.session_id == session_id).order_by(students.tid.asc()).all()
         except exc.SQLAlchemyError:
+            log_exception()
             return None
         results = []
         for each in all_students:
@@ -469,6 +525,7 @@ class students(db.Model):
             return results
 
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
     def decrypt_string(self, string):
@@ -504,6 +561,7 @@ class students(db.Model):
                                       final_done=each.final_done)
                     return result
         except exc.SQLAlchemyError:
+            log_exception()
             return None
         return result
 
@@ -511,10 +569,26 @@ class students(db.Model):
         """
         Remove a list of selected students
         Input: list of students, team name and session id
-        Output: return False of the list of student is empty
+        Output: return False of the list of student is empty or if something went wrong
             otherwise, remove student from the team
         """
-        if t_name is None or sts is None:
+        try:
+            if t_name is None or sts is None:
+                return False
+            removed_student = removed_students()
+            team = teams.query.filter(teams.name == t_name,
+                                      teams.session_id == session_id).first()
+            for i in sts:
+                student = students.query.filter(students.name == i,
+                                                students.tid == team.id,
+                                                students.session_id == session_id).first()
+                removed_student.add_student(student)
+                st = students.query.filter(students.id == student.id,
+                                           students.session_id == session_id).first()
+                db.session.delete(st)
+                db.session.commit()
+        except exc.SQLAlchemyError:
+            log_exception()
             return False
         removed_student = removed_students()
         team = teams.query.filter(teams.name == t_name,
@@ -558,6 +632,7 @@ class students(db.Model):
             '''
             result = students.query.all()
         except exc.SQLAlchemyError:
+            log_exception()
             result = None
         for each in result:
             if (decrypt(each.id)) == id:
@@ -580,12 +655,14 @@ class students(db.Model):
     # input: student id of the student to retrieve
     # output: the student's capstone session id value
     def get_student(self, s_id):
+        student = None
         try:
             all_students = students.query.all()
             for each in all_students:
                 if decrypt(each.id) == s_id:
                     student = each
         except exc.SQLAlchemyError:
+            log_exception()
             return None
         return student
 
@@ -605,6 +682,7 @@ class students(db.Model):
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
+            log_exception()
             return False
 
     def check_team_lead(self, s_id, sess_id):
@@ -626,6 +704,7 @@ class students(db.Model):
             else:
                 return False
         except exc.SQLAlchemyError:
+            log_exception()
             return False
 
     def get_unassigned_students(self, s_id):
@@ -635,18 +714,15 @@ class students(db.Model):
         Output: Students who have no team.
         """
         try:
-            tname = ""
-            tid = teams.query.filter_by(name=tname, session_id=s_id).first()
-            tid = tid.id
-            unassigned_students = students.query.filter_by(session_id=s_id,
-                                                           tid=tid).all()
-        except exc.SQLAlchemyError:
-            unassigned_students = None
-            return unassigned_students
-        except AttributeError:
-            unassigned_students = None
-            return unassigned_students
-        return unassigned_students
+            empty_team = teams.query.filter_by(name="", session_id=s_id).first()
+            if empty_team:
+                return students.query.filter_by(session_id=s_id, tid=empty_team.id).all()
+            else:
+                return None
+        # https://stackoverflow.com/questions/6470428/catch-multiple-exceptions-in-one-line-except-block
+        except (exc.SQLAlchemyError, AttributeError):
+            log_exception()
+            return None
 
     def edit_student(self, id, new_name, new_email):
         """
@@ -660,19 +736,20 @@ class students(db.Model):
             for each in all_students:
                 if each.id == id:
                     student.append(each)
+            if student is None:
+                print("no student found")
+                return False
+            for i in student:
+                print("editing student information")
+                if new_name != '':
+                    i.name = encrypt(new_name)
+                if new_email != '':
+                    i.email_address = encrypt(new_email)
+                db.session.commit()
+            return True
         except exc.SQLAlchemyError:
-            student = None
-        if student is None:
-            print("no student found")
+            log_exception()
             return False
-        for i in student:
-            print("editing student information")
-            if new_name != '':
-                i.name = encrypt(new_name)
-            if new_email != '':
-                i.email_address = encrypt(new_email)
-            db.session.commit()
-        return True
 
     def set_lead(self, session_id, team_name, lead):
         """
@@ -680,13 +757,28 @@ class students(db.Model):
         Input: self, chosen session id, team name and lead name
         Output: set 1 to team lead and 0 to the rest of students in the team
         """
+        # Sanity check inputs
         if team_name is None or lead is None:
             return False
+
+        # Set team lead status
         try:
-            result = teams.query.filter(teams.session_id == session_id, teams.name == team_name).first()
-            team_id = result.id
+            # Find the team
+            team = teams.query.filter(teams.session_id == session_id, teams.name == team_name).first()
+            if team is None:
+                return False
+
+            # Get list of students in the given team
+            student = students.query.filter(students.tid == team.id).all()
+            for i in student:
+                if i.name == lead:
+                    i.is_lead = 1
+                else:
+                    i.is_lead = 0
+                db.session.commit()
+            return True
         except exc.SQLAlchemyError:
-            team_id = None
+            log_exception()
             return False
         # Get list of students in the given team
         student = students.query.filter(students.tid == team_id).all()
@@ -711,7 +803,9 @@ class capstone_session(db.Model):
         try:
             max_id = db.session.query(func.max(capstone_session.id)).scalar()
         except exc.SQLAlchemyError:
+            log_exception()
             max_id = None
+
         if max_id is None:
             return 1
         else:
@@ -764,21 +858,22 @@ class capstone_session(db.Model):
                 team.remove_team_from_session(team_name, session_id)
             db.session.delete(del_session)
             db.session.commit()
+            return True
         except exc.SQLAlchemyError:
+            log_exception()
             return None
-        return True
 
     def get_sess_by_id(self, id):
         """
-        this method is for getting a specific capstone session object
+        Get the capstone session object associated with the given id
         inputs: id of capstone session to retrieve
         outputs: capstone session object if found, none otherwise
         """
         try:
-            # query for session and return if found
-            cap = capstone_session.query.filter_by(id=id).first()
-            return cap
+            # query for session and return
+            return capstone_session.query.filter_by(id=id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
     def check_term_name(self, s_term):
@@ -828,7 +923,9 @@ class capstone_session(db.Model):
             result = capstone_session().query.filter_by(
                 start_term=s_term, start_year=s_year, professor_id=p_id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             result = None
+
         if result is not None:
             return False
         return True
@@ -846,7 +943,9 @@ class capstone_session(db.Model):
                                                capstone_session.start_year == year,
                                                capstone_session.professor_id == prof_id).first()
         except exc.SQLAlchemyError:
+            log_exception()
             id = None
+
         if id is None:
             prof_id = professors().prof_id(prof)
             return self.insert_session(term, str(year), prof_id)
@@ -914,6 +1013,7 @@ class capstone_session(db.Model):
                                                  ((capstone_session.start_year == start_year_2) &
                                                   (capstone_session.start_term == start_term_2))).all()
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
     def check_dates(self, start, end):
@@ -1035,6 +1135,7 @@ class capstone_session(db.Model):
                 # no dates set, so error
                 return 'Error'
         except exc.SQLAlchemyError:
+            log_exception()
             return 'Error'
 
     def check_not_late(Self, session_id, date, type):
@@ -1082,6 +1183,7 @@ class capstone_session(db.Model):
                 # error
                 return False
         except exc.SQLAlchemyError:
+            log_exception()
             return False
 
 
@@ -1107,21 +1209,24 @@ class reports(db.Model):
                                                reports.session_id == session_id).all()
             return reviews
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
-    def check_report_submitted(self, team_id, reviewing_student_id, reviewee_student_id, is_final):
-        results = reports.query.filter(reports.reviewer == reviewing_student_id,
-                                       reports.reviewee == reviewee_student_id,
-                                       reports.tid == team_id,
-                                       reports.is_final == is_final).first()
-        return results.time is not None
-
-    def get_report(self, reviewer_id, reviewee_id, tid, is_final):
-        result = reports.query.filter(reports.reviewer == reviewer_id,
-                                      reports.tid == tid,
-                                      reports.is_final == is_final,
-                                      reports.reviewee == reviewee_id).first()
-        return result
+    def get_report(self, reviewer_id, reviewee_id, team_id, is_final):
+        """
+        Get a review from the database using the given information
+        Input: reviewer_id (a student id), reviewee_id (a student id), team_id, is_final (indicates if the
+               review is a final review or not)
+        Output: the review, if it was found, or None if it wasn't or if there was a problem
+        """
+        try:
+            return reports.query.filter(reports.reviewer == reviewer_id,
+                                        reports.tid == team_id,
+                                        reports.is_final == is_final,
+                                        reports.reviewee == reviewee_id).first()
+        except exc.SQLAlchemyError:
+            log_exception()
+            return None
 
     def get_team_reports(self, tid, is_final):
         """
@@ -1131,9 +1236,10 @@ class reports(db.Model):
         """
         try:
             result = reports.query.filter(reports.tid == tid,
-                                          reports.is_final == is_final).distinct()
+                                          reports.is_final == is_final).distinct().all()
             return result
         except exc.SQLAlchemyError:
+            log_exception()
             return None
 
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
@@ -1175,6 +1281,7 @@ class reports(db.Model):
             return True
         except exc.SQLAlchemyError:
             # if error, return false
+            log_exception()
             return False
 
     def commit_reports(self, id, state, sess_id, success):
@@ -1211,6 +1318,7 @@ class reports(db.Model):
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
+            log_exception()
             print('Rolling Back Reports')
             db.session.rollback()
             return False
@@ -1232,6 +1340,7 @@ class reports(db.Model):
                 db.session.commit()
                 return True
         except exc.SQLAlchemyError:
+            log_exception()
             print('Rolling Back Edits')
             db.session.rollback()
             return False
