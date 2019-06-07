@@ -218,7 +218,7 @@ class teams(db.Model):
                     student.final_done = False
                     student.tid = empty_team_id
 
-            # Remove all of the review submitted with team id
+            # Remove all of the reviews submitted with team id
             reviews = reports.query.filter(reports.tid == team.id).all()
             for review in reviews:
                 db.session.delete(review)
@@ -487,9 +487,20 @@ class students(db.Model):
                 student = students.query.filter(students.name == i,
                                                 students.tid == team.id,
                                                 students.session_id == session_id).first()
+
+                # Add student to removed table
                 removed_student.add_student(student)
+
+                # Remove all of the reviews submitted with team id
+                reviews = reports.query.filter(reports.tid == team.id).all()
+                for review in reviews:
+                    db.session.delete(review)
+
+                # Remove the student
                 st = students.query.filter(students.id == student.id,
                                            students.session_id == session_id).first()
+
+                # Finalize
                 db.session.delete(st)
                 db.session.commit()
         except exc.SQLAlchemyError:
