@@ -248,7 +248,6 @@ class teams(db.Model):
         session = capstone_session()
         today = datetime.datetime.now()
         teams = self.get_team_session_id(session_id)
-       
         tids = []
         team_names = []
         if teams is not None:
