@@ -68,7 +68,6 @@ class ProfDashboard(MethodView):
         student = gbmodel.students()
         team = gbmodel.teams()
         professor = gbmodel.professors()
-
         if 'session_id' in request.form:
             # Get current session id from dropdowns in profDashboard.html
             # IFF session id is not NULL

@@ -247,8 +247,15 @@ class teams(db.Model):
         student = students()
         session = capstone_session()
         today = datetime.datetime.now()
-        tids = [row.id for row in self.get_team_session_id(session_id)]
-        team_names = [row.name for row in self.get_team_session_id(session_id)]
+        teams = self.get_team_session_id(session_id)
+       
+        tids = []
+        team_names = []
+        if teams is not None:
+            for row in teams:
+                if row is not None:
+                    tids.append(row.id)
+                    team_names.append(row.name)
         lists = [[] for _ in range(len(tids))]
         flag = 0
         for i in range(len(tids)):
@@ -267,7 +274,9 @@ class teams(db.Model):
                     reports.reviewee).filter_by(tid=tids[i], is_final=False).filter(
                         reports.reviewee != reports.reviewer).group_by(reports.reviewee)
                 # Query to get the students in the students table
-                team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
+                team_members = student.query.filter_by(tid=tids[i], session_id=session_id).distinct().all()
+                if team_members is None:
+                    team_members = []
             except exc.SQLAlchemyError:
                 log_exception()
                 return 'Error'
