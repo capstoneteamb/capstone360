@@ -48,9 +48,6 @@ class ProfDashboard(MethodView):
             # When professor first login, user_session = None
             if user_session is None:
                 session_id = ""
-            # choose 'select session' in dropdown
-            elif user_session == "":
-                session_id = ""
             else:
                 term = str(user_session[:user_session.index("-")].strip())
                 year = int(user_session[user_session.index("-")+1:user_session.index("(")].strip())
@@ -71,7 +68,6 @@ class ProfDashboard(MethodView):
         student = gbmodel.students()
         team = gbmodel.teams()
         professor = gbmodel.professors()
-
         if 'session_id' in request.form:
             # Get current session id from dropdowns in profDashboard.html
             # IFF session id is not NULL
