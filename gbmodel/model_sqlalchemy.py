@@ -168,6 +168,8 @@ class teams(db.Model):
             removed_student = removed_students()
             result = teams.query.filter(teams.name == name,
                                         teams.session_id == session_id).first()
+
+            # get students to delete
             tid = result.id
             list_students = student.get_students(tid)
             if list_students is not None:
@@ -177,6 +179,12 @@ class teams(db.Model):
                     removed_student.add_student(result)
             student_list = students.query.filter(students.tid == tid,
                                                  students.session_id == session_id).all()
+            #remove reports
+            reviews = reports.query.filter(reports.tid == team.id).all()
+            for review in reviews:
+                db.session.delete(review)
+
+            #remove students
             for i in student_list:
                 db.session.delete(i)
                 db.session.commit()
