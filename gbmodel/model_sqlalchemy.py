@@ -148,7 +148,10 @@ class teams(db.Model):
         Output: list of teams and their info from the selected session
         """
         try:
-            if session_id:
+            if str(session_id) == '0':
+                team = teams.query.filter_by(session_id=session_id).all()
+                return team
+            elif session_id:
                 team = teams.query.filter_by(session_id=session_id).all()
                 return team
             else:
