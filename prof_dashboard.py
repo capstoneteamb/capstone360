@@ -48,9 +48,6 @@ class ProfDashboard(MethodView):
             # When professor first login, user_session = None
             if user_session is None:
                 session_id = ""
-            # choose 'select session' in dropdown
-            elif user_session == "":
-                session_id = ""
             else:
                 term = str(user_session[:user_session.index("-")].strip())
                 year = int(user_session[user_session.index("-")+1:user_session.index("(")].strip())
@@ -77,7 +74,6 @@ class ProfDashboard(MethodView):
         professor = gbmodel.professors()
         # Get current session id from dropdowns in profDashboard.html
         session_id = request.form['session_id']
-
         if 'student_name' in request.form:
             # Add New Student (student name, student id and student email)
             # Get team name and session id from profDashboard.html,
@@ -385,12 +381,14 @@ class AddSession(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        # Canceling creating a session, render to the current session
+        old_session_id = request.args.get('session_id')
         session = gbmodel.capstone_session()
         # Session id for new session
         session_id = session.get_max()
         professors = gbmodel.professors()
         prof_list = professors.get_all_professors()
-        return render_template('addSession.html', error=None, session_id=session_id, prof_list=prof_list)
+        return render_template('addSession.html', error=None, session_id=session_id, old_session_id=old_session_id, prof_list=prof_list)
 
 
 class RemoveSession(MethodView):
