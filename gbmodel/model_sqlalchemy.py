@@ -148,8 +148,9 @@ class teams(db.Model):
         Output: list of teams and their info from the selected session
         """
         try:
-            team = teams.query.filter_by(session_id=session_id).all()
-            return team
+            if session_id:
+                team = teams.query.filter_by(session_id=session_id).all()
+                return team
         except exc.SQLAlchemyError:
             log_exception()
             return None
@@ -246,6 +247,9 @@ class teams(db.Model):
         student = students()
         session = capstone_session()
         today = datetime.datetime.now()
+        sessions = session.get_sessions()
+        if self.get_team_session_id(session_id) is None:
+            return None, sessions
         tids = [row.id for row in self.get_team_session_id(session_id)]
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
@@ -307,7 +311,6 @@ class teams(db.Model):
                     temp.append(params)
                 flag = 0
             lists[i] = temp
-        sessions = session.get_sessions()
         return lists, sessions
 
     def get_team_from_id(self, team_id):
