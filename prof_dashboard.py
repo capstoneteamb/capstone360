@@ -68,299 +68,292 @@ class ProfDashboard(MethodView):
         """
         This method handles all the functionalities from proDashboard
         includes add/remove students/teams, add new session, set review
-        midterm/final start/end dates and set team lead
+        midterm/final start/end dates, setting reviews to be open/closed,
+        and set team lead
         """
         session = gbmodel.capstone_session()
         student = gbmodel.students()
         team = gbmodel.teams()
         professor = gbmodel.professors()
+        # Get current session id from dropdowns in profDashboard.html
+        session_id = request.form['session_id']
 
-        if 'session_id' in request.form:
-            # Get current session id from dropdowns in profDashboard.html
-            # IFF session id is not NULL
-            session_id = request.form['session_id']
-            if 'student_name' in request.form:
-                # Add New Student (student name, student id and student email)
-                # Get team name and session id from profDashboard.html,
-                # new student id, name, email from addStudent.html
-                team_name = request.form.get('team_name')
-                if not student.check_dup_student(request.form['student_id'], session_id):
-                    # If student id in a current session already exists
-                    # Return to addStudent.html with error msg and request a new form
-                    error = "Student id " + str(request.form['student_id']) + " already exists"
+        if 'student_name' in request.form:
+            # Add New Student (student name, student id and student email)
+            # Get team name and session id from profDashboard.html,
+            # new student id, name, email from addStudent.html
+            team_name = request.form.get('team_name')
+            if not student.check_dup_student(request.form['student_id'], session_id):
+                # If student id in a current session already exists
+                # Return to addStudent.html with error msg and request a new form
+                error = "Student id " + str(request.form['student_id']) + " already exists"
+                return render_template('addStudent.html',
+                                       team_name=team_name,
+                                       session_id=session_id,
+                                       error=error)
+            if request.form['student_email'] != '':
+                # If new email is invalid, return to addStudent.html
+                # with error msg and request a new form
+                if self.valid_email(str(request.form['student_email'])) is False:
+                    error = "Invalid Email Address"
                     return render_template('addStudent.html',
                                            team_name=team_name,
                                            session_id=session_id,
                                            error=error)
-                if request.form['student_email'] != '':
-                    # If new email is invalid, return to addStudent.html
-                    # with error msg and request a new form
-                    if self.valid_email(str(request.form['student_email'])) is False:
-                        error = "Invalid Email Address"
-                        return render_template('addStudent.html',
-                                               team_name=team_name,
-                                               session_id=session_id,
-                                               error=error)
-                # Insert new student information into the database
-                student.insert_student(request.form['student_name'],
-                                       request.form['student_email'],
-                                       request.form['student_id'],
-                                       session_id,
-                                       team_name)
-                # Update new list of students to reflect on profDashboard.html
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            elif 'team' in request.form:
-                # Remove a student/students from a team
-                # get list of students and team name from profDashboard.html
-                students = request.form.getlist('removed_student')
-                team_name = request.form.get('team')
-                # Remove student/students from database
-                student.remove_student(students, team_name, session_id)
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            elif 'removed_team' in request.form:
-                # Remove a team in a session
-                # Get team name in current session from profDashboard.html
-                team_name = request.form.get('removed_team')
-                # There was a problem removing teams with blank names, so (in remove team requests) a '_'
-                # character was added to the beginning of the name.
-                # We will want to remove it before we continue
-                # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
-                team_name = team_name[1:]
-                # Remove team and students in the team from database
-                team.remove_team(team_name, session_id)
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            elif 'start_term' in request.form:
-                # Add a new session to the profDashboard
-                # Gets all professors in DB and stores into prof_list
-                professors = gbmodel.professors()
-                prof_list = professors.get_all_professors()
-                while not session.check_term_name(request.form['start_term']):
-                    error = "Enter a valid term (Example: Summer)"
-                    return render_template(
-                        'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
-                while not session.check_term_year(request.form['start_year']):
-                    error = "Enter a valid year (Example: 2019)"
-                    return render_template(
-                        'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
-                while not professor.check_professor(request.form['professor_id']):
-                    error = "Enter a valid professor ID"
-                    return render_template(
-                        'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
-                while not session.check_dup_session(request.form['start_term'], request.form['start_year'],
-                                                    request.form['professor_id']):
-                    error = "Session already exists"
-                    return render_template(
-                        'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
-                start_term = request.form.get('start_term')
-                start_year = request.form.get('start_year')
-                start_term = start_term.replace("_", " ")
-                start_year = start_year.replace("_", " ")
-                professor_id = request.form.get('professor_id')
-                professor_id = professor_id.replace("_", " ")
-                session_id = session.insert_session(start_term, start_year, professor_id)
-                lists, sessions = team.dashboard(session_id)
-                return render_template(
-                    'profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
-            # If REMOVE SESSION was submitted (removed_session)
-            elif 'removed_session' in request.form:
-                while not session.check_session_id_valid(request.form['removed_session']):
-                    error = "Invalid session ID"
-                    return render_template('profDashboard.html',
-                                           lists=lists, sessions=sessions, session_id=session_id)
-                remove_session = request.form.get('removed_session')
-                remove_session = remove_session.replace("_", " ")
-                session.remove_session(session_id)
-                session_id = session.get_max() - 1
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            # If ADD TEAM was submitted (addTeam)
-            elif 'team_name' in request.form:
-                # Add a new team to a current session
-                # Request new team name from addTeam.html
-                if not team.check_dup_team(request.form['team_name'], session_id):
-                    # If new name already exists in current session
-                    # Rentering the addTeam.html with given error message
-                    error = "Team name already exists"
-                    return render_template('addTeam.html', error=error, session_id=session_id)
-                team_name = request.form.get('team_name')
-                # Add new team to the given session from profDashboard.html
-                team.insert_team(session_id, team_name)
-                # Update new list of sessions, teams, students to reflect on profDashboard.html
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            # if ASSIGNED TEAMS for to place new students on teams was submitted
-            elif 'assigned_teams' in request.form:
-                size = request.form.get('size')
-                size = int(size)
-                unassigned_students = student.get_unassigned_students(session_id)
-                team_names = []
-                i = 1
-                while i <= size:
-                    team_name = (request.form.get('assigned_team'+str(i)))
-                    if team.check_dup_team(team_name, session_id) is False:
-                        t_id = team.get_tid_from_name(team_name, session_id)
-                        student.update_team(unassigned_students[i-1].name,
-                                            session_id, t_id)
-                    else:
-                        team.insert_team(session_id, team_name)
-                        t_id = team.get_tid_from_name(team_name, session_id)
-                        student.update_team(unassigned_students[i-1].name,
-                                            session_id, t_id)
-                    team_names.append(team_name)
-                    i += 1
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            # If IMPORT STUDENTS was submitted (addTeamCSV)
-            elif 'student_data_csv' in request.files:
-                session_id = int(request.form['session_id'])
-                teams_table = gbmodel.teams()  # Accessor to the teams table
-                students_table = gbmodel.students()  # Accessor to the students table
-                file = request.files['student_data_csv']
-                # If 'Create from File' was selected with no file
-                # return back to import student page.
-                if(file.filename == ''):
-                    return render_template('csvAddTeam.html',
-                                           session_id=session_id,
-                                           error="Please select a file to upload")
-                stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
-                csv_reader = csv.reader(stream, delimiter=',')
-                uninserted_students = []
-                for row in csv_reader:
-                    if len(row) > 3:
-                        return render_template('csvAddTeam.html',
-                                               session_id=session_id,
-                                               error="Incorrect csv Format")
-                    try:
-                        student_name = row[0]
-                        student_id = row[1]
-                        team_name = row[2]
-                    except IndexError:
-                        logging.warning("CSV Add Students/Team - Problem parsing csv")
-                        return render_template('csvAddTeam.html',
-                                               session_id=session_id,
-                                               error="Incorrect csv Format")
-
-                    # Create team if it doesn't exist, then create the student.
-                    try:
-                        if teams_table.check_dup_team(team_name, session_id) is True:
-                            teams_table.insert_team(session_id, team_name)
-                    except SQLAlchemyError:
-                        logging.error(('CSV Add Students/Team - Error checking for existing team and/or'
-                                       ' inserting a new one'))
-                        return render_template('csvAddTeam.html',
-                                               session_id=session_id,
-                                               error="Something went wrong")
-                    try:
-                        if students_table.check_dup_student(student_id, session_id) is True:
-                            students_table.insert_student(student_name, "", student_id, session_id, team_name)
-                        else:
-                            # Keep track of what students weren't added to the database (and make a note it)
-                            logging.warning("CSV Add Students/Team -"
-                                            " Error inserting student into the database")
-                            uninserted_students.append(student_name)
-                    except SQLAlchemyError:
-                        logging.error(('CSV Add Students/Team -'
-                                       ' Error inserting students or checking if they exist in the database'))
-                        return render_template('csvAddTeam.html',
-                                               session_id=session_id,
-                                               error="Something went wrong")
-
-                # If everything went well, reload the professor dashboard
-                if len(uninserted_students) == 0:
-                    logging.info("CSV Add Students/Team - added student data from uploaded csv file")
-                    lists, sessions = team.dashboard(session_id)
-                    return render_template('profDashboard.html',
-                                           lists=lists,
-                                           sessions=sessions,
-                                           session_id=session_id)
-                # If there were some problems, let the user know
-                else:
-                    error_str = "There was a problem inserting the following students into the database: "
-                    error_str = error_str + ", ".join(uninserted_students)
-                    error_str = error_str + ". They are already in this session."
-                    return render_template('csvAddTeam.html',
-                                           session_id=session_id,
-                                           error=error_str)
-
-            # If SET DATE for reviews was submitted (setDate)
-            elif 'midterm_start' in request.form:
-                # Add midterm/final start/end dates for review form
-                # Request start and end dates for midterm and final from setDate.html
-                midterm_start = request.form.get('midterm_start')
-                midterm_end = request.form.get('midterm_end')
-                final_start = request.form.get('final_start')
-                final_end = request.form.get('final_end')
-                params = {'midterm_start': midterm_start,
-                          'midterm_end': midterm_end,
-                          'final_start': final_start,
-                          'final_end': final_end}
-                if session.date_error(params) is not None:
-                    # Check if the dates are valid, rendering to setDate.html
-                    # with a error message
-                    error_msg = session.date_error(params)
-                    return render_template('setDate.html', error=error_msg, session_id=session_id)
-                # Insert dates into database
-                session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
-                # Update new list of sessions, teams, students to reflect on profDashboard.html
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            elif 'team_lead' in request.form:
-                # Set team lead for a team in current session
-                # Get team name and lead from checkboxes in profDashboard.html
-                team_name = request.form.get('team_lead')
-                student_name = request.form.get('is_lead')
-                # Set lead for chosen team in current sesison
-                student.set_lead(session_id, team_name, student_name)
-                # Update new list of sessions, teams, students to reflect on profDashboard.html
-                lists, sessions = team.dashboard(session_id)
-                return render_template('profDashboard.html',
-                                       lists=lists,
-                                       sessions=sessions,
-                                       session_id=session_id)
-            elif 'set_review_available' in request.form:
-            # update students' review availability
-                setting = request.form.get('set_review_available')
-                result = student.set_active(session_id, setting)
-                if result is True:
-                    # back to page
-                    lists, sessions = team.dashboard(session_id)
-                    return render_template('profDashboard.html',
-                                           lists=lists,
-                                           sessions=sessions,
-                                           session_id=session_id)
-                else:
-                    error_msg = "Error When Selecting Option"
-                    return render_template('setAvailable.html', error=error_msg, session_id=session_id)
-        else:
-            lists, sessions = team.dashboard("")
+            # Insert new student information into the database
+            student.insert_student(request.form['student_name'],
+                                   request.form['student_email'],
+                                   request.form['student_id'],
+                                   session_id,
+                                   team_name)
+            # Update new list of students to reflect on profDashboard.html
+            lists, sessions = team.dashboard(session_id)
             return render_template('profDashboard.html',
                                    lists=lists,
                                    sessions=sessions,
-                                   session_id="")
+                                   session_id=session_id)
+        elif 'team' in request.form:
+            # Remove a student/students from a team
+            # get list of students and team name from profDashboard.html
+            students = request.form.getlist('removed_student')
+            team_name = request.form.get('team')
+            # Remove student/students from database
+            student.remove_student(students, team_name, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        elif 'removed_team' in request.form:
+            # Remove a team in a session
+            # Get team name in current session from profDashboard.html
+            team_name = request.form.get('removed_team')
+            # There was a problem removing teams with blank names, so (in remove team requests) a '_'
+            # character was added to the beginning of the name.
+            # We will want to remove it before we continue
+            # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
+            team_name = team_name[1:]
+            # Remove team and students in the team from database
+            team.remove_team(team_name, session_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        elif 'start_term' in request.form:
+            # Add a new session to the profDashboard
+            # Gets all professors in DB and stores into prof_list
+            professors = gbmodel.professors()
+            prof_list = professors.get_all_professors()
+            while not session.check_term_name(request.form['start_term']):
+                error = "Enter a valid term (Example: Summer)"
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
+            while not session.check_term_year(request.form['start_year']):
+                error = "Enter a valid year (Example: 2019)"
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
+            while not professor.check_professor(request.form['professor_id']):
+                error = "Enter a valid professor ID"
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
+            while not session.check_dup_session(request.form['start_term'], request.form['start_year'],
+                                                request.form['professor_id']):
+                error = "Session already exists"
+                return render_template(
+                    'addSession.html', error=error, session_id=session_id, prof_list=prof_list)
+            start_term = request.form.get('start_term')
+            start_year = request.form.get('start_year')
+            start_term = start_term.replace("_", " ")
+            start_year = start_year.replace("_", " ")
+            professor_id = request.form.get('professor_id')
+            professor_id = professor_id.replace("_", " ")
+            session_id = session.insert_session(start_term, start_year, professor_id)
+            lists, sessions = team.dashboard(session_id)
+            return render_template(
+                'profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
+        # If REMOVE SESSION was submitted (removed_session)
+        elif 'removed_session' in request.form:
+            while not session.check_session_id_valid(request.form['removed_session']):
+                error = "Invalid session ID"
+                return render_template('profDashboard.html',
+                                       lists=lists, sessions=sessions, session_id=session_id)
+            remove_session = request.form.get('removed_session')
+            remove_session = remove_session.replace("_", " ")
+            session.remove_session(session_id)
+            session_id = session.get_max() - 1
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        # If ADD TEAM was submitted (addTeam)
+        elif 'team_name' in request.form:
+            # Add a new team to a current session
+            # Request new team name from addTeam.html
+            if not team.check_dup_team(request.form['team_name'], session_id):
+                # If new name already exists in current session
+                # Rentering the addTeam.html with given error message
+                error = "Team name already exists"
+                return render_template('addTeam.html', error=error, session_id=session_id)
+            team_name = request.form.get('team_name')
+            # Add new team to the given session from profDashboard.html
+            team.insert_team(session_id, team_name)
+            # Update new list of sessions, teams, students to reflect on profDashboard.html
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        # if ASSIGNED TEAMS for to place new students on teams was submitted
+        elif 'assigned_teams' in request.form:
+            size = request.form.get('size')
+            size = int(size)
+            unassigned_students = student.get_unassigned_students(session_id)
+            team_names = []
+            i = 1
+            while i <= size:
+                team_name = (request.form.get('assigned_team'+str(i)))
+                if team.check_dup_team(team_name, session_id) is False:
+                    t_id = team.get_tid_from_name(team_name, session_id)
+                    student.update_team(unassigned_students[i-1].name,
+                                        session_id, t_id)
+                else:
+                    team.insert_team(session_id, team_name)
+                    t_id = team.get_tid_from_name(team_name, session_id)
+                    student.update_team(unassigned_students[i-1].name,
+                                        session_id, t_id)
+                team_names.append(team_name)
+                i += 1
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        # If IMPORT STUDENTS was submitted (addTeamCSV)
+        elif 'student_data_csv' in request.files:
+            session_id = int(request.form['session_id'])
+            teams_table = gbmodel.teams()  # Accessor to the teams table
+            students_table = gbmodel.students()  # Accessor to the students table
+            file = request.files['student_data_csv']
+            # If 'Create from File' was selected with no file
+            # return back to import student page.
+            if(file.filename == ''):
+                return render_template('csvAddTeam.html',
+                                       session_id=session_id,
+                                       error="Please select a file to upload")
+            stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+            csv_reader = csv.reader(stream, delimiter=',')
+            uninserted_students = []
+            for row in csv_reader:
+                if len(row) > 3:
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Incorrect csv Format")
+                try:
+                    student_name = row[0]
+                    student_id = row[1]
+                    team_name = row[2]
+                except IndexError:
+                    logging.warning("CSV Add Students/Team - Problem parsing csv")
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Incorrect csv Format")
+
+                # Create team if it doesn't exist, then create the student.
+                try:
+                    if teams_table.check_dup_team(team_name, session_id) is True:
+                        teams_table.insert_team(session_id, team_name)
+                except SQLAlchemyError:
+                    logging.error(('CSV Add Students/Team - Error checking for existing team and/or'
+                                   ' inserting a new one'))
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Something went wrong")
+                try:
+                    if students_table.check_dup_student(student_id, session_id) is True:
+                        students_table.insert_student(student_name, "", student_id, session_id, team_name)
+                    else:
+                        # Keep track of what students weren't added to the database (and make a note it)
+                        logging.warning("CSV Add Students/Team -"
+                                        " Error inserting student into the database")
+                        uninserted_students.append(student_name)
+                except SQLAlchemyError:
+                    logging.error(('CSV Add Students/Team -'
+                                   ' Error inserting students or checking if they exist in the database'))
+                    return render_template('csvAddTeam.html',
+                                           session_id=session_id,
+                                           error="Something went wrong")
+
+            # If everything went well, reload the professor dashboard
+            if len(uninserted_students) == 0:
+                logging.info("CSV Add Students/Team - added student data from uploaded csv file")
+                lists, sessions = team.dashboard(session_id)
+                return render_template('profDashboard.html',
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+            # If there were some problems, let the user know
+            else:
+                error_str = "There was a problem inserting the following students into the database: "
+                error_str = error_str + ", ".join(uninserted_students)
+                error_str = error_str + ". They are already in this session."
+                return render_template('csvAddTeam.html',
+                                       session_id=session_id,
+                                       error=error_str)
+
+        # If SET DATE for reviews was submitted (setDate)
+        elif 'midterm_start' in request.form:
+            # Add midterm/final start/end dates for review form
+            # Request start and end dates for midterm and final from setDate.html
+            midterm_start = request.form.get('midterm_start')
+            midterm_end = request.form.get('midterm_end')
+            final_start = request.form.get('final_start')
+            final_end = request.form.get('final_end')
+            params = {'midterm_start': midterm_start,
+                      'midterm_end': midterm_end,
+                      'final_start': final_start,
+                      'final_end': final_end}
+            if session.date_error(params) is not None:
+                # Check if the dates are valid, rendering to setDate.html
+                # with a error message
+                error_msg = session.date_error(params)
+                return render_template('setDate.html', error=error_msg, session_id=session_id)
+            # Insert dates into database
+            session.insert_dates(midterm_start, midterm_end, final_start, final_end, session_id)
+            # Update new list of sessions, teams, students to reflect on profDashboard.html
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        elif 'team_lead' in request.form:
+            # Set team lead for a team in current session
+            # Get team name and lead from checkboxes in profDashboard.html
+            team_name = request.form.get('team_lead')
+            student_name = request.form.get('is_lead')
+            # Set lead for chosen team in current sesison
+            student.set_lead(session_id, team_name, student_name)
+            # Update new list of sessions, teams, students to reflect on profDashboard.html
+            lists, sessions = team.dashboard(session_id)
+            return render_template('profDashboard.html',
+                                   lists=lists,
+                                   sessions=sessions,
+                                   session_id=session_id)
+        elif 'set_review_available' in request.form:
+            # update students' review availability
+            setting = request.form.get('set_review_available')
+            result = student.set_active(session_id, setting)
+            if result is True:
+                # back to page
+                lists, sessions = team.dashboard(session_id)
+                return render_template('profDashboard.html',
+                                       lists=lists,
+                                       sessions=sessions,
+                                       session_id=session_id)
+            else:
+                error_msg = "Error When Selecting Option"
+                return render_template('setAvailable.html', error=error_msg, session_id=session_id)
 
 
 class AddStudent(MethodView):
