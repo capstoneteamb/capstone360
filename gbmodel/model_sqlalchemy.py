@@ -180,7 +180,7 @@ class teams(db.Model):
             student_list = students.query.filter(students.tid == tid,
                                                  students.session_id == session_id).all()
             #remove reports
-            reviews = reports.query.filter(reports.tid == team.id).all()
+            reviews = reports.query.filter(reports.tid == tid).all()
             for review in reviews:
                 db.session.delete(review)
 
