@@ -148,8 +148,11 @@ class teams(db.Model):
         Output: list of teams and their info from the selected session
         """
         try:
-            team = teams.query.filter_by(session_id=session_id).all()
-            return team
+            if session_id:
+                team = teams.query.filter_by(session_id=session_id).all()
+                return team
+            else:
+                return None
         except exc.SQLAlchemyError:
             log_exception()
             return None
