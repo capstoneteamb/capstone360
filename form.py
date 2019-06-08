@@ -597,7 +597,7 @@ class review(MethodView):
                             report.what_you_learned = learned
                             report.proud_of_accomplishment = proud
                         else:
-                            test_sub = gbmodel.reports.insert_report(cid, datetime.now(), user_id,
+                            test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
                                                                      tid, i, tech, ethic, com, coop, init,
                                                                      focus, cont, lead, org, dlg, points,
                                                                      strn, wkn, traits, learned, proud,
