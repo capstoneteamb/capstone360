@@ -8,7 +8,7 @@
         {% endif %}
         <form id="add-session" action="{{ url_for('profDashboard', session_id=session_id) }}" method=POST>
             <p class="heading">Start Term: <input type=text required='required' name=start_term></p>
-            <p class="heading">Start Year: <input type=text required='required' name=start_year></p>
+            <p class="heading">Start Year: <input type=text required='required' name=start_year maxlength="4"></p>
             <p class="heading">Assign to professor:</p>
             <select class="selected_professor" name="professor_id">
                 {% for i in prof_list %}
