@@ -179,12 +179,12 @@ class teams(db.Model):
                     removed_student.add_student(result)
             student_list = students.query.filter(students.tid == tid,
                                                  students.session_id == session_id).all()
-            #remove reports
+            # remove reports
             reviews = reports.query.filter(reports.tid == tid).all()
             for review in reviews:
                 db.session.delete(review)
 
-            #remove students
+            # remove students
             for i in student_list:
                 db.session.delete(i)
                 db.session.commit()
