@@ -5,10 +5,10 @@
         <div class="col-sm" method="POST">Sessions 
             <form style="display: inline;">
                 <select class="selected_session" name="selected_session" onchange="this.form.submit()">
+                    <option selected disabled hidden>Select Session</option>
                     {% for i in sessions %}
                     <option value="{{i}}" name="sessions" data-count="{{loop.index}}">{{i}}</option>
                     {% endfor %}
-                    <option selected disabled hidden>Select Term</option>
                 </select>
                 <noscript><input type="submit" value="Submit"></noscript>
             </form>

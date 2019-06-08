@@ -5,7 +5,6 @@ handles get post request for proDashboard.html
 from flask import request, render_template
 from flask.views import MethodView
 import gbmodel
-import datetime
 from catCas import validate_professor
 from flask_cas import login_required
 import logging
@@ -34,7 +33,7 @@ class ProfDashboard(MethodView):
     @login_required
     def get(self):
         """
-        Get session_id from the prefvious selected session
+        Get session_id from the previous selected session
         If None returned then request for a selection.
         Otherwise, display the current session_id
         """
@@ -46,28 +45,20 @@ class ProfDashboard(MethodView):
         session_id = request.args.get('session_id')
         if session_id is None:
             user_session = request.args.get('selected_session')
-            if user_session is not None:
-                user_session = user_session.split('-')
-                term = str(user_session[0].strip())
-                year = int(user_session[1][:5].strip())
-                prof = str(user_session[1][7:-1])
+            # When professor first login, user_session = None
+            if user_session is None:
+                session_id = ""
             else:
-                current_date = datetime.datetime.now()
-                month = int(current_date.month)
-                year = current_date.year
-                if month in range(9, 11):
-                    term = "Fall"
-                elif month in range(3, 6):
-                    term = "Spring"
-                elif month in range(6, 9):
-                    term = "Summer"
-                else:
-                    term = "Winter"
-                prof = validate_professor().name
-            session_id = session.get_session_id(term, year, prof)
+                term = str(user_session[:user_session.index("-")].strip())
+                year = int(user_session[user_session.index("-")+1:user_session.index("(")].strip())
+                prof = str(user_session[user_session.index("(")+1:user_session.index(")")].strip())
+                session_id = session.get_session_id(term, year, prof)
         # Lists - a list of teams and students of a selected session to display on the dashboard
         # Sessions - a list of sessions to display in drop downs
         lists, sessions = team.dashboard(session_id)
+        # If theres no team in the session, do not display teams
+        if lists is None:
+            return render_template('profDashboard.html', sessions=sessions, session_id=session_id)
         return render_template('profDashboard.html', lists=lists, sessions=sessions, session_id=session_id)
 
     def post(self):
@@ -83,8 +74,6 @@ class ProfDashboard(MethodView):
         professor = gbmodel.professors()
         # Get current session id from dropdowns in profDashboard.html
         session_id = request.form['session_id']
-        session_id = int(session_id)
-
         if 'student_name' in request.form:
             # Add New Student (student name, student id and student email)
             # Get team name and session id from profDashboard.html,
@@ -136,7 +125,8 @@ class ProfDashboard(MethodView):
             # Get team name in current session from profDashboard.html
             team_name = request.form.get('removed_team')
             # There was a problem removing teams with blank names, so (in remove team requests) a '_'
-            # character was added to the beginning of the name. We will want to remove it before we continue
+            # character was added to the beginning of the name.
+            # We will want to remove it before we continue
             # https://stackoverflow.com/questions/4945548/remove-the-first-character-of-a-string
             team_name = team_name[1:]
             # Remove team and students in the team from database
@@ -281,7 +271,8 @@ class ProfDashboard(MethodView):
                         students_table.insert_student(student_name, "", student_id, session_id, team_name)
                     else:
                         # Keep track of what students weren't added to the database (and make a note it)
-                        logging.warning("CSV Add Students/Team - Error inserting student into the database")
+                        logging.warning("CSV Add Students/Team -"
+                                        " Error inserting student into the database")
                         uninserted_students.append(student_name)
                 except SQLAlchemyError:
                     logging.error(('CSV Add Students/Team -'
@@ -390,10 +381,18 @@ class AddSession(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
-        session_id = request.args.get('session_id')
+        # Canceling creating a session, render to the current session
+        old_session_id = request.args.get('session_id')
+        session = gbmodel.capstone_session()
+        # Session id for new session
+        session_id = session.get_max()
         professors = gbmodel.professors()
         prof_list = professors.get_all_professors()
-        return render_template('addSession.html', error=None, session_id=session_id, prof_list=prof_list)
+        return render_template('addSession.html',
+                               error=None,
+                               session_id=session_id,
+                               old_session_id=old_session_id,
+                               prof_list=prof_list)
 
 
 class RemoveSession(MethodView):

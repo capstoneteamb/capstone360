@@ -148,8 +148,14 @@ class teams(db.Model):
         Output: list of teams and their info from the selected session
         """
         try:
-            team = teams.query.filter_by(session_id=session_id).all()
-            return team
+            if str(session_id) == '0':
+                team = teams.query.filter_by(session_id=session_id).all()
+                return team
+            elif session_id:
+                team = teams.query.filter_by(session_id=session_id).all()
+                return team
+            else:
+                return None
         except exc.SQLAlchemyError:
             log_exception()
             return None
@@ -165,6 +171,8 @@ class teams(db.Model):
             removed_student = removed_students()
             result = teams.query.filter(teams.name == name,
                                         teams.session_id == session_id).first()
+
+            # get students to delete
             tid = result.id
             list_students = student.get_students(tid)
             if list_students is not None:
@@ -174,6 +182,12 @@ class teams(db.Model):
                     removed_student.add_student(result)
             student_list = students.query.filter(students.tid == tid,
                                                  students.session_id == session_id).all()
+            # remove reports
+            reviews = reports.query.filter(reports.tid == tid).all()
+            for review in reviews:
+                db.session.delete(review)
+
+            # remove students
             for i in student_list:
                 db.session.delete(i)
                 db.session.commit()
@@ -246,6 +260,9 @@ class teams(db.Model):
         student = students()
         session = capstone_session()
         today = datetime.datetime.now()
+        sessions = session.get_sessions()
+        if self.get_team_session_id(session_id) is None:
+            return None, sessions
         tids = [row.id for row in self.get_team_session_id(session_id)]
         team_names = [row.name for row in self.get_team_session_id(session_id)]
         lists = [[] for _ in range(len(tids))]
@@ -307,7 +324,6 @@ class teams(db.Model):
                     temp.append(params)
                 flag = 0
             lists[i] = temp
-        sessions = session.get_sessions()
         return lists, sessions
 
     def get_team_from_id(self, team_id):

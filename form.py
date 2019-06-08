@@ -579,22 +579,32 @@ class review(MethodView):
                     try:
                         logging.info('updating report')
                         report = gbmodel.reports().get_report(user_id, i, tid, is_final)
-                        report.tech_mastery = tech
-                        report.work_ethic = ethic
-                        report.communication = com
-                        report.cooperation = coop
-                        report.initiative = init
-                        report.team_focus = focus
-                        report.contribution = cont
-                        report.leadership = lead
-                        report.organization = org
-                        report.delegation = dlg
-                        report.points = points
-                        report.strengths = strn
-                        report.weaknesses = wkn
-                        report.traits_to_work_on = traits
-                        report.what_you_learned = learned
-                        report.proud_of_accomplishment = proud
+                        if report is not None:
+                            report.tech_mastery = tech
+                            report.work_ethic = ethic
+                            report.communication = com
+                            report.cooperation = coop
+                            report.initiative = init
+                            report.team_focus = focus
+                            report.contribution = cont
+                            report.leadership = lead
+                            report.organization = org
+                            report.delegation = dlg
+                            report.points = points
+                            report.strengths = strn
+                            report.weaknesses = wkn
+                            report.traits_to_work_on = traits
+                            report.what_you_learned = learned
+                            report.proud_of_accomplishment = proud
+                        else:
+                            test_sub = gbmodel.reports().insert_report(cid, datetime.now(), user_id,
+                                                                       tid, i, tech, ethic, com, coop, init,
+                                                                       focus, cont, lead, org, dlg, points,
+                                                                       strn, wkn, traits, learned, proud,
+                                                                       is_final, late)
+                            if test_sub is False:
+                                logging.error('report creation failure')
+                                pass_insert = False
 
                     except SQLAlchemyError:
                         pass_insert = False
