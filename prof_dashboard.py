@@ -388,7 +388,11 @@ class AddSession(MethodView):
         session_id = session.get_max()
         professors = gbmodel.professors()
         prof_list = professors.get_all_professors()
-        return render_template('addSession.html', error=None, session_id=session_id, old_session_id=old_session_id, prof_list=prof_list)
+        return render_template('addSession.html',
+                               error=None,
+                               session_id=session_id,
+                               old_session_id=old_session_id,
+                               prof_list=prof_list)
 
 
 class RemoveSession(MethodView):
