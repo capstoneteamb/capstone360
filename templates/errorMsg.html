@@ -3,17 +3,16 @@
 <div class="body">
     <div class="row">
         <div class="login-container">
-            <div class="login-error-hero">
-                <div class="row">
-                    <h3 class="login-error-h3">{{ msg }}</h3>
-                </div>
-                <div class="row">
-                    <a class="login-error-link" href="{{ url_for('cas.logout') }}"><div>Logout</div></a>
-                </div>
+            <div class="login-hero">
+                <h3>{{ msg }}</h3>
+                <a href="{{ url_for('cas.logout') }}">
+                    <div class="prof-login-btn">Logout</div>
+                </a>
                 {% if student_register %}
-                <div class="row">
-                    <a class="login-error-link" href="{{ url_for('registerStudent') }}"><div>Register for a session</div></a>
-                </div>
+		<!--- https://stackoverflow.com/questions/1383143/how-to-prevent-line-breaks-in-list-items-using-css -->
+                <a href="{{ url_for('registerStudent') }}" style="width: 100%;">
+                    <div class="student-login-btn" style="white-space: nowrap;">Register for a session</div>
+                </a>
                 {% endif %}
             </div>
         </div>
