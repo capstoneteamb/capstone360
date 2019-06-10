@@ -2,7 +2,7 @@ from flask import request, make_response, render_template
 from flask.views import MethodView
 from flask_cas import login_required
 from common_functions import display_access_control_error
-
+from catCas import validate_professor
 import gbmodel
 
 

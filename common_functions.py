@@ -1,6 +1,7 @@
 from flask import render_template
 import logging
 
+
 def display_access_control_error():
     """
     Returns a rendering of an access control violation error message page. Also logs the event

@@ -13,7 +13,7 @@ from common_functions import display_access_control_error
 import csv
 import io
 import re
-import logging
+
 
 class ProfDashboard(MethodView):
     """
