@@ -158,7 +158,7 @@ input {
     border: 0px;
     color: white;
     padding: 0;
-    margin-left: 25px !important;
+    margin: auto;
 }
 
 .checkbox-container {
