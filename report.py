@@ -1,7 +1,8 @@
 from flask import request, make_response, render_template
 from flask.views import MethodView
 from flask_cas import login_required
-
+from common_functions import display_access_control_error
+from catCas import validate_professor
 import gbmodel
 
 
@@ -28,6 +29,9 @@ class GeneratedProfessorReportView(MethodView):
         Specifically, generates a single report, for a single session and term (midterm or final), for a
         single student, with comments deanonymized.
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         student_id = request.args.get('student_id')
         session_id = request.args.get('session_id')
         is_final = request.args.get('is_final')
@@ -52,6 +56,9 @@ class GeneratedAnonymousReportView(MethodView):
         """
         Generates all anonymized reports for printing and handing out to students.
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         session_id = request.args.get('session_id')
         is_final = request.args.get('is_final')
         # TODO find a less fragile way to deal with booleans in urls

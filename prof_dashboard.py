@@ -9,6 +9,7 @@ from catCas import validate_professor
 from flask_cas import login_required
 import logging
 from sqlalchemy.exc import SQLAlchemyError
+from common_functions import display_access_control_error
 import csv
 import io
 import re
@@ -37,9 +38,9 @@ class ProfDashboard(MethodView):
         If None returned then request for a selection.
         Otherwise, display the current session_id
         """
-        if validate_professor() is False:
-            msg = "Professor not found"
-            return render_template('errorMsg.html', msg=msg)
+        if not validate_professor():
+            return display_access_control_error()
+
         session = gbmodel.capstone_session()
         team = gbmodel.teams()
         session_id = request.args.get('session_id')
@@ -68,6 +69,9 @@ class ProfDashboard(MethodView):
         midterm/final start/end dates, setting reviews to be open/closed,
         and set team lead
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         session = gbmodel.capstone_session()
         student = gbmodel.students()
         team = gbmodel.teams()
@@ -364,6 +368,9 @@ class AddStudent(MethodView):
         Output: rendering the addSession.html template with session id
                 name of the team from profDashboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         team_name = request.args.get('data')
         session_id = request.args.get('session_id')
         return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
@@ -381,6 +388,9 @@ class AddSession(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         # Canceling creating a session, render to the current session
         old_session_id = request.args.get('session_id')
         session = gbmodel.capstone_session()
@@ -407,6 +417,9 @@ class RemoveSession(MethodView):
         Output: rendering the removeSession.html template with session id
                 from profDasboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         session_id = request.args.get('session_id')
         return render_template('removeSession.html', error=None, session_id=session_id)
 
@@ -423,6 +436,9 @@ class AddTeam(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         session_id = request.args.get('session_id')
         return render_template('addTeam.html', error=None, session_id=session_id)
 
@@ -433,9 +449,9 @@ class AddTeamCSV(MethodView):
     @login_required
     # Display webpage
     def get(self):
-        if validate_professor() is False:
-            msg = "Professor not found"
-            return render_template('errorMsg.html', msg=msg)
+        if not validate_professor():
+            return display_access_control_error()
+
         session_id = request.args.get('session_id')
         return render_template('csvAddTeam.html', session_id=session_id)
 
@@ -452,6 +468,9 @@ class RemoveTeam(MethodView):
         Output: rendering the addSession.html template with session id
                 and team name from profDashboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         team_name = request.args.get('data')
         session_id = request.args.get('session_id')
         return render_template('removeTeam.html', team_name=team_name, session_id=session_id)
@@ -469,6 +488,9 @@ class SetDate(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         session_id = request.args.get('session_id')
         return render_template('setDate.html', error=None, session_id=session_id)
 
@@ -484,6 +506,9 @@ class SetAvailable(MethodView):
         Input: only self
         Output: renders template for setAvailable.html with the session id of profDashboard.html
         """
+        if not validate_professor():
+            return display_access_control_error()
+
         session_id = request.args.get('session_id')
         return render_template('setAvailable.html', error=None, session_id=session_id)
 
@@ -491,10 +516,15 @@ class SetAvailable(MethodView):
 class AssignTeam(MethodView):
     @login_required
     def get(self):
+        """
+        This method handled get requests for assignTeam.html
+        Input: self
+        Output: none
+        """
+        if not validate_professor():
+            return display_access_control_error()
+
         s_id = request.args.get('session_id')
-        if validate_professor is False:
-            msg = "Professor not found"
-            return render_template('errorMsg.html', msg=msg)
         students_table = gbmodel.students()
         team_table = gbmodel.teams()
         unassigned_students = students_table.get_unassigned_students(s_id)

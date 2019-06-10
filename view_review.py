@@ -2,6 +2,7 @@ from flask import request, render_template
 from flask.views import MethodView
 from flask_cas import login_required
 from catCas import validate_professor
+from common_functions import display_access_control_error
 import logging
 import gbmodel
 
@@ -56,6 +57,10 @@ class ViewReview(MethodView):
                 included in this rendering depends on the POST request parameters.
                 Used as reference: http://flask.pocoo.org/docs/1.0/api/#flask.render_template
         """
+        # Validate that the one making the request is a professor
+        if not validate_professor():
+            return display_access_control_error()
+
         # Get the database object we will need
         reports = gbmodel.reports()
         teams = gbmodel.teams()

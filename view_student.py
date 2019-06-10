@@ -2,16 +2,17 @@ from flask import request, render_template
 from flask.views import MethodView
 from flask_cas import login_required
 from catCas import validate_professor
+from common_functions import display_access_control_error
 import gbmodel
 import logging
 
-"""
-A class for the student page (that a professor would access form the professor dashboard. The professor
-should be able to use this page to access the midterm and final reviews for a student)
-"""
-
 
 class ViewStudent(MethodView):
+    """
+    A class for the view student page (that a professor would access via the professor dashboard. This page
+    allows the professors to access the midterm and final reviews a student submitted and the unanonymous
+    midterm and final reports for that student)
+    """
 
     def check_review_done(self, reviews_table, reviewer_id, reviewee_id, team_id, is_final):
         """
@@ -53,8 +54,7 @@ class ViewStudent(MethodView):
         # Validate that the one making the request is a professor
         # Might want to consider noting things like these or forcefuly logging the person out
         if not validate_professor():
-            return self.display_error(("A student (or someone else) tried to access the view_student page (a "
-                                       "page that professors should only have access to)"))
+            return display_access_control_error()
 
         # Otherwise, load the student page
         try:
