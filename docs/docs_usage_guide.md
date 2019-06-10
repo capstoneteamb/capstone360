@@ -140,16 +140,16 @@ To generate anonymous reports for student distribution:
 3. You'll be taken to a web page containing all reports.
 4. Print the page -- reports will automatically be divided to be printed on individual pages
 
-#### Report Analysis
+#### Review Analysis and Unanonymous Report Generation
 
 Dashboard Analysis:
 If 'midterm' or 'final' review dates have been set, and it is currently after one of those dates,
-point ranges will be displayed next to each student if reviews have been filled out for that student.
+review point ranges will be displayed next to each student if reviews have been filled out for that student.
 
-Individual report analysis:
+To see the reviews a student has filled out for themselves and each of their team members:
 1. Click on a student name
 2. You'll be taken to a 'viewStudent' page containing a list of team members and a 'Report' button
-3. For all team members the student has submitted reports for, you may click on the students name to see the report the student has filled out for that team member
+3. For all team members the student has submitted reviews for, you may click on the students name to see the review the student has filled out for that team member
 4. If no review is present, a message saying so will be displayed
 
 To see the student's de-anonymized report:
