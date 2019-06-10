@@ -9,8 +9,14 @@ from sqlalchemy import exc, func
 sys.path.append(os.getcwd())
 
 
-def log_exception():
+def handle_exception():
+    # Get exception information
     exception_details = sys.exc_info()
+
+    # Rollback the db (so the session doesn't crash)
+    db.session.rollback()
+
+    # Log the error message
     error = "Gbmodel - {}: {}".format(exception_details[0].__name__, exception_details[1])
     logging.error(error)
     traceback.print_tb(exception_details[2])
@@ -32,7 +38,7 @@ class professors(db.Model):
         try:
             result = professors.query.filter(professors.id == id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             result = None
 
         if result is None:
@@ -52,7 +58,7 @@ class professors(db.Model):
                 temp = i
                 lists.append(temp)
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             profs = None
 
         if profs is None:
@@ -69,7 +75,7 @@ class professors(db.Model):
             prof_id = prof_id.strip().lower()
             result = professors().query.filter_by(id=prof_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             result = None
 
         if result is not None:
@@ -85,7 +91,7 @@ class professors(db.Model):
         try:
             prof = professors.query.filter_by(name=name).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             prof = None
 
         if prof is None:
@@ -105,7 +111,7 @@ class teams(db.Model):
         try:
             max_id = db.session.query(func.max(teams.id)).scalar()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             max_id = None
 
         if max_id is None:
@@ -123,7 +129,7 @@ class teams(db.Model):
             result = teams().query.filter_by(name=t_name,
                                              session_id=session_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             result = None
 
         if result is not None:
@@ -157,7 +163,7 @@ class teams(db.Model):
             else:
                 return None
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def remove_team_from_session(self, name, session_id):
@@ -196,7 +202,7 @@ class teams(db.Model):
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
     def remove_team(self, name, session_id):
@@ -247,8 +253,7 @@ class teams(db.Model):
             return True
         except exc.SQLAlchemyError:
             # Log exception, and rollback db changes
-            log_exception()
-            db.session.rollback()
+            handle_exception()
             return False
 
     def dashboard(self, session_id):
@@ -285,7 +290,7 @@ class teams(db.Model):
                 # Query to get the students in the students table
                 team_members = student.query.filter_by(tid=tids[i], session_id=session_id)
             except exc.SQLAlchemyError:
-                log_exception()
+                handle_exception()
                 return 'Error'
 
             temp = [team_names[i]]
@@ -335,7 +340,7 @@ class teams(db.Model):
         try:
             result = teams.query.filter(teams.id == team_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
         return result
 
@@ -350,7 +355,7 @@ class teams(db.Model):
             result = teams.query.filter(teams.name == team_name,
                                         teams.session_id == ses_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
         if result is not None:
@@ -372,7 +377,7 @@ class students(db.Model):
         try:
             result = students.query.filter_by(id=id, session_id=session_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             result = None
         if result is not None:
             return False
@@ -400,7 +405,7 @@ class students(db.Model):
             db.session.add(new_student)
             db.session.commit()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
         return True
@@ -414,7 +419,7 @@ class students(db.Model):
         try:
             result = [r.name for r in students.query.filter_by(tid=tid)]
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
         return result
@@ -428,7 +433,7 @@ class students(db.Model):
         try:
             mems = students.query.filter_by(tid=tid).distinct().all()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
         return mems
 
@@ -444,7 +449,7 @@ class students(db.Model):
             results = students.query.filter(
                           students.session_id == session_id).order_by(students.tid.asc()).all()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
         return results
 
@@ -470,7 +475,7 @@ class students(db.Model):
             return results
 
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def get_student_in_session(self, sid, session_id):
@@ -482,7 +487,7 @@ class students(db.Model):
         try:
             result = students.query.filter(students.id == sid, students.session_id == session_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
         return result
 
@@ -509,7 +514,7 @@ class students(db.Model):
                 db.session.delete(st)
                 db.session.commit()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
         return True
@@ -523,7 +528,7 @@ class students(db.Model):
         try:
             result = students.query.filter_by(id=id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             result = None
 
         if result is None:
@@ -538,7 +543,7 @@ class students(db.Model):
         try:
             return students.query.filter_by(id=s_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def update_team(self, name, s_id, t_id):
@@ -549,7 +554,7 @@ class students(db.Model):
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
     def check_team_lead(self, s_id, sess_id):
@@ -565,7 +570,7 @@ class students(db.Model):
             else:
                 return False
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
     def get_unassigned_students(self, s_id):
@@ -582,7 +587,7 @@ class students(db.Model):
                 return None
         # https://stackoverflow.com/questions/6470428/catch-multiple-exceptions-in-one-line-except-block
         except (exc.SQLAlchemyError, AttributeError):
-            log_exception()
+            handle_exception()
             return None
 
     def edit_student(self, id, new_name, new_email):
@@ -606,7 +611,7 @@ class students(db.Model):
                 db.session.commit()
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
     def set_lead(self, session_id, team_name, lead):
@@ -636,7 +641,7 @@ class students(db.Model):
                 db.session.commit()
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
     def set_active(self, session_id, option):
@@ -665,7 +670,7 @@ class students(db.Model):
             # success, so return true
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
 
@@ -681,7 +686,7 @@ class capstone_session(db.Model):
         try:
             max_id = db.session.query(func.max(capstone_session.id)).scalar()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             max_id = None
 
         if max_id is None:
@@ -738,7 +743,7 @@ class capstone_session(db.Model):
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def get_sess_by_id(self, id):
@@ -751,7 +756,7 @@ class capstone_session(db.Model):
             # query for session and return
             return capstone_session.query.filter_by(id=id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def check_term_name(self, s_term):
@@ -801,7 +806,7 @@ class capstone_session(db.Model):
             result = capstone_session().query.filter_by(
                 start_term=s_term, start_year=s_year, professor_id=p_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             result = None
 
         if result is not None:
@@ -821,7 +826,7 @@ class capstone_session(db.Model):
                                                capstone_session.start_year == year,
                                                capstone_session.professor_id == prof_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             id = None
 
         if id is None:
@@ -892,7 +897,7 @@ class capstone_session(db.Model):
                                                  ((capstone_session.start_year == start_year_2) &
                                                   (capstone_session.start_term == start_term_2))).all()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def check_dates(self, start, end):
@@ -1015,7 +1020,7 @@ class capstone_session(db.Model):
                 # no dates set, so error
                 return 'Error'
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return 'Error'
 
     def check_not_late(Self, session_id, date, type):
@@ -1063,7 +1068,7 @@ class capstone_session(db.Model):
                 # error
                 return False
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return False
 
 
@@ -1089,7 +1094,7 @@ class reports(db.Model):
                                                reports.session_id == session_id).all()
             return reviews
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def get_report(self, reviewer_id, reviewee_id, team_id, is_final):
@@ -1105,7 +1110,7 @@ class reports(db.Model):
                                         reports.is_final == is_final,
                                         reports.reviewee == reviewee_id).first()
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def get_team_reports(self, tid, is_final):
@@ -1119,7 +1124,7 @@ class reports(db.Model):
                                           reports.is_final == is_final).distinct().all()
             return result
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             return None
 
     def insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
@@ -1161,7 +1166,7 @@ class reports(db.Model):
             return True
         except exc.SQLAlchemyError:
             # if error, return false
-            log_exception()
+            handle_exception()
             return False
 
     def commit_reports(self, id, state, sess_id, success):
@@ -1195,9 +1200,8 @@ class reports(db.Model):
             db.session.commit()
             return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             print('Rolling Back Reports')
-            db.session.rollback()
             return False
 
     def commit_updates(self, success):
@@ -1217,9 +1221,8 @@ class reports(db.Model):
                 db.session.commit()
                 return True
         except exc.SQLAlchemyError:
-            log_exception()
+            handle_exception()
             print('Rolling Back Edits')
-            db.session.rollback()
             return False
 
 
