@@ -157,5 +157,23 @@ To see the student's de-anonymized report:
 
 ### Students
 
+#### Review Access and Submission:
+
+1. From the drop down, select the capstone session you wish to submit reviews for
+2. Click Review
+3. Fill out all entries in the form
+4. Click submit
+
+#### Review Editing
+
+1. Follow the steps described for review access
+2. Alter the fields you wish to change
+3. Click submit
+
+#### Student Info Editing
+
+1. Click 'Edit'
+2. Fill in the name and or email fields
+3. Click submit
 
 
