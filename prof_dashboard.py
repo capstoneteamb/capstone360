@@ -364,6 +364,9 @@ class AddStudent(MethodView):
         Output: rendering the addSession.html template with session id
                 name of the team from profDashboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         team_name = request.args.get('data')
         session_id = request.args.get('session_id')
         return render_template('addStudent.html', team_name=str(team_name), session_id=session_id, error=None)
@@ -381,6 +384,9 @@ class AddSession(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         # Canceling creating a session, render to the current session
         old_session_id = request.args.get('session_id')
         session = gbmodel.capstone_session()
@@ -407,6 +413,9 @@ class RemoveSession(MethodView):
         Output: rendering the removeSession.html template with session id
                 from profDasboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         session_id = request.args.get('session_id')
         return render_template('removeSession.html', error=None, session_id=session_id)
 
@@ -423,6 +432,9 @@ class AddTeam(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         session_id = request.args.get('session_id')
         return render_template('addTeam.html', error=None, session_id=session_id)
 
@@ -434,8 +446,8 @@ class AddTeamCSV(MethodView):
     # Display webpage
     def get(self):
         if validate_professor() is False:
-            msg = "Professor not found"
-            return render_template('errorMsg.html', msg=msg)
+            return render_template('errorMsg.html', msg="Professor not found")
+
         session_id = request.args.get('session_id')
         return render_template('csvAddTeam.html', session_id=session_id)
 
@@ -452,6 +464,9 @@ class RemoveTeam(MethodView):
         Output: rendering the addSession.html template with session id
                 and team name from profDashboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         team_name = request.args.get('data')
         session_id = request.args.get('session_id')
         return render_template('removeTeam.html', team_name=team_name, session_id=session_id)
@@ -469,6 +484,9 @@ class SetDate(MethodView):
         Output: rendering the addSession.html template with session id
                 from profDashboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         session_id = request.args.get('session_id')
         return render_template('setDate.html', error=None, session_id=session_id)
 
@@ -484,6 +502,9 @@ class SetAvailable(MethodView):
         Input: only self
         Output: renders template for setAvailable.html with the session id of profDashboard.html
         """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         session_id = request.args.get('session_id')
         return render_template('setAvailable.html', error=None, session_id=session_id)
 
@@ -491,10 +512,15 @@ class SetAvailable(MethodView):
 class AssignTeam(MethodView):
     @login_required
     def get(self):
+        """
+        This method handled get requests for assignTeam.html
+        Input: self
+        Output: none
+        """
+        if validate_professor() is False:
+            return render_template('errorMsg.html', msg="Professor not found")
+
         s_id = request.args.get('session_id')
-        if validate_professor is False:
-            msg = "Professor not found"
-            return render_template('errorMsg.html', msg=msg)
         students_table = gbmodel.students()
         team_table = gbmodel.teams()
         unassigned_students = students_table.get_unassigned_students(s_id)
