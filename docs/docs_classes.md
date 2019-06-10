@@ -87,17 +87,57 @@ This class handles the get request for index.html
 ##### class ProfDashboard
 ProfDashboard class handles get and post requests for profDashboard.html
 
+def valid_email(self, email):<br>
+Verify if the email is in a correct syntax by checking if it has '@' & '.'
+Input: self and new email
+Output: return True if it matches the format, False otherwise
+
+def get(self):<br>
+Get session_id from the previous selected session
+If None returned then request for a selection.
+Otherwise, display the current session_id
+
+def post(self):<br>
+This method handles all the functionalities from proDashboard
+includes add/remove students/teams, add new session, set review
+midterm/final start/end dates, setting reviews to be open/closed,
+and set team lead
+
 ##### class AddStudent
 This class handles get request for addStudent.html
 
+def get(self):<br>
+This method handles get requests go addStudent.html
+Input: only self
+Output: rendering the addSession.html template with session id
+name of the team from profDashboard.html
+
 ##### class AddSession
-This class handles get requests for addStudent.html
+This class handles get requests for addSession.html
+
+def get(self):<br>
+This method handles get requests go addSession.html
+Input: only self
+Output: rendering the addSession.html template with session id
+from profDashboard.html
 
 ##### class RemoveSession
 This class handles get requests for removeSession.html
 
+def get(self):<br>
+This method handles get requests go removeSession.html
+Input: only self
+Output: rendering the removeSession.html template with session id
+from profDasboard.html
+
 ##### class AddTeam
 This class handles get requests for addTeam.html
+
+def get(self):<br>
+This method handles get requests go addTeam.html
+Input: only self
+Output: rendering the addSession.html template with session id
+from profDashboard.html
 
 ##### class AddTeamCSV
 This class handles import students via CSV file
@@ -105,8 +145,20 @@ This class handles import students via CSV file
 ##### class RemoveTeam
 This class handles get requests for removeTeam.html
 
+def get(self):<br>
+This method handles get requests go removeTeam.html
+Input: only self
+Output: rendering the addSession.html template with session id
+and team name from profDashboard.html
+
 ##### class SetDate
 This class handles get requests for setDate.html
+
+def get(self):<br>
+This method handles get requests go setDate.html
+Input: only self
+Output: rendering the addSession.html template with session id
+from profDashboard.html
 
 ##### class AssignTeam
 This class handles team assignment for assignTeam.html
