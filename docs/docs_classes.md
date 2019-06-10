@@ -232,20 +232,20 @@ or False -- the review IS late or an error was experienced
 ##### reports
 A model class which keeps track of capstone teams -- reflects the teams table in the database with its attributes.
 
-get_reports_for_student(self, student_id, session_id, is_final=None)
+get_reports_for_student(self, student_id, session_id, is_final=None):<br>
 Gets all available reports for a student, optionally filtering to only midterms or finals
 Input: student id, session_id and is_final (is_final indicates if we are filtering for final reviews
 or not. is_final = true indicates we are looking for final reviews. is_final = false indicates
 we are looking for midterm reviews. is_final = None indicates we want both.
 Output: the available reports for the student
 
-get_report(self, reviewer_id, reviewee_id, team_id, is_final)
+get_report(self, reviewer_id, reviewee_id, team_id, is_final):<br>
 Get a review from the database using the given information
 Input: reviewer_id (a student id), reviewee_id (a student id), team_id, is_final (indicates if the
 review is a final review or not)
 Output: the review, if it was found, or None if it wasn't or if there was a problem
 
-get_team_reports(self, tid, is_final):
+get_team_reports(self, tid, is_final):<br>
 This method is for getting the reports of an entire team
 Inputs: tid -- team id of reports to retrieve, is_final - if it's the second term
 Outputs: result - all report objects for the team
