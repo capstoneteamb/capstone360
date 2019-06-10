@@ -8,6 +8,7 @@ The purpose of this document is to provide an overview of the the application's 
 
 
 ### CSV Formatting
-
-
+When importing students via .csv, each row in the .csv should be formatted in the following manner;
+firstName lastName, studentID, teamName
+This will the create a student with the given name and assign them to the named team.
 

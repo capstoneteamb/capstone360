@@ -37,7 +37,7 @@ Add in bulk via CSV:
 3. Click 'Browse'
 4. Choose csv file to upload
 5. Click import
-7. Teams and Students will be automatically created and displayed on the professor dashboard
+6. Teams and Students will be automatically created and displayed on the professor dashboard
 
 Student self-regitration:<br>
 Students may sign themselves up for an ongoing capstone course. They will be placed into the capstone session without a team.
