@@ -54,7 +54,7 @@ class ViewStudent(MethodView):
         # Validate that the one making the request is a professor
         # Might want to consider noting things like these or forcefuly logging the person out
         if not validate_professor():
-            display_access_control_error()
+            return display_access_control_error()
 
         # Otherwise, load the student page
         try:
