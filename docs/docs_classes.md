@@ -42,32 +42,26 @@ check if the user is done with their review
 input: id of user to check, capstone session to check
 output: none if no result, otherwise the midterm or final done attribute of the student record
 
-check_available(self, user_id, capstone_id)
+check_available(self, user_id, capstone_id):<br>
 This method checks if a student's reviews are open or clocked
 Inputs: user_id -- the student's id in the database,
 capstone_id -- the capstone session the student belongs to
 Outputs: True -- the student can proceed with reviews.
 False -- The student cannot proceed with reviews.
-
-check_available
-This method checks to ensure that the user trying to access
-the review exists and has an open review.
-Input: self and user_id
-Output: A boolean indication for if the user was successfully confirmed (true) or not (false)
          
-confirm_user
+confirm_user(self, user_id, capstone_id):<br>
 This method checks to ensure that the user trying to access
 the review exists and has an open review.
 Input: self and user_id
 Output: A boolean indication for if the user was successfully confirmed (true) or not (false)
 
-get_data(self, id, capstone_id)
+get_data(self, id, capstone_id):<br>
 This method collects information of a student's submitted reviews into an object for jinja2 templating
 input: id of the student to retrieve review info for, the capstone session id to check
 output: an array of one dictionary object containing all report info in a
 style that matches review.html fields
 
-get(self, capstone_id)
+get(self, capstone_id):<br>
 This method handles get requests to review.html.
 Input: Self and the capstone session id for the review.
 Output: rendering the review.html template with given conditions --
@@ -76,7 +70,7 @@ if there are any user input errors to report, and if there are
 any fatal errors to report as a result of user action. 
 This also handles editing, in which case review data will be included in the output as well.
 
-post(self, capstone_id)
+post(self, capstone_id):<br>
 This method handles post requests from review.html.
 Input: only self and the capstone session id of the capstone session reviews are being turned in for
 Output: rendering the review.html template with errors reported
@@ -156,29 +150,29 @@ A class for the student page (that a professor would access from the professor d
 
 ## gbmodel/model_sqlalchemy.py
 
-handle_exception
+handle_exception():<br>
 A global method which provides error handling in the event of a database error.
 It rollsback the current database session and writes out logging information on the error.
 
 ##### professors
 A model class which keeps track of capstone professors -- reflects the professors table in the database with its attributes.
 
-get_professor(self, id):
+get_professor(self, id):<br>
 Get a professor with the given id
 Input: professor id
 Output: the professor object associated with the given id
 
-get_all_professors(self):
+get_all_professors(self):<br>
 Get a list of all professors in the database (by id)
 Input: none
 Output: a list of professors
 
-check_professor(self, prof_id):
+check_professor(self, prof_id):<br>
 Checks if professor ID exists in the DB
 Input: professor ID given
 Output: True if it exists, False otherwise
 
-prof_id(self, name):
+prof_id(self, name):<br>
 Gets the id of the professor with the given name, if he is found. Returns -1 otherwise
 Input: professor name
 Output: return professor's id
@@ -186,7 +180,7 @@ Output: return professor's id
 ##### teams
 A model class which keeps track of capstone teams -- reflects the teams table in the database with its attributes.
 
-get_max_team(self):
+get_max_team(self):<br>
 Calculate the next id for a newly added team
 if the table is empty, returns 1
 Otherwise, return the max id+1
@@ -194,21 +188,22 @@ Otherwise, return the max id+1
 ##### students
 A model class which keeps track of capstone teams -- reflects the teams table in the database with its attributes.
 
-get_team_members(self, tid)
+get_team_members(self, tid):<br>
 Get all members of a team
 Input: team id as tid
 Output: A list of student objects representing the students on that team
 
-get_student_in_session(self, sid, session_id)
+get_student_in_session(self, sid, session_id):<br>
 Get a student from the students table
 Input: student id, session id
 Output: the student that we found, or none if nothing was found
 
-check_team_lead(self, s_id, sess_id)
+check_team_lead(self, s_id, sess_id):<br>
 Check if the student passed in by id is the team lead
 Input: student id of the student to check
 Output: True if the student is a team lead, False otherwise
 
+set_active(self, session_id, option):<br>
 Sets the active attribute in student
 For a student to be able to access their reviews, "open" must be set
 Inputs: The capstone session id of the class to set as active or not. Option as 'open' or 'close'.
@@ -218,7 +213,7 @@ Outputs: True to indicate success, False to indicate an error.
 ##### capstone_session
 A model class which keeps track of capstone teams -- reflects the teams table in the database with its attributes.
 
-check_review_state(self, session_id, date)
+check_review_state(self, session_id, date):<br>
 Given a capstone session id to check and a date,
 this method determines the currently available review if any
 Inputs: a capstone session id and a date which should be a python date time object
@@ -226,7 +221,7 @@ Outputs: 'final' if date is after the final start date for the session
 'midterm' if the date is between the midterm and final start dates.
 'error' otherwise
 
-check_not_late(Self, session_id, date, type)
+check_not_late(Self, session_id, date, type):<br>
 This method is for determining is a review is late. It receives the type of review to check
 and compares the date sent into the method with the review's end period
 Inputs: session_id -- the value of the id for the capstone session to check
@@ -237,18 +232,48 @@ or False -- the review IS late or an error was experienced
 ##### reports
 A model class which keeps track of capstone teams -- reflects the teams table in the database with its attributes.
 
-commit_reports(self, id, state, sess_id, success)
+get_reports_for_student(self, student_id, session_id, is_final=None)
+Gets all available reports for a student, optionally filtering to only midterms or finals
+Input: student id, session_id and is_final (is_final indicates if we are filtering for final reviews
+or not. is_final = true indicates we are looking for final reviews. is_final = false indicates
+we are looking for midterm reviews. is_final = None indicates we want both.
+Output: the available reports for the student
+
+get_report(self, reviewer_id, reviewee_id, team_id, is_final)
+Get a review from the database using the given information
+Input: reviewer_id (a student id), reviewee_id (a student id), team_id, is_final (indicates if the
+review is a final review or not)
+Output: the review, if it was found, or None if it wasn't or if there was a problem
+
+get_team_reports(self, tid, is_final):
+This method is for getting the reports of an entire team
+Inputs: tid -- team id of reports to retrieve, is_final - if it's the second term
+Outputs: result - all report objects for the team
+
+insert_report(self, sess_id, time, reviewer, tid, reviewee, tech,
+                      ethic, com, coop, init, focus, cont, lead, org, dlg,
+                      points, strn, wkn, traits, learned, proud, is_final, late):<br>
+Stages a report to be inserted into the database -- This does NOT commit the add!
+Inputs: Arguments for each individual field of the report
+Outputs: true if adding was successful, false if not
+
+commit_reports(self, id, state, sess_id, success):<br>
 Method to commit changes to the DB through the model while updating the user's state
 input: None
 output: True if successful, false otherwise
 
-commit_updates(self, success)
+commit_updates(self, success):<br>
 This method is for committing review updates following several being edited.
 It should be called whenever reports are edited, but not added.
 input: success -- a boolean object indicating whether to proceed
 with committing (true) or to roll back (false)
 output: False -- commit was not made, True - commit was made successfully
 
-
 ##### removed_students
 A model class which keeps track of capstone teams -- reflects the teams table in the database with its attributes.
+
+add_student(self, s):<br>
+Insert removed students into remocved_students table
+Input: student info
+Output: return False if the info is empty
+Otherwise, add student to the list and return True
