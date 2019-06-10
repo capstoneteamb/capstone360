@@ -5,7 +5,7 @@
 The review class handles get and post requests for reivew.html, and it includes helper functions for cleanliness
 Uses variables human_fields and code_fields to populate the review form and its html structure
 
-display_error(self, err_str):
+display_error(self, err_str):<br>
 If an unrecoverable error occurs and there is a need to abort,
 report an internal server error and print the error to the console.
 As the code indicates, this should be reserved for internal errors. User
@@ -13,31 +13,31 @@ error should not lead here.
 input: self and a string to report to the console
 output: none
 
-convert_to_int(self, to_convert)
+convert_to_int(self, to_convert):<br>
 Converts strings to integers and tests if the input was an integer.
 User textarea input from reviews should not come into this method.
 input: self and a number to be converted to the integer format
 output: the same number as an integer
 
-get_self_name(self, user_id, capstone_id):
+get_self_name(self, user_id, capstone_id):<br>
 This method returns the current user's name to display on the web page
 input: only self
 output: A string representing the user's name
 
-get_tid(self, user_id, capstone_id):
+get_tid(self, user_id, capstone_id):<br>
 This method returns the current user's team id value while testing if
 the user exists in the database.
 input: only self
 output: the user's tid as an integer
 
-get_state(self, user_id, capstone_id)
+get_state(self, user_id, capstone_id):<br>
 This method queries the database to get the user's report state. It will
 test for any database errors.
 input: only self
 output: String -- The user's "active" attribute or 'Error' to indicate
 something went wrong (could be user error, thus no need to abort)  
 
-get_done(self, user_id, capstone_id):
+get_done(self, user_id, capstone_id):<br>
 check if the user is done with their review
 input: id of user to check, capstone session to check
 output: none if no result, otherwise the midterm or final done attribute of the student record
