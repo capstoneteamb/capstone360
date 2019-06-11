@@ -20,6 +20,7 @@ The purpose of this document is to provide an overview of the the application's 
 | final_end        | TIMESTAMP    | Yes         | -             | -              |
 | professor_id     | VARCHAR(128) | No          | -             | professors(id) |
 
+
 #### students table
 | Attribute Name | Type         | Can Be Null | Default Value | Foreign Key To       |
 |----------------|--------------|-------------|---------------|----------------------|
@@ -33,12 +34,14 @@ The purpose of this document is to provide an overview of the the application's 
 | active         | VARCHAR(128) | Yes         | -             | -                    |
 | email_address  | VARCHAR(128) | No          | -             | -                    |
 
+
 #### teams table
 | Attribute Name | Type         | Can Be Null | Default Value | Foreign Key To |
 |----------------|--------------|-------------|---------------|----------------|
 | id             | INTEGER      | No          | -             | -              |
 | session_id     | INTEGER      | No          | -             | session(id)    |
 | name           | VARCHAR(128) | No          | -             | -              |
+
 
 #### removed_students
 | Attribute Name   | Type         | Can Be Null | Default Value | Foreign Key To           |
@@ -52,14 +55,15 @@ The purpose of this document is to provide an overview of the the application's 
 | final_done       | BOOLEAN      | No          | FALSE         | -                        |
 | removed_date     | TIMESTAMP    | No          | -             | -                        |
 
+
 #### professors
 | Attribute Name | Type         | Can Be Null | Default Value | Foreign Key To |
 |----------------|--------------|-------------|---------------|----------------|
 | id             | VARCHAR(128) | No          | -             | -              |
 | name           | VARCHAR(128) | No          | -             | -              |
 
+
 #### reports
-|-------------------------|---------------|---------------|---------------|---------------------------|
 | Attribute Name          | Type          | Can Be Null   | Default Value | Foreign Key To            |
 |-------------------------|---------------|---------------|---------------|---------------------------|
 | time                    | TIMESTAMP     | No            | -             | -                         |
@@ -85,6 +89,7 @@ The purpose of this document is to provide an overview of the the application's 
 | proud_of_accomplishment | VARCHAR(4096) | Yes           | -             | -                         |
 | is_final                | BOOLEAN       | No            | -             | -                         |
 | is_late                 | BOOLEAN       | Yes (for now) | -             | -                         |
+
 
 ### CSV Formatting
 When importing students via .csv, each row in the .csv should be formatted in the following manner;
