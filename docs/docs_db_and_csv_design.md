@@ -6,8 +6,8 @@ The purpose of this document is to provide an overview of the the application's 
 
 ### Database Schema
 
-#### capstone_session table
-
+|                                 capstone_session                               |
+|--------------------------------------------------------------------------------|
 | Attribute Name   | Type         | Can Be Null | Default Value | Foreign Key To |
 |------------------|--------------|-------------|---------------|----------------|
 | id               | INTEGER      | No          | -             | -              |
