@@ -1,7 +1,7 @@
 import psycopg2
-from psycopg2 import Error
 
 def generate_tables(cursor):
+
 
     try:
         """
@@ -88,12 +88,14 @@ def generate_tables(cursor):
         print("Table created successfully in PostgreSQL ")
 
     except (Exception, psycopg2.DatabaseError) as error:
-        print ("Error while creating PostgreSQL table: ", error)
+        print("Error while creating PostgreSQL table: ", error)
 
 def get_credentials(user, password):
+
     user = str(input("Enter username: "))
     password = str(input("Enter password: "))
     return user, password
+
 
 def run():
     usern = ""
@@ -101,21 +103,21 @@ def run():
     usern, passw = get_credentials(usern, passw)
 
     # Part 1: Create database and add tables
-    connection = psycopg2.connect(user = usern,
-                                  password = passw,
-                                  host = "db.cecs.pdx.edu")
-                                  #database = "capstone360")
+    connection = psycopg2.connect(user=usern,
+                                  password=passw,
+                                  host="db.cecs.pdx.edu")
     cursor = connection.cursor()
     generate_tables(cursor)
 
     # Commit database changes
     connection.commit()
 
-    #closing database connection.
+    # Closing database connection.
     if(connection):
         cursor.close()
         connection.close()
         print("PostgreSQL connection is closed")
+
 
 # Run everything only if you are trying to run the script explicitly
 if (__name__ == "__main__"):
