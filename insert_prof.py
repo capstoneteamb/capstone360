@@ -1,6 +1,4 @@
 import psycopg2
-import os
-from extensions import db
 
 # Get db credentials from file
 try:
