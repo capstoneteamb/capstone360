@@ -1,7 +1,7 @@
 import psycopg2
 
-def generate_tables(cursor):
 
+def generate_tables(cursor):
 
     try:
         """
@@ -89,6 +89,7 @@ def generate_tables(cursor):
 
     except (Exception, psycopg2.DatabaseError) as error:
         print("Error while creating PostgreSQL table: ", error)
+
 
 def get_credentials(user, password):
 
