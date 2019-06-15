@@ -4,11 +4,9 @@ import psycopg2
 def generate_tables(cursor):
 
     try:
-        """
         # Drops all tables if they exist
         cursor.execute(('DROP TABLE professors, capstone_session, teams, '
-                        'students, reports, removed_students;'))
-        """
+                        'students, reports, removed_students cascade;'))
 
         # Create the professors table
         cursor.execute(('CREATE TABLE professors( '
@@ -51,9 +49,9 @@ def generate_tables(cursor):
         cursor.execute(('CREATE TABLE reports('
                         'time timestamp NOT NULL, '
                         'session_id INTEGER NOT NULL, '
-                        'reviewer VARCHAR(128) NOT NULL REFERENCES students(id), '
+                        'reviewer VARCHAR(128) NOT NULL, '
                         'tid INTEGER NOT NULL REFERENCES teams(id), '
-                        'reviewee VARCHAR(128) NOT NULL REFERENCES students(id), '
+                        'reviewee VARCHAR(128) NOT NULL, '
                         'tech_mastery INTEGER NULL, '
                         'work_ethic INTEGER NULL, '
                         'communication INTEGER NULL, '
