@@ -9,7 +9,7 @@
 2. From the command line, enter 'service apache2 restart' [This will clear any previous connection to the db which may be blocking the set up from proceeding.]
 3. In the command line, enter 'python3 create_db.py' *Danger: This will wipe out the old database tables including their contents as this is necessary to create the tables. Only proceed with this step if you wish to wipe out the old data.*
 4. You will now have a fresh database.
-5. For good measure, enter 'service apache2 restart' again
+5. Enter 'service apache2 restart' again
 
 Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the command line to find the python process running and enter 'kill <pid>'
 
