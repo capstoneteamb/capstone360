@@ -24,11 +24,11 @@ Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the comma
 
 ### Removing Yourself as a Professor From the Database
 
-#### [Note: Removing your log in will remove your access to the professor side of the application and its contents. Ensure that you wish to remove the capstone sessions the professor is assigned to along with their submitted data.]
+#### [Note: Removing your log in will remove your access to the professor side of the application and its contents. It also requires removing the capstone sessions you are assigned to. Ensure that you are willing to remove the capstone sessions you are assigned to (and their submitted data) before trying to remove yourself]
 
-1. To remove a professor, you will first need to remove any capstone sessions the professor is assigned to (if none, skip to the next step). 
+1. Remove any capstone sessions you are assigned to (if none, skip to the next step). 
 2. Go to the capstone 360 directory
 3. From the command line, enter 'python3 remove_prof.py'
-4. At the prompt, enter the MCECS log in you wish to remove
+4. At the prompt, enter your MCECS log in
 
 
