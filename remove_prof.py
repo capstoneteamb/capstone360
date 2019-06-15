@@ -27,7 +27,7 @@ try:
                                   port="5432",
                                   database=db_name)
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM PROFESSORS WHERE id = %s", (id))
+    cursor.execute("DELETE FROM PROFESSORS WHERE id = %s", (id,))
     connection.commit()
     print("Professor removed.")
 except Exception as error:
