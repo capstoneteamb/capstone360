@@ -91,22 +91,30 @@ def generate_tables(cursor):
         print("Error while creating PostgreSQL table: ", error)
 
 
-def get_credentials(user, password):
-
-    user = str(input("Enter username: "))
-    password = str(input("Enter password: "))
-    return user, password
-
-
 def run():
-    usern = ""
-    passw = ""
-    usern, passw = get_credentials(usern, passw)
+
+    # Get db credentials from file
+    try:
+        db_username = ""
+        db_password = ""
+        db_name = ""
+        with open("/etc/capstone.prod.cfg", "r") as cfg_file:
+            for line in cfg_file:
+                if "SQLALCHEMY_DATABASE_URI" in line:
+                    db_username = line.split('@')[0].split('//')[1].split(':')[0]
+                    db_password = line.split('@')[0].split('//')[1].split(':')[1]
+                    db_name = line.split('@')[1].split('/')[1][:-2]
+    except Exception as error:
+        print(error)
+        print("Couldn't get database credentials")
+        exit()
 
     # Part 1: Create database and add tables
-    connection = psycopg2.connect(user=usern,
-                                  password=passw,
-                                  host="db.cecs.pdx.edu")
+    connection = psycopg2.connect(user=db_username,
+                                  password=db_password,
+                                  host="db.cecs.pdx.edu",
+                                  port="5432",
+                                  database=db_name)
     cursor = connection.cursor()
     generate_tables(cursor)
 
