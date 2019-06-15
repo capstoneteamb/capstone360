@@ -24,7 +24,7 @@ Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the comma
 
 ### Removing Yourself as a Professor From the Database
 
-#### [Note: Anyone removing your log in will remove your access to the professor side of the application and its contents]
+#### [Note: Removing your log in will remove your access to the professor side of the application and its contents]
 
 1. Go to the capstone 360 directory
 2. From the command line, enter 'python3 remove_prof.py'
