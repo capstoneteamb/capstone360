@@ -11,7 +11,7 @@
 4. You will now have a fresh database.
 5. Enter 'service apache2 restart' again
 
-Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the command line to find the python process running and enter 'kill <pid>'
+Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the command line to find the python process running and enter 'kill [pid]'
 
 ### Inserting Yourself as a Professor Into the Database
 
