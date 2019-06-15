@@ -1,5 +1,5 @@
 
-## Capstone 360 Developer Documentation -- Usage Guide
+## Capstone 360 Developer Documentation -- Database and Professor Set Up
 
 ### Setting Up the Database
 
