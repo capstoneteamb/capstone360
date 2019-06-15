@@ -5,8 +5,8 @@ def generate_tables(cursor):
 
     try:
         # Drops all tables if they exist
-        cursor.execute(('DROP TABLE professors, capstone_session, teams, '
-                        'students, reports, removed_students cascade;'))
+        cursor.execute(('DROP TABLE IF EXISTS professors, capstone_session, teams, '
+                        'students, reports, removed_students CASCADE;'))
 
         # Create the professors table
         cursor.execute(('CREATE TABLE professors( '
@@ -75,14 +75,15 @@ def generate_tables(cursor):
         # Create removed students table
         cursor.execute(('CREATE TABLE removed_students( '
                         'id VARCHAR(128) NOT NULL, '
-                        'tid INTEGER NOT NULL REFERENCES teams(id), '
-                        'session_id INTEGER NOT NULL REFERENCES capstone_session(id), '
-                        'name VARCHAR(128) NOT NULL , '
+                        'tid INTEGER NOT NULL, '
+                        'session_id INTEGER NOT NULL, '
+                        'name VARCHAR(128) NOT NULL, '
                         'is_lead BOOLEAN NOT NULL, '
                         'midterm_done BOOLEAN NOT NULL, '
                         'final_done BOOLEAN NOT NULL, '
                         'removed_date timestamp NOT NULL, '
                         'PRIMARY KEY (id, session_id, removed_date));'))
+
         print("Table created successfully in PostgreSQL ")
 
     except (Exception, psycopg2.DatabaseError) as error:
