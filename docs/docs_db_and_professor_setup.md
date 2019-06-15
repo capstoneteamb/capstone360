@@ -26,7 +26,7 @@ Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the comma
 
 #### [Note: Removing your log in will remove your access to the professor side of the application and its contents]
 
-1. Remove the professor from any capstone sessions that they are assigned to (if none, skip to the next step)
+1. Remove any capstone sessions the professor is assigned to (if none, skip to the next step)
 2. Go to the capstone 360 directory
 3. From the command line, enter 'python3 remove_prof.py'
 4. At the prompt, enter the MCECS log in you wish to remove
