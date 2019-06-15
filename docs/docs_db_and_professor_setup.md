@@ -24,7 +24,7 @@ Note: If step 2 is skipped, the process may hang. If so, use 'ps' from the comma
 
 ### Removing Yourself as a Professor From the Database
 
-#### [Note: Removing your log in will remove your access to the professor side of the application and its contents]
+#### [Note: Removing your log in will remove your access to the professor side of the application and its contents. Ensure that you wish to remove the capstone sessions the professor is assigned to.]
 
 1. To remove a professor, you will first need to remove any capstone sessions the professor is assigned to (if none, skip to the next step). 
 2. Go to the capstone 360 directory
